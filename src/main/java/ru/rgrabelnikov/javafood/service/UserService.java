@@ -5,10 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.rgrabelnikov.javafood.config.jwt.JwtProvider;
+import ru.rgrabelnikov.javafood.entity.Dish;
 import ru.rgrabelnikov.javafood.entity.Role;
 import ru.rgrabelnikov.javafood.entity.User;
 import ru.rgrabelnikov.javafood.repository.RoleRepository;
 import ru.rgrabelnikov.javafood.repository.UserRepository;
+
+import java.util.List;
 
 @Service
 public class UserService {
@@ -20,6 +23,12 @@ public class UserService {
   private PasswordEncoder passwordEncoder;
   @Autowired
   private JwtProvider jwtProvider;
+
+  public List<User> getUsers() {
+    List<User> users = userRepository.findAll();
+    users.forEach(user -> user.setRoleName(user.getRole().getName().equals("ROLE_USER") ? "user" : "admin"));
+    return users;
+  }
 
   public User saveUser(User user) {
     Role userRole = roleRepository.findByName("ROLE_USER");

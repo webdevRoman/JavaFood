@@ -7,11 +7,17 @@ import ru.rgrabelnikov.javafood.entity.User;
 import ru.rgrabelnikov.javafood.entity.Views;
 import ru.rgrabelnikov.javafood.service.UserService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/user")
 public class UserController {
   @Autowired
   private UserService userService;
+
+  @GetMapping("/admin")
+  @JsonView(Views.User.class)
+  public List<User> getDishes() { return userService.getUsers(); }
 
   @PutMapping
   @JsonView(Views.User.class)
@@ -25,7 +31,7 @@ public class UserController {
     return userService.updateUserPassword(user);
   }
 
-  @PutMapping("/role")
+  @PutMapping("/admin/role")
   @JsonView(Views.User.class)
   public User updateUserRole(@RequestBody User user) {
     return userService.updateUserRole(user);
