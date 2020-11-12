@@ -1,0 +1,145 @@
+$font         = 'Roboto', sans-serif
+$fz-title     = 24px
+$fz-subtitle  = 18px
+$fz-norm      = 15px
+$fz-small     = 13px
+$c-dark       = #414141
+$c-light      = #FFFFFF
+$c-middle     = #D3D2D2
+$c-active     = #74A049
+$c-fav        = #F5D011
+$c-bg         = #FAFAFA
+$c-warning    = #CF3737
+
+@media (max-width: 1200px)
+  html
+    .container
+      width: 960px
+    .logo
+      width: 280px
+    .form
+      &-block
+        margin-bottom: 42px
+      div.form-block_error
+        margin-bottom: 65px
+@media (max-width: 992px)
+  html
+    .container
+      width: 720px
+    .btn
+      &:hover
+        background-color: $c-dark
+        border: 1px solid $c-dark
+      &_o
+        &:hover
+          background-color: transparent
+    .form
+      &-label
+        color: lighten($c-dark, 40)
+        &:hover
+          color: lighten($c-dark, 40)
+      &-error
+        top: calc(100% + 5px)
+      &-submit
+        &:hover
+          background-color: $c-active
+          border: 1px solid $c-active
+@media (max-width: 768px)
+  html
+    .container
+      width: 540px
+    .logo
+      width: 220px
+    .btn
+      width: 180px
+    .form
+      &-block
+        margin-bottom: 30px
+      div.form-block_error
+        margin-bottom: 50px
+      &-submit
+        width: 210px
+        padding: 18px
+    // .select
+    //   .vs
+    //     &__dropdown
+    //       &-option
+    //         font-size: 16px
+@media (max-width: 576px)
+  html
+    .container
+      width: 300px
+      &_center
+        padding: 25px 0
+    .logo
+      width: 190px
+    .btn
+      width: 140px
+      padding: 15px 5px
+      font-size: 13px
+    .form
+      &-block
+        margin-bottom: 20px
+      div.form-block_error
+        margin-bottom: 40px
+      &-label
+        font-size: 10px
+      &-input
+        padding: 3px 0 10px
+        font-size: 15px
+        &::placeholder
+          font-size: 15px
+      &-password
+        &__eye
+          width: 20px
+      &-error
+        font-size: 10px
+        top: calc(100% + 1px)
+      &-submit
+        width: 180px
+        padding: 15px
+        font-size: 13px
+    // .select
+    //   .vs
+    //     &__dropdown
+    //       &-toggle
+    //         padding: 12px
+    // .calendar
+    //   .vfc
+    //     &-main
+    //       &-container
+    //         width: 266px
+    //     &-navigation
+    //       &-buttons
+    //         padding: 10px
+    //         & > div
+    //           width: 18px
+    //           height: 18px
+    //           border: 1px solid lighten($c-dark, 40)
+    //           .vfc-arrow-left, .vfc-arrow-right
+    //             width: 6px
+    //             height: 6px
+    //             border-top: 1px solid lighten($c-dark, 40)
+    //             border-right: 1px solid lighten($c-dark, 40)
+    //         .vfc-cursor
+    //           &-pointer
+    //             border: 1px solid $c-dark
+    //             &:hover
+    //               border: 1px solid $c-dark
+    //               .vfc-arrow-left, .vfc-arrow-right
+    //                 border-top: 1px solid $c-dark
+    //                 border-right: 1px solid $c-dark
+    //             .vfc-arrow-left, .vfc-arrow-right
+    //               border-top: 1px solid $c-dark
+    //               border-right: 1px solid $c-dark
+    //     &-top
+    //       &-date
+    //         padding: 4px
+    //     &-dayNames
+    //       span
+    //         width: 38px
+    //         padding: 7px 0
+    //     &-day
+    //       width: 38px
+    //       span
+    //         padding: 7px 0

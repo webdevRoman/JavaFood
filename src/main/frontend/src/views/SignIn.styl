@@ -1,0 +1,114 @@
+$font         = 'Roboto', sans-serif
+$fz-title     = 24px
+$fz-subtitle  = 18px
+$fz-norm      = 15px
+$fz-small     = 13px
+$c-dark       = #414141
+$c-light      = #FFFFFF
+$c-middle     = #D3D2D2
+$c-active     = #74A049
+$c-fav        = #F5D011
+$c-bg         = #FAFAFA
+$c-warning    = #CF3737
+
+.signin
+  width: 262px
+  &-container
+    flex-direction: column
+    .logo
+      margin-bottom: 50px
+  &-title
+    font-size: 30px
+    text-align: center
+    margin-bottom: 90px
+  &-form
+    &__forget
+      display: block
+      font-weight: 500
+      font-size: 13px
+      color: lighten($c-dark, 40)
+      text-decoration: underline
+      margin-top: 12px
+      transition: 0.2s
+      &:hover
+        color: lighten($c-dark, 20)
+    &__signup
+      font-weight: 500
+      font-size: 13px
+      color: lighten($c-dark, 40)
+      text-transform: uppercase
+      text-decoration: underline
+      text-align: center
+      margin: 30px auto 0 auto
+      transition: 0.2s
+      &:hover
+        color: lighten($c-dark, 20)
+  .form
+    &-submit
+      margin-top: 85px
+
+@media(max-width: 1200px)
+  html
+    .container_center
+      align-items: center
+      height: 100vh
+    .signin
+      &-title
+        font-size: 28px
+        margin-bottom: 60px
+      .logo
+        margin-bottom: 25px
+      &-form
+        &__signup
+          margin-top: 13px
+
+@media(max-width: 992px)
+  html
+    .signin
+      .form
+        &__signup
+          &:hover
+            color: lighten($c-dark, 40)
+
+@media(max-width: 768px)
+  html
+    .container_center
+      background: url("../assets/img/bg.png") $c-bg center center no-repeat
+      background-size: cover
+    .signin
+      &-title
+        font-size: 20px
+        margin-bottom: 50px
+      .form
+        &-block
+          margin-right: 0
+          &:nth-child(3n)
+            margin-right: 0
+          &:nth-child(2n)
+            margin-right: 0
+        &-submit
+          width: 100%
+          margin-top: 60px
+
+@media(max-width: 576px)
+  html
+    .signin
+      width: 200px
+      &-title
+        font-size: 15px
+        margin-bottom: 25px
+      .logo
+        margin-bottom: 20px
+      .form
+        &-block
+          margin-right: 0
+          &:nth-child(3n)
+            margin-right: 0
+          &:nth-child(2n)
+            margin-right: 0
+        &-submit
+          width: 210px
+          font-size: 15px
+      &-form
+        &__signup
+          margin-top: 20px

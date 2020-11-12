@@ -1,0 +1,70 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id "com.github.node-gradle.node" version "2.2.4"
+}
+
+group = 'ru.rgrabelnikov'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+// Frontend
+//node {
+//    version = '14.15.0'
+//    download = true
+//    // Set the work directory for unpacking node
+//    workDir = file("${project.projectDir}/src/main/frontend/nodejs")
+//    // Set the work directory for NPM
+//    npmWorkDir = file("${project.projectDir}/src/main/frontend/npm")
+//    // Set the work directory where node_modules should be located
+//    nodeModulesDir = file("${project.projectDir}/src/main/frontend")
+//}
+//
+//task npmInstallDependencies(type: NpmTask) {
+//    dependsOn 'npmSetup'
+//    execOverrides {
+//        it.ignoreExitValue = true
+//        it.workingDir = 'src/main/frontend'
+//    }
+//    args = ['install']
+//}
+//
+//task npmBuild(type: NpmTask) {
+//    dependsOn 'npmInstallDependencies'
+//    execOverrides {
+//        it.workingDir = 'src/main/frontend'
+//    }
+//    args = ['run', 'build']
+//}
+//
+//task copyFrontendToBuild(type: Copy) {
+//    dependsOn 'npmBuild'
+//    from "$projectDir/src/main/frontend/build/"
+//    into "$buildDir/resources/main/static"
+//}
+//
+//processResources {
+//    dependsOn 'copyFrontendToBuild'
+//}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+//    implementation 'javax.validation:validation-api:2.0.1.Final'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+test {
+    useJUnitPlatform()
+}
