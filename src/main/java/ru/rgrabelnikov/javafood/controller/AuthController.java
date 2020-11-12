@@ -12,46 +12,25 @@ import ru.rgrabelnikov.javafood.entity.Views;
 import ru.rgrabelnikov.javafood.service.UserService;
 
 @RestController
-@RequestMapping("api/")
+@RequestMapping("api/auth")
 public class AuthController {
   @Autowired
   private UserService userService;
   @Autowired
   private JwtProvider jwtProvider;
 
-  @PostMapping("register")
-  @JsonView(Views.Auth.class)
+  @PostMapping("/register")
+  @JsonView(Views.User.class)
   public User registerUser(@RequestBody User user) { return userService.saveUser(user); }
-  @PostMapping("login")
-  @JsonView(Views.Auth.class)
+
+  @PostMapping("/login")
+  @JsonView(Views.User.class)
   public User auth(@RequestBody User user) {
-    User userFromDb = userService.fingByLoginAndPassword(user.getLogin(), user.getPassword());
-    userFromDb.setToken(jwtProvider.generateToken(userFromDb.getLogin()));
-    return userFromDb;
+    User userFromDb = userService.findByLoginAndPassword(user.getLogin(), user.getPassword());
+    if (userFromDb != null) {
+      userFromDb.setToken(jwtProvider.generateToken(userFromDb.getLogin()));
+      return userFromDb;
+    }
+    return null;
   }
-
-//  @PostMapping("register")
-//  public String registerUser(@RequestBody RegistrationRequest registrationRequest) {
-//    User u = new User();
-//    u.setPassword(registrationRequest.getPassword());
-//    u.setLogin(registrationRequest.getLogin());
-//    u.setFirstName(registrationRequest.getFirstName());
-//    u.setLastName(registrationRequest.getLastName());
-//    u.setMidName(registrationRequest.getMidName());
-//    userService.saveUser(u);
-//    return "OK";
-//  }
-//
-//  @PostMapping("login")
-//  public AuthResponse auth(@RequestBody AuthRequest authRequest) {
-//    User user = userService.fingByLoginAndPassword(authRequest.getLogin(), authRequest.getPassword());
-//    String token = jwtProvider.generateToken(user.getLogin());
-//    return new AuthResponse(token);
-//  }
-
-//  @PostMapping("test")
-//  public String test(@RequestBody RegistrationRequest registrationRequest) {
-//    String reqBody = "Request body: " + registrationRequest.getLogin() + " | " + registrationRequest.getPassword() + " | " +registrationRequest.getFirstName() + " | " +registrationRequest.getLastName() + " | " +registrationRequest.getMidName();
-//    return reqBody;
-//  }
 }

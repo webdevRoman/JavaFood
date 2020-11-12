@@ -1,5 +1,6 @@
 package ru.rgrabelnikov.javafood.service;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class UserService {
   public User saveUser(User user) {
     Role userRole = roleRepository.findByName("ROLE_USER");
     user.setRole(userRole);
+    user.setRoleName("user");
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     user.setToken(jwtProvider.generateToken(user.getLogin()));
     return userRepository.save(user);
@@ -31,11 +33,54 @@ public class UserService {
   public User findByLogin(String login) {
     return userRepository.findByLogin(login);
   }
-  public User fingByLoginAndPassword(String login, String password) {
+
+  public User findByLoginAndPassword(String login, String password) {
     User user = findByLogin(login);
     if (user != null)
-      if (passwordEncoder.matches(password, user.getPassword()))
+      if (passwordEncoder.matches(password, user.getPassword())) {
+        user.setRoleName(user.getRole().getName().equals("ROLE_USER") ? "user" : "admin");
         return user;
+      }
     return null;
+  }
+
+  public User updateUser(User user) {
+    User userFromDb = findByLogin(user.getLogin());
+    if (userFromDb != null) {
+      BeanUtils.copyProperties(user, userFromDb, "id", "password", "role");
+      userFromDb.setRoleName(userFromDb.getRole().getName().equals("ROLE_USER") ? "user" : "admin");
+      return userRepository.save(userFromDb);
+    }
+    return null;
+  }
+
+  public User updateUserPassword(User user) {
+    User userFromDb = findByLoginAndPassword(user.getLogin(), user.getOldPassword());
+    if (userFromDb != null) {
+      userFromDb.setPassword(passwordEncoder.encode(user.getPassword()));
+      userFromDb.setRoleName(userFromDb.getRole().getName().equals("ROLE_USER") ? "user" : "admin");
+      return userRepository.save(userFromDb);
+    }
+    return null;
+  }
+
+  public User updateUserRole(User user) {
+    User userFromDb = findByLogin(user.getLogin());
+    if (userFromDb != null) {
+      Role userRole = roleRepository.findByName(user.getRoleName().equals("user") ? "ROLE_USER" : "ROLE_ADMIN");
+      userFromDb.setRole(userRole);
+      userFromDb.setRoleName(user.getRoleName());
+      return userRepository.save(userFromDb);
+    }
+    return null;
+  }
+
+  public boolean deleteUser(String login) {
+    User userFromDb = findByLogin(login);
+    if (userFromDb != null) {
+      userRepository.delete(userFromDb);
+      return true;
+    }
+    return false;
   }
 }
