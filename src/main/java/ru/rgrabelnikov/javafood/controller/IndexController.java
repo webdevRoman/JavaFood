@@ -5,6 +5,7 @@
 //
 //@Controller
 //public class IndexController {
+////  @GetMapping("/signin")
 //  @GetMapping(value = {"/", "/{x:[\\w\\-]+}", "/{x:^(?!api$).*$}/**/{y:[\\w\\-]+}"})
 //  public String index() {
 //    return "index";
