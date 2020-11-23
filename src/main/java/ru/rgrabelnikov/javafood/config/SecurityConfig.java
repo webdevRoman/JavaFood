@@ -26,11 +26,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeRequests()
-        .antMatchers("/api/admin/*", "/api/user/admin", "/api/user/admin/*", "/api/dish/admin", "/api/dish/admin/*").hasRole("ADMIN")
-        .antMatchers("/api/*").hasAnyRole("USER", "ADMIN")
-        .antMatchers("/api/register", "/api/auth", "/").permitAll()
+        .antMatchers("/api/*/admin*").hasRole("ADMIN")
+        .antMatchers("/api/*").authenticated()
+        .antMatchers("/api/auth/*", "/").permitAll()
         .and()
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//    .antMatchers("/api/basket*", "/api/company", "/api/dish", "/api/favourite", "/api/user", "/api/user/password").hasRole("USER")
+//    .antMatchers("/api/admin/*", "/api/user/admin*", "/api/dish/admin*").hasRole("ADMIN")
+//        .antMatchers("/api/admin/*", "/api/user/admin", "/api/user/admin/*", "/api/dish/admin", "/api/dish/admin/*").hasRole("ADMIN")
 //        .and()
 //        .logout().permitAll()
   }

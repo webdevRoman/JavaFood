@@ -16,22 +16,22 @@ public class CompanyInfoController {
     return companyInfoService.getCompanyInfo();
   }
 
-  @PutMapping("/description")
+  @PutMapping("/admin/description")
   public boolean updateDescription(@RequestBody String description) {
     return companyInfoService.updateDescription(description);
   }
 
-  @PutMapping("/phone")
+  @PutMapping("/admin/phone")
   public boolean updatePhone(@RequestBody String phone) {
     return companyInfoService.updatePhone(phone);
   }
 
-  @PutMapping("/email")
+  @PutMapping("/admin/email")
   public boolean updateEmail(@RequestBody String email) {
     return companyInfoService.updateEmail(email);
   }
 
-  @PutMapping("/address")
+  @PutMapping("/admin/address")
   public boolean updateAddress(@RequestBody String address) {
     return companyInfoService.updateAddress(address);
   }

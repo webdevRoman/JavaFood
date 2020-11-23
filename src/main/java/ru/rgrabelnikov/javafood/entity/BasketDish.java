@@ -1,5 +1,7 @@
 package ru.rgrabelnikov.javafood.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 
 @Entity
@@ -13,8 +15,10 @@ public class BasketDish {
   private Basket basket;
   @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name = "dish_id")
+  @JsonView(Views.BasketDish.class)
   private Dish dish;
   @Column
+  @JsonView(Views.BasketDish.class)
   private Integer amount;
 
   public Long getId() { return id; }

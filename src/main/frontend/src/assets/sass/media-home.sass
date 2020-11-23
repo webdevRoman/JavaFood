@@ -1,0 +1,94 @@
+@media(max-width: 1200px)
+  html
+    .navigation
+      padding: 20px
+      .container
+        .logo
+          width: 254px
+    .image
+      height: 160px
+
+@media(max-width: 992px)
+  html    
+    .navigation
+      .container
+        .logo
+          width: 220px
+        .right
+          .nav
+            &-item
+              margin-left: 45px
+              font-size: 15px
+              &:after
+                width: 6px
+                height: 6px
+                bottom: -6px
+                margin-left: -3px
+          .cart
+            &-img
+              width: 18px
+              margin-right: 6px
+            &-sum
+              font-size: 15px
+
+@media(max-width: 768px)
+  html
+    .navigation
+      position: relative
+      .container
+        .logo
+          width: 200px
+        .right
+          .nav
+            display: none
+            padding: 30px
+            width: 100%
+            background-color: $c-bg
+            box-shadow: 0 10px 15px -8px rgba(0, 0, 0, 0.25)
+            position: absolute
+            top: 100%
+            left: 0
+            z-index: 10
+            &-burger
+              display: block
+            &-item
+              margin-left: 20px
+              font-size: 24px
+              margin-bottom: 45px
+              &:last-child
+                margin-bottom: 0
+              &:after
+                width: 8px
+                height: 8px
+                bottom: auto
+                top: 50%
+                transform: translateY(-50%)
+                left: -20px
+                margin-left: 0
+          .cart
+            &-img
+              width: 28px
+              margin-right: 13px
+            &-sum
+              font-size: 24px
+    .image
+      display: none
+
+@media(max-width: 576px)
+  html
+    .navigation
+      padding: 20px 10px
+      .container
+        .logo
+          width: 180px
+        .right
+          .nav
+            &-item
+              font-size: 20px
+              margin-bottom: 40px
+          .cart
+            &-img
+              width: 24px
+              margin-right: 10px
+            &-sum
+              font-size: 20px

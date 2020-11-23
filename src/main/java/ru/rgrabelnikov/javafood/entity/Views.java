@@ -4,4 +4,5 @@ public final class Views {
   public interface User {}
   public interface Dish {}
   public interface Favourite {}
+  public interface BasketDish extends Dish {}
 }
