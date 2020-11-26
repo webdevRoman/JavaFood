@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
 import Store from '../store/index'
 import Home from '../views/Home.vue'
 import Account from '../views/Account.vue'
 import SignIn from '../views/SignIn.vue'
 import Password from '../views/Password.vue'
-import SignUp from '../views/SignUp.vue'
+// import SignUp from '../views/SignUp.vue'
 import EmailConfirmation from '../views/EmailConfirmation.vue'
 import PasswordConfirmation from '../views/PasswordConfirmation.vue'
 import Admin from '../views/Admin.vue'
@@ -88,7 +89,8 @@ const routes = [
   {
     path: '/signup',
     name: 'signup',
-    component: SignUp,
+    component: () => import('../views/SignUp.vue'),
+    // component: SignUp,
     beforeEnter: ifNotAuthenticated
   },
   {

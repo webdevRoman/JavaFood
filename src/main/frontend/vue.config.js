@@ -3,8 +3,8 @@ module.exports = {
     ? './' // prod
     : '/', // dev
     devServer: {
-      // proxy: 'https://pylearn.info'
-      proxy: 'http://swdelivery.local/modules'             // SHOW!!!
+      proxy: 'http://localhost:8087'
+      // proxy: 'http://swdelivery.local/modules'             // SHOW!!!
       // https: true
     }
 }

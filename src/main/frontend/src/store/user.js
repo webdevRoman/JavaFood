@@ -2,46 +2,47 @@ import Vue from 'vue'
 import axios from 'axios'
 
 export default {
+
   state: {
-    isAuthenticated: false,
-    isAdmin: false,
+    login: '',
     name: '',
     surname: '',
     middlename: '',
+    phone: '',
+    token: '',
+    isAdmin: false,
     limit: 0,
     order: true,
     start: null,
     end: null
   },
+
   mutations: {
-    SET_AUTHENTICATED(state, data) {
-      state.isAuthenticated = data
-    },
-    LOAD_USERNAME(state) {
-      const username = Vue.$cookies.get('username')
-      state.name = username.name
-      state.surname = username.surname
-      if (username.role == 'admin')
-        state.isAdmin = true
-      state.isAuthenticated = true
-    },
     SET_USER(state, user) {
-      state.name = user.firstname
-      state.surname = user.lastname
-      if (user.role == 'admin')
+      state.login = user.login
+      state.name = user.firstName
+      state.surname = user.lasName
+      state.middlename = user.midName
+      state.phone = user.phone
+      state.token = user.token
+      if (user.roleName === 'admin')
         state.isAdmin = true
-      state.isAuthenticated = true
-      Vue.$cookies.set('username', { name: user.firstname, surname: user.lastname, role: user.role }, '1m')
+      Vue.$cookies.set('user', user, '1m')
+      axios.defaults.headers.common['Authorization'] = 'Bearer ' + user.token
     },
+
     AUTH_LOGOUT(state) {
       state.status = ''
-      state.token = ''
       state.name = ''
       state.surname = ''
+      state.middlename = ''
+      state.phone = ''
+      state.token = ''
       state.isAdmin = false
-      state.isAuthenticated = false
-      Vue.$cookies.remove('username')
+      Vue.$cookies.remove('user')
+      delete axios.defaults.headers.common['Authorization']
     },
+
     SET_USER_ACCOUNT(state, data) {
       state.name = data.firstname
       state.surname = data.lastname
@@ -51,31 +52,34 @@ export default {
       state.end = data.end != null ? data.end.split('/').join('.') : data.end
       Vue.$cookies.set('username', { name: data.firstname, surname: data.lastname, role: state.isAdmin ? 'admin' : 'user' }, '1m')
     },
+
     SET_LIMIT(state, limit) {
       Vue.set(state, 'limit', limit)
     }
   },
+
   actions: {
     CHECK_AUTHORIZED({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        if (Vue.$cookies.get('username') != null) {
-          commit('SET_AUTHENTICATED', true)
+        if (Vue.$cookies.get('user') != null) {
+          commit('SET_USER', Vue.$cookies.get('user'))
           commit('SET_PROCESSING', false)
           resolve()
         } else {
-          commit('SET_AUTHENTICATED', false)
+          commit('AUTH_LOGOUT')
           commit('SET_PROCESSING', false)
           reject()
         }
       })
     },
+
     CHECK_AUTHORIZED_ADMIN({commit, dispatch, getters}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
         dispatch('CHECK_AUTHORIZED')
         .then(() => {
-          if (Vue.$cookies.get('username').role == 'admin')
+          if (Vue.$cookies.get('user').roleName == 'admin')
             resolve()
           else
             reject()
@@ -85,53 +89,53 @@ export default {
         })
       })
     },
-    LOAD_USERNAME({commit}) {
-      commit('LOAD_USERNAME')
-    },
+
     AUTH_REQUEST({commit}, user) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        // const url = '/backend/modules/auth/login'
-        const url = '/auth/login'             // SHOW!!!
+        const url = '/api/auth/login'
         axios({ url: url, data: user, method: 'POST' })
         .then(resp => {
-          if (resp.data.firstname != undefined && resp.data.lastname != undefined && resp.data.role != 'banned') {
+          if (resp.data) {
             commit('SET_USER', resp.data)
             commit('SET_PROCESSING', false)
             resolve()
-          } else if (resp.data.password != undefined) {
+          } else if (resp.data === "") {
+            commit('AUTH_LOGOUT')
             commit('SET_PROCESSING', false)
             reject('password')
-          } else if (resp.data.role == 'banned') {
-            commit('SET_PROCESSING', false)
-            reject('banned')
-          }else {
+          } else {
+            commit('AUTH_LOGOUT')
             reject()
           }
         },
         err => {
-          commit('SET_PROCESSING', false)
-          reject(err)
-        })
-      })
-    },
-    AUTH_LOGOUT({commit}) {
-      return new Promise((resolve, reject) => {
-        commit('SET_PROCESSING', true)
-        // const url = '/backend/modules/auth/logout'
-        const url = '/auth/logout'             // SHOW!!!
-        axios({ url: url, method: 'POST' })
-        .then(resp => {
           commit('AUTH_LOGOUT')
           commit('SET_PROCESSING', false)
-          resolve()
-        })
-        .catch(err => {
-          commit('SET_PROCESSING', false)
           reject(err)
         })
       })
     },
+
+    AUTH_LOGOUT({commit}) {
+      return new Promise((resolve, reject) => {
+        commit('AUTH_LOGOUT')
+        resolve()
+        // commit('SET_PROCESSING', true)
+        // const url = 'api/auth/logout'
+        // axios({ url: url, method: 'POST' })
+        // .then(resp => {
+        //   commit('AUTH_LOGOUT')
+        //   commit('SET_PROCESSING', false)
+        //   resolve()
+        // })
+        // .catch(err => {
+        //   commit('SET_PROCESSING', false)
+        //   reject(err)
+        // })
+      })
+    },
+
     REG_REQUEST({commit}, user) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -157,6 +161,7 @@ export default {
         })
       })
     },
+
     LOAD_ACCOUNT({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -174,6 +179,7 @@ export default {
         })
       })
     },
+
     UPDATE_USER({commit, dispatch, getters}, data) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -192,6 +198,7 @@ export default {
         })
       })
     },
+
     SEND_LINK({commit}) {
       return new Promise((resolve, reject) => {
         if (Vue.$cookies.get('email') != null) {
@@ -210,6 +217,7 @@ export default {
         }
       })
     },
+
     SEND_EMAIL({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -226,6 +234,7 @@ export default {
         })
       })
     },
+
     SEND_PASSWORDS({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -243,11 +252,13 @@ export default {
       })
     }
   },
+
   getters: {
+    login: state => state.login,
     name: state => state.name,
     surname: state => state.surname,
     middlename: state => state.middlename,
-    isAuthenticated: state => state.isAuthenticated,
+    isAuthenticated: state => !!state.token,
     isAdmin: state => state.isAdmin,
     limit: state => state.limit,
     order: state => state.order,

@@ -4,7 +4,9 @@ div
   .navigation
     .container
       .logo
-        img(src="../assets/img/logo.png", alt="Logo")
+        | JavaF
+        img.logo__img(src="../assets/img/loader.svg", alt="OO")
+        | d
       .right
         button.nav-btn(@click.prevent="toggleMenu()")
           .nav-burger
@@ -112,9 +114,9 @@ export default {
     display: flex
     justify-content: space-between
     align-items: center
-    .logo
-      width: 310px
-      margin: 0
+    // .logo
+    //   width: 310px
+    //   margin: 0
     .right
       display: flex
       justify-content: flex-end

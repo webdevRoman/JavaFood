@@ -23,8 +23,17 @@ body, button, input, a
     min-height: 100vh
     max-width: 100vw
 .logo
-  width: 388px
+  display: flex
+  justify-content: center
+  align-items: center
+  font-size: 48px
+  text-align: center
+  text-transform: uppercase
+  letter-spacing: 10px
   margin: 0 auto
+  &__img
+    width: 60px
+    margin-right: 10px
 .title
   font-weight: bold
   font-size: 24px
@@ -88,11 +97,6 @@ body, button, input, a
     transition: 0.2s
     &:focus
       border-bottom: 2px solid $c-active
-    &::placeholder
-      font-weight: 500
-      font-size: 18px
-      text-align: right
-      color: $c-middle
     &[type="password"]
       padding-right: 30px
   &-password

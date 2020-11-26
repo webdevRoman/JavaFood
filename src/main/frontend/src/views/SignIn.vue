@@ -1,14 +1,20 @@
 <template lang="pug">
 .container_center.signin-container
+
   .logo
-    img(src="../assets/img/logo.png", alt="Logo")
+    | JavaF
+    img.logo__img(src="../assets/img/loader.svg", alt="OO")
+    | d
+
   .signin
     .title.signin-title Вход
+
     form.form.signin-form(action="#", @submit.prevent="checkForm()")
-      .form-block(:class="{'form-block_error': emailError != ''}")
-        label.form-label(for="signin-email") Корпоративная почта SmartWorld
-        input.form-input(type="text", id="signin-email", placeholder="@smartworld.team", v-model.trim="email", @focusout="checkEmail()")
-        .form-error(v-if="emailError != ''") {{ emailError }}
+      .form-block(:class="{'form-block_error': loginError != ''}")
+        label.form-label(for="signin-login") Логин
+        input.form-input(type="text", id="signin-login", v-model.trim="login", @focusout="checkLogin()")
+        .form-error(v-if="loginError != ''") {{ loginError }}
+
       .form-block(:class="{'form-block_error': passwordError != '' || authError != ''}")
         label.form-label(for="signin-password") Пароль
         .form-password
@@ -20,8 +26,10 @@
         button.signin-form__forget(@click.prevent="goToPassword()") Забыли пароль?
         .form-error(v-if="passwordError != ''") {{ passwordError }}
         .form-error(v-if="authError != ''") {{ authError }}
+
       button.form-submit(type="submit", :disabled="errors") Войти
       button.signin-form__signup(@click.prevent="goToSignup()") Еще нет аккаунта?
+
   .notification-popup(v-if="notification.msg != ''")
     .notification-info {{ notification.msg }}
     .notification-img(v-if="notification.err")
@@ -29,16 +37,18 @@
     .notification-img(v-else)
       img(src="../assets/img/tick-success.svg", alt="Tick")
     button.notification-close(@click.prevent="closeNotification()") &times;
+
   .processing-overlay(v-if="processing")
     .processing-indicator
 </template>
 
 <script>
 export default {
+
   data() {
     return {
-      email: '',
-      emailError: '',
+      login: '',
+      loginError: '',
       password: '',
       passwordError: '',
       passwordFocus: false,
@@ -46,20 +56,23 @@ export default {
       authError: ''
     }
   },
+
   methods: {
     goToPassword() {
       this.$store.dispatch('CLEAR_ERRORS', 'all')
       this.$router.push('/password')
     },
+
     goToSignup() {
       this.$store.dispatch('CLEAR_ERRORS', 'all')
       this.$router.push('/signup')
     },
+
     checkForm() {
-      this.checkEmail()
+      this.checkLogin()
       this.checkPassword()
-      if (!this.errors || (this.email != '' && this.password != '')) {
-        this.$store.dispatch('AUTH_REQUEST', { email: this.email, rememberMe: 1, password: this.password })
+      if (!this.errors || (this.login != '' && this.password != '')) {
+        this.$store.dispatch('AUTH_REQUEST', { login: this.login, rememberMe: 1, password: this.password })
         .then(resp => {
           this.$router.push('/')
         },
@@ -67,9 +80,6 @@ export default {
           if (err == 'password') {
             this.$store.dispatch('SET_ERROR', { type: 'auth', msg: 'wrong' })
             this.authError = 'Неверная почта или пароль'
-          } else if (err == 'banned') {
-            this.$store.dispatch('SET_ERROR', { type: 'auth', msg: 'banned' })
-            this.authError = 'Пользователь удален'
           } else {
             console.log('Error on signing in: ' + err)
             this.$store.dispatch('SET_NOTIFICATION', { msg: `Ошибка: ${err}`, err: true })
@@ -80,27 +90,26 @@ export default {
         })
       }
     },
-    checkEmail() {
+
+    checkLogin() {
       this.$store.dispatch('CLEAR_ERRORS', 'auth')
       this.authError = ''
-      const emailArr = this.email.split('@')
-      if (this.email != '' && emailArr[1] == undefined)
-        this.email = emailArr[0] + '@smartworld.team'
-      this.$store.dispatch('CHECK_EMAIL', this.email)
+      this.$store.dispatch('CHECK_LOGIN', this.login)
       .then(
         result => {
           if (result == 'empty')
-            this.emailError = 'Заполните e-mail'
-          // else if (result == 'wrong')
-          //   this.emailError = 'Невалидный e-mail'
+            this.loginError = 'Заполните логин'
+          else if (result == 'wrong')
+            this.loginError = 'Неверный логин'
           else {
-            this.emailError = ''
-            this.$store.dispatch('CLEAR_ERRORS', 'email')
+            this.loginError = ''
+            this.$store.dispatch('CLEAR_ERRORS', 'login')
           }
         },
-        error => console.log("Email checker rejected: " + error.message)
+        error => console.log("Login checker rejected: " + error.message)
       )
     },
+
     checkPassword() {
       this.$store.dispatch('CLEAR_ERRORS', 'auth')
       this.authError = ''
@@ -119,6 +128,7 @@ export default {
         error => console.log("Password checker rejected: " + error.message)
       )
     },
+
     togglePasswordShow() {
       const passwordInput = document.getElementById('signin-password')
       if (passwordInput.type == 'password')
@@ -127,25 +137,30 @@ export default {
         passwordInput.type = 'password'
       this.passwordShow = !this.passwordShow
     },
+
     closeNotification() {
       this.$store.dispatch('SET_NOTIFICATION', { msg: '', err: false })
     }
   },
+
   computed: {
     errors() {
       const errors = this.$store.getters.errors
-      if (errors.email != undefined || errors.password != undefined || errors.auth != undefined)
+      if (errors.login != undefined || errors.password != undefined || errors.auth != undefined)
         return true
       else
         return false
     },
+
     processing() {
       return this.$store.getters.processing
     },
+
     notification() {
       return this.$store.getters.notification
     }
   },
+
   watch: {
     password(value) {
       if (value != '')
@@ -154,6 +169,7 @@ export default {
         this.passwordFocus = false
     }
   }
+
 }
 </script>
 

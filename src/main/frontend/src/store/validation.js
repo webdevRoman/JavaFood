@@ -1,12 +1,14 @@
 import Vue from 'vue'
 
 export default {
+
   state: {
     errors: {},
     nameMask: /^[А-Яа-яё]{0,35}$/,
-    emailMask: /^[\w.]{1,34}@smartworld.team$/,
+    loginMask: /^[A-Za-z0-9]{0,35}$/,
     passwordMask: /^[A-Za-z0-9]{6,25}$/
   },
+
   mutations: {
     CHECK_NAME(state, payload) {
       Vue.set(state.errors, payload.type, undefined)
@@ -18,22 +20,25 @@ export default {
         Vue.set(state.errors, payload.type, 'wrong')
       }
     },
-    CHECK_EMAIL(state, email) {
-      Vue.set(state.errors, 'email', undefined)
-      if (email.length == 0) {
-        Vue.set(state.errors, 'email', 'empty')
-      } else if (email.length > 50) {
-        Vue.set(state.errors, 'email', 'long')
-      } else if (!email.match(state.emailMask)) {
-        Vue.set(state.errors, 'email', 'wrong')
+
+    CHECK_LOGIN(state, login) {
+      Vue.set(state.errors, 'login', undefined)
+      if (login.length == 0) {
+        Vue.set(state.errors, 'login', 'empty')
+      } else if (login.length > 50) {
+        Vue.set(state.errors, 'login', 'long')
+      } else if (!login.match(state.loginMask)) {
+        Vue.set(state.errors, 'login', 'wrong')
       }
     },
+
     CHECK_OLD_PASSWORD(state, password) {
       Vue.set(state.errors, 'oldPassword', undefined)       // Change!
       if (password.length == 0) {
         Vue.set(state.errors, 'oldPassword', 'empty')
       }
     },
+
     CHECK_PASSWORD(state, password) {
       Vue.set(state.errors, 'password', undefined)
       if (password.length == 0) {
@@ -46,6 +51,7 @@ export default {
         Vue.set(state.errors, 'password', 'wrong')
       }
     },
+
     CHECK_PASSWORD_REPEAT(state, password) {
       Vue.set(state.errors, 'passwordRepeat', undefined)
       if (password.passwordRepeat.length == 0) {
@@ -54,9 +60,11 @@ export default {
         Vue.set(state.errors, 'passwordRepeat', 'wrong')
       }
     },
+
     SET_ERROR (state, error) {
       Vue.set(state.errors, error.type, error.msg)
     },
+
     CLEAR_ERRORS(state, errorType) {
       if (errorType == 'all')
         Vue.set(state, 'errors', {})
@@ -64,6 +72,7 @@ export default {
         Vue.set(state.errors, errorType, undefined)
     }
   },
+
   actions: {
     CHECK_NAME({commit, getters}, payload) {
       commit('CHECK_NAME', payload)
@@ -74,15 +83,17 @@ export default {
           resolve('correct')
       })
     },
-    CHECK_EMAIL({commit, getters}, email) {
-      commit('CHECK_EMAIL', email)
+
+    CHECK_LOGIN({commit, getters}, login) {
+      commit('CHECK_LOGIN', login)
       return new Promise((resolve) => {
-        if (getters.errors.email != undefined)
-          resolve(getters.errors.email)
+        if (getters.errors.login != undefined)
+          resolve(getters.errors.login)
         else
           resolve('correct')
       })
     },
+
     CHECK_OLD_PASSWORD({commit, getters}, password) {
       commit('CHECK_OLD_PASSWORD', password)
       return new Promise((resolve) => {
@@ -92,6 +103,7 @@ export default {
           resolve('correct')
       })
     },
+
     CHECK_PASSWORD({commit, getters}, password) {
       commit('CHECK_PASSWORD', password)
       return new Promise((resolve) => {
@@ -101,6 +113,7 @@ export default {
           resolve('correct')
       })
     },
+
     CHECK_PASSWORD_REPEAT({commit, getters}, passwords) {
       commit('CHECK_PASSWORD_REPEAT', passwords)
       return new Promise((resolve) => {
@@ -110,14 +123,18 @@ export default {
           resolve('correct')
       })
     },
+
     SET_ERROR({commit}, error) {
       commit('SET_ERROR', error)
     },
+
     CLEAR_ERRORS({commit}, errorType) {
       commit('CLEAR_ERRORS', errorType)
     },
   },
+
   getters: {
     errors: (state) => state.errors
   }
+
 }

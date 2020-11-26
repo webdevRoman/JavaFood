@@ -1,11 +1,12 @@
 import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
 import VueMask from 'v-mask'
 import vSelect from 'vue-select'
 import FunctionalCalendar from 'vue-functional-calendar'
 import VueCookies from 'vue-cookies'
+
+import App from './App.vue'
+import router from './router'
+import store from './store'
 
 Vue.config.productionTip = false
 

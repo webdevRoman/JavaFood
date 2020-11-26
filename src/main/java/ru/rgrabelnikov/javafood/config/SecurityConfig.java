@@ -35,7 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    .antMatchers("/api/admin/*", "/api/user/admin*", "/api/dish/admin*").hasRole("ADMIN")
 //        .antMatchers("/api/admin/*", "/api/user/admin", "/api/user/admin/*", "/api/dish/admin", "/api/dish/admin/*").hasRole("ADMIN")
 //        .and()
-//        .logout().permitAll()
+//        .logout()
+//        .permitAll()
+//        .logoutUrl("/api/auth/logout")
   }
 
   @Bean

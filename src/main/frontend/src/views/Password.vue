@@ -2,7 +2,9 @@
 div
   .container_center.password-container(v-if="!isEmailSent")
     .logo
-      img(src="../assets/img/logo.png", alt="Logo")
+      | JavaF
+      img.logo__img(src="../assets/img/loader.svg", alt="OO")
+      | d
     .password
       .title.password-title Замена пароля
       form.form.password-form(action="#", @submit.prevent="checkForm()")
@@ -13,7 +15,9 @@ div
         button.form-submit(type="submit", :disabled="errors") Подтвердить
   .container_center.signup-container(v-else)
     .logo
-      img(src="../assets/img/logo.png", alt="Logo")
+      | JavaF
+      img.logo__img(src="../assets/img/loader.svg", alt="OO")
+      | d
     .signup.container
       .title.signup-title Замена пароля
       .signup-info

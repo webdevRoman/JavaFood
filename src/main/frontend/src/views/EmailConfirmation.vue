@@ -1,7 +1,9 @@
 <template lang="pug">
 .container_center.signup-container
   .logo
-    img(src="../assets/img/logo.png", alt="Logo")
+    | JavaF
+    img.logo__img(src="../assets/img/loader.svg", alt="OO")
+    | d
   .signup.container
     .title.signup-title Регистрация
     .signup-info

@@ -5,7 +5,7 @@
       button.user(@click.prevent="toggleMenu()")
         .user-img
           img(src="../assets/img/user.svg", alt="User Image")
-        .user-name {{ surname }} {{ name }}
+        .user-name {{ login }}
         .user-triangle
           img(src="../assets/img/triangle-down.svg", alt="Triangle down")
       .user-menu
@@ -16,11 +16,13 @@
 
 <script>
 export default {
+
   methods: {
     toggleMenu() {
       const menuBtn = document.querySelector('.header-container')
       menuBtn.classList.contains('header-container_active') ? menuBtn.classList.remove('header-container_active') : menuBtn.classList.add('header-container_active')
     },
+
     signout() {
       this.$store.dispatch('AUTH_LOGOUT')
       .then(resp => {
@@ -35,20 +37,12 @@ export default {
       })
     }
   },
+
   computed: {
-    name() {
-      return this.$store.getters.name
-    },
-    surname() {
-      return this.$store.getters.surname
-    },
-    isAdmin() {
-      return this.$store.getters.isAdmin
-    }
-  },
-  created() {
-    this.$store.dispatch('LOAD_USERNAME')
+    login() { return this.$store.getters.login },
+    isAdmin() { return this.$store.getters.isAdmin }
   }
+
 }
 </script>
 

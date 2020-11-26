@@ -2,7 +2,9 @@
 .container_center
   .signup
     .logo
-      img(src="../assets/img/logo.png", alt="Logo")
+      | JavaF
+      img.logo__img(src="../assets/img/loader.svg", alt="OO")
+      | d
     .title.signup-title Регистрация
     form.form.signup-form(action="#", @submit.prevent="checkForm()")
       .signup-form__inputs
