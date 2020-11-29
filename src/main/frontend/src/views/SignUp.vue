@@ -1,29 +1,38 @@
 <template lang="pug">
 .container_center
   .signup
+
     .logo
       | JavaF
       img.logo__img(src="../assets/img/loader.svg", alt="OO")
       | d
+
     .title.signup-title Регистрация
+
     form.form.signup-form(action="#", @submit.prevent="checkForm()")
+
       .signup-form__inputs
+
         .form-block.signup-form__block(:class="{'form-block_error': surnameError != ''}")
           label.form-label(for="signup-surname") Фамилия
           input.form-input(type="text", id="signup-surname", v-model.trim="surname", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkSurname()")
           .form-error(v-if="surnameError != ''") {{ surnameError }}
+
         .form-block.signup-form__block(:class="{'form-block_error': nameError != ''}")
           label.form-label(for="signup-name") Имя
           input.form-input(type="text", id="signup-name", v-model.trim="name", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkName()")
           .form-error(v-if="nameError != ''") {{ nameError }}
+
         .form-block.signup-form__block(:class="{'form-block_error': middlenameError != ''}")
           label.form-label(for="signup-middlename") Отчество (не обязательно)
           input.form-input(type="text", id="signup-middlename", v-model.trim="middlename", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkMiddlename()")
           .form-error(v-if="middlenameError != ''") {{ middlenameError }}
-        .form-block.signup-form__block(:class="{'form-block_error': emailError != ''}")
-          label.form-label(for="signup-email") Корпоративная почта SmartWorld
-          input.form-input(type="text", id="signup-email", placeholder="@smartworld.team", v-model.trim="email", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkEmail()")
-          .form-error(v-if="emailError != ''") {{ emailError }}
+
+        .form-block.signup-form__block(:class="{'form-block_error': loginError != ''}")
+          label.form-label(for="signup-login") Логин
+          input.form-input(type="text", id="signup-login", v-model.trim="login", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkLogin()")
+          .form-error(v-if="loginError != ''") {{ loginError }}
+
         .form-block.signup-form__block(:class="{'form-block_error': passwordError != ''}")
           label.form-label(for="signup-password") Пароль
           .form-password
@@ -35,6 +44,7 @@
             .form-password__eye(v-if="passwordsMatch")
               img(src="../assets/img/tick-success.svg", alt="Tick")
           .form-error(v-if="passwordError != ''") {{ passwordError }}
+
         .form-block.signup-form__block(:class="{'form-block_error': passwordRepeatError != ''}")
           label.form-label(for="signup-password-repeat") Повторите пароль
           .form-password
@@ -46,8 +56,15 @@
             .form-password__eye(v-if="passwordsMatch")
               img(src="../assets/img/tick-success.svg", alt="Tick")
           .form-error(v-if="passwordRepeatError != ''") {{ passwordRepeatError }}
+
+        .form-block.signup-form__block(:class="{'form-block_error': phoneError != ''}")
+          label.form-label(for="signup-phone") Телефон
+          input.form-input(type="text", id="signup-phone", v-model.trim="phone", v-mask="'+7 (###) ###-##-##'", @focusout="checkPhone()")
+          .form-error(v-if="phoneError != ''") {{ phoneError }}
+
       button.form-submit.signup-form__submit(type="submit", :disabled="errors") Зарегистрироваться
       button.signup-form__signin(@click.prevent="goToSignin()") Уже есть аккаунт?
+
   .notification-popup(v-if="notification.msg != ''")
     .notification-info {{ notification.msg }}
     .notification-img(v-if="notification.err")
@@ -55,12 +72,14 @@
     .notification-img(v-else)
       img(src="../assets/img/tick-success.svg", alt="Tick")
     button.notification-close(@click.prevent="closeNotification()") &times;
+
   .processing-overlay(v-if="processing")
     .processing-indicator
 </template>
 
 <script>
 export default {
+
   data() {
     return {
       name: '',
@@ -69,8 +88,8 @@ export default {
       surnameError: '',
       middlename: '',
       middlenameError: '',
-      email: '',
-      emailError: '',
+      login: '',
+      loginError: '',
       password: '',
       passwordError: '',
       passwordFocus: false,
@@ -79,29 +98,34 @@ export default {
       passwordRepeatError: '',
       passwordRepeatFocus: false,
       passwordRepeatShow: false,
-      passwordsMatch: false
+      passwordsMatch: false,
+      phone: '',
+      phoneError: ''
     }
   },
+
   methods: {
     goToSignin() {
       this.$store.dispatch('CLEAR_ERRORS', 'all')
       this.$router.push('/signin')
     },
+
     checkForm() {
       this.checkName()
       this.checkSurname()
       this.checkMiddlename()
-      this.checkEmail()
+      this.checkLogin()
       this.checkPassword()
+      this.checkPhone()
       if (!this.errors) {
-        this.$store.dispatch('REG_REQUEST', { email: this.email, firstname: this.name, lastname: this.surname, midname: this.middlename, password: this.password, password_2: this.passwordRepeat })
+        this.$store.dispatch('REG_REQUEST', { login: this.login, password: this.password, firstName: this.name, lastName: this.surname, midName: this.middlename, phone: this.phone })
         .then(resp => {
-          this.$router.push('/email-confirmation')
+          this.$router.push('/')
         },
         err => {
-          if (err == 'email') {
-            this.$store.dispatch('SET_ERROR', { type: 'email', msg: 'reserved' })
-            this.emailError = 'Данная почта уже занята'
+          if (err == 'login') {
+            this.$store.dispatch('SET_ERROR', { type: 'login', msg: 'reserved' })
+            this.loginError = 'Данный логин уже занят'
           } else {
             console.log('Error on checking registration data: ' + err)
             this.$store.dispatch('SET_NOTIFICATION', { msg: `Ошибка: ${err}`, err: true })
@@ -112,6 +136,7 @@ export default {
         })
       }
     },
+
     checkName() {
       this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1).toLowerCase()
       this.$store.dispatch('CHECK_NAME', { type: 'name', data: this.name })
@@ -129,6 +154,7 @@ export default {
         error => console.log("Name checker rejected: " + error.message)
       )
     },
+
     checkSurname() {
       this.surname = this.surname.charAt(0).toUpperCase() + this.surname.slice(1).toLowerCase()
       this.$store.dispatch('CHECK_NAME', { type: 'surname', data: this.surname })
@@ -146,6 +172,7 @@ export default {
         error => console.log("Name checker rejected: " + error.message)
       )
     },
+
     checkMiddlename() {
       this.middlename = this.middlename.charAt(0).toUpperCase() + this.middlename.slice(1).toLowerCase()
       this.$store.dispatch('CHECK_NAME', { type: 'middlename', data: this.middlename })
@@ -161,27 +188,24 @@ export default {
         error => console.log("Name checker rejected: " + error.message)
       )
     },
-    checkEmail() {
-      const emailArr = this.email.split('@')
-      if (this.email != '' && emailArr[1] == undefined)
-        this.email = emailArr[0] + '@smartworld.team'
-      this.$store.dispatch('CHECK_EMAIL', this.email)
+
+    checkLogin() {
+      this.$store.dispatch('CHECK_LOGIN', this.login)
       .then(
         result => {
           if (result == 'empty')
-            this.emailError = 'Заполните e-mail'
-          else if (result == 'long')
-            this.emailError = 'E-mail должен содержать не более 50 символов'
-          // else if (result == 'wrong')
-          //   this.emailError = 'Невалидный e-mail'
+            this.loginError = 'Заполните логин'
+          else if (result == 'wrong')
+            this.loginError = 'Неверный логин'
           else {
-            this.emailError = ''
-            this.$store.dispatch('CLEAR_ERRORS', 'email')
+            this.loginError = ''
+            this.$store.dispatch('CLEAR_ERRORS', 'login')
           }
         },
-        error => console.log("Email checker rejected: " + error.message)
+        error => console.log("Login checker rejected: " + error.message)
       )
     },
+
     checkPassword() {
       this.$store.dispatch('CHECK_PASSWORD', this.password)
       .then(
@@ -201,6 +225,7 @@ export default {
         error => console.log("Password checker rejected: " + error.message)
       )
     },
+
     checkPasswordRepeat() {
       this.$store.dispatch('CHECK_PASSWORD_REPEAT', { password: this.password, passwordRepeat: this.passwordRepeat })
       .then(
@@ -220,6 +245,7 @@ export default {
         error => console.log("PasswordRepeat checker rejected: " + error.message)
       )
     },
+
     togglePasswordShow() {
       const passwordInput = document.getElementById('signup-password')
       if (passwordInput.type == 'password')
@@ -228,6 +254,7 @@ export default {
         passwordInput.type = 'password'
       this.passwordShow = !this.passwordShow
     },
+
     togglePasswordRepeatShow() {
       const passwordInput = document.getElementById('signup-password-repeat')
       if (passwordInput.type == 'password')
@@ -236,25 +263,47 @@ export default {
         passwordInput.type = 'password'
       this.passwordRepeatShow = !this.passwordRepeatShow
     },
+
+    checkPhone() {
+      this.$store.dispatch('CHECK_PHONE', this.phone)
+      .then(
+        result => {
+          if (result == 'empty')
+            this.phoneError = 'Заполните телефон'
+          else if (result == 'wrong')
+            this.phoneError = 'Неверный телефон'
+          else {
+            this.phoneError = ''
+            this.$store.dispatch('CLEAR_ERRORS', 'phone')
+          }
+        },
+        error => console.log("Phone checker rejected: " + error.message)
+      )
+    },
+
     closeNotification() {
       this.$store.dispatch('SET_NOTIFICATION', { msg: '', err: false })
     }
   },
+
   computed: {
     errors() {
       const errors = this.$store.getters.errors
-      if (errors.email != undefined && errors.email != 'wrong' || errors.password != undefined || errors.passwordRepeat != undefined || errors.name != undefined || errors.surname != undefined || errors.middlename != undefined)
+      if (errors.login != undefined && errors.login != 'wrong' || errors.password != undefined || errors.passwordRepeat != undefined || errors.name != undefined || errors.surname != undefined || errors.middlename != undefined || errors.phone != undefined)
         return true
       else
         return false
     },
+
     processing() {
       return this.$store.getters.processing
     },
+
     notification() {
       return this.$store.getters.notification
     }
   },
+
   watch: {
     password(value) {
       if (value != '')
@@ -262,6 +311,7 @@ export default {
       else
         this.passwordFocus = false
     },
+
     passwordRepeat(value) {
       if (value != '')
         this.passwordRepeatFocus = true
@@ -269,6 +319,7 @@ export default {
         this.passwordRepeatFocus = false
     }
   }
+
 }
 </script>
 
@@ -287,12 +338,13 @@ export default {
     &__inputs
       display: flex
       justify-content: space-between
+      align-items: center
       flex-wrap: wrap
     &__block
       flex-basis: 262px
-      margin-right: 78px
-      &:nth-child(3n)
-        margin-right: 0
+      &:last-child
+        margin-left: auto
+        margin-right: auto
     &__submit
       display: block
       width: 262px
@@ -322,12 +374,6 @@ export default {
       .logo
         margin-bottom: 25px
       &-form
-        &__block
-          margin-right: 85px
-          &:nth-child(3n)
-            margin-right: 85px
-          &:nth-child(2n)
-            margin-right: 0
         &__submit
           width: 220px
         &__signin
@@ -355,12 +401,6 @@ export default {
         font-size: 20px
         margin-bottom: 50px
       &-form
-        &__block
-          margin-right: 0
-          &:nth-child(3n)
-            margin-right: 0
-          &:nth-child(2n)
-            margin-right: 0
         &__submit
           width: 210px
           margin-top: 60px
@@ -375,12 +415,6 @@ export default {
       .logo
         margin-bottom: 20px
       &-form
-        &__block
-          margin-right: 0
-          &:nth-child(3n)
-            margin-right: 0
-          &:nth-child(2n)
-            margin-right: 0
         &__submit
           width: 210px
           margin-top: 60px

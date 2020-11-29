@@ -11,11 +11,13 @@ export default {
     phone: '',
     token: '',
     isAdmin: false,
+    // todo
     limit: 0,
     order: true,
     start: null,
     end: null
   },
+
 
   mutations: {
     SET_USER(state, user) {
@@ -43,6 +45,7 @@ export default {
       delete axios.defaults.headers.common['Authorization']
     },
 
+    // todo
     SET_USER_ACCOUNT(state, data) {
       state.name = data.firstname
       state.surname = data.lastname
@@ -53,10 +56,12 @@ export default {
       Vue.$cookies.set('username', { name: data.firstname, surname: data.lastname, role: state.isAdmin ? 'admin' : 'user' }, '1m')
     },
 
+    // todo
     SET_LIMIT(state, limit) {
       Vue.set(state, 'limit', limit)
     }
   },
+
 
   actions: {
     CHECK_AUTHORIZED({commit}) {
@@ -106,6 +111,7 @@ export default {
             reject('password')
           } else {
             commit('AUTH_LOGOUT')
+            commit('SET_PROCESSING', false)
             reject()
           }
         },
@@ -139,29 +145,32 @@ export default {
     REG_REQUEST({commit}, user) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        // const url = '/backend/modules/auth/signup'
-        const url = '/auth/signup'             // SHOW!!!
+        const url = '/api/auth/register'
         axios({ url: url, data: user, method: 'POST' })
         .then(resp => {
-          if (resp.data == 'success') {
-            Vue.$cookies.set('email', user.email, '1m')
+          if (resp.data) {
+            commit('SET_USER', resp.data)
             commit('SET_PROCESSING', false)
             resolve()
-          } else if (resp.data.email != undefined) {
+          } else if (resp.data === "") {
+            commit('AUTH_LOGOUT')
             commit('SET_PROCESSING', false)
-            reject('email')
+            reject('login')
           } else {
+            commit('AUTH_LOGOUT')
             commit('SET_PROCESSING', false)
             reject()
           }
         },
         err => {
+          commit('AUTH_LOGOUT')
           commit('SET_PROCESSING', false)
           reject(err)
         })
       })
     },
 
+    // todo
     LOAD_ACCOUNT({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -180,6 +189,7 @@ export default {
       })
     },
 
+    // todo
     UPDATE_USER({commit, dispatch, getters}, data) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -199,6 +209,7 @@ export default {
       })
     },
 
+    // todo
     SEND_LINK({commit}) {
       return new Promise((resolve, reject) => {
         if (Vue.$cookies.get('email') != null) {
@@ -218,6 +229,7 @@ export default {
       })
     },
 
+    // todo
     SEND_EMAIL({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -235,6 +247,7 @@ export default {
       })
     },
 
+    // todo
     SEND_PASSWORDS({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -253,13 +266,16 @@ export default {
     }
   },
 
+
   getters: {
     login: state => state.login,
     name: state => state.name,
     surname: state => state.surname,
     middlename: state => state.middlename,
+    phone: state => state.phone,
     isAuthenticated: state => !!state.token,
     isAdmin: state => state.isAdmin,
+    // todo
     limit: state => state.limit,
     order: state => state.order,
     start: state => state.start,

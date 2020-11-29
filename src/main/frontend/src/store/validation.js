@@ -6,8 +6,10 @@ export default {
     errors: {},
     nameMask: /^[А-Яа-яё]{0,35}$/,
     loginMask: /^[A-Za-z0-9]{0,35}$/,
-    passwordMask: /^[A-Za-z0-9]{6,25}$/
+    passwordMask: /^[A-Za-z0-9]{6,25}$/,
+    phoneMask: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/
   },
+
 
   mutations: {
     CHECK_NAME(state, payload) {
@@ -61,6 +63,15 @@ export default {
       }
     },
 
+    CHECK_PHONE(state, phone) {
+      Vue.set(state.errors, 'phone', undefined)
+      if (phone.length == 0) {
+        Vue.set(state.errors, 'phone', 'empty')
+      } else if (!phone.match(state.phoneMask)) {
+        Vue.set(state.errors, 'phone', 'wrong')
+      }
+    },
+
     SET_ERROR (state, error) {
       Vue.set(state.errors, error.type, error.msg)
     },
@@ -72,6 +83,7 @@ export default {
         Vue.set(state.errors, errorType, undefined)
     }
   },
+
 
   actions: {
     CHECK_NAME({commit, getters}, payload) {
@@ -119,6 +131,16 @@ export default {
       return new Promise((resolve) => {
         if (getters.errors.passwordRepeat != undefined)
           resolve(getters.errors.passwordRepeat)
+        else
+          resolve('correct')
+      })
+    },
+
+    CHECK_PHONE({commit, getters}, phone) {
+      commit('CHECK_PHONE', phone)
+      return new Promise((resolve) => {
+        if (getters.errors.phone != undefined)
+          resolve(getters.errors.phone)
         else
           resolve('correct')
       })

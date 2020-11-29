@@ -425,3 +425,23 @@ body, button, input, a
         background-color: $c-active
         color: $c-light
 </style>
+
+<script>
+import axios from 'axios'
+
+export default {
+  created() {
+    axios.interceptors.response.use(undefined, function (err) {
+    return new Promise(function (resolve, reject) {
+      if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+        this.$store.dispatch('AUTH_LOGOUT').then(
+          resp => this.$router.push('/signin'),
+          err => console.log('Error when logging out: ' + err)
+        )
+      }
+      throw err;
+    });
+  });
+  }
+}
+</script>

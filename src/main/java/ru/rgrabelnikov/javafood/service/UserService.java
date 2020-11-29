@@ -31,12 +31,16 @@ public class UserService {
   }
 
   public User saveUser(User user) {
-    Role userRole = roleRepository.findByName("ROLE_USER");
-    user.setRole(userRole);
-    user.setRoleName("user");
-    user.setPassword(passwordEncoder.encode(user.getPassword()));
-    user.setToken(jwtProvider.generateToken(user.getLogin()));
-    return userRepository.save(user);
+    User userFromDb = findByLogin(user.getLogin());
+    if (userFromDb == null) {
+      Role userRole = roleRepository.findByName("ROLE_USER");
+      user.setRole(userRole);
+      user.setRoleName("user");
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
+      user.setToken(jwtProvider.generateToken(user.getLogin()));
+      return userRepository.save(user);
+    }
+    return null;
   }
 
   public User findByLogin(String login) {
