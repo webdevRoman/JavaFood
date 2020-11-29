@@ -1,7 +1,10 @@
 <template lang="pug">
 footer.footer
+
   .container
+
     .footer-top
+
       .footer-contacts
         .contacts-item
           .contacts-item__title Доставка:
@@ -9,10 +12,15 @@ footer.footer
         .contacts-item
           .contacts-item__title Служба поддержки:
           a.contacts-item__contact(href="mailto:mail@edatomsk.ru") mail@edatomsk.ru
+
       .logo
-        img(src="../assets/img/logo-white.png", alt="Logo")
+        | JavaF
+        img.logo__img(src="../assets/img/loader-light.svg", alt="OO")
+        | d
+
     .footer-bot
       a.footer-bot__policy(href="#") Политика конфиденциальности
+
   button.btn-up(@click.prevent="scrollToTop()")
     img.btn-up__arrow(src="../assets/img/arrow-up.svg", alt="Arrow image")
 </template>
@@ -50,8 +58,13 @@ window.addEventListener('scroll', () => {
     padding-bottom: 35px
     border-bottom: 1px solid $c-middle
     .logo
-      width: 225px
+      font-size: 36px
+      color: #fafafa
       margin: 0
+      letter-spacing: 3px
+      &__img
+        width: 40px
+        margin-right: 3px
   &-contacts
     flex-basis: 584px
     display: flex
@@ -101,16 +114,14 @@ window.addEventListener('scroll', () => {
     height: 100%
     transition: 0.2s
 
-@media(max-width: 1200px)
+@media(max-width: 992px)
   html
     .footer
       &-top
         .logo
-          width: 200px
-
-@media(max-width: 992px)
-  html
-    .footer
+          font-size: 32px
+          &__img
+            width: 35px
       &-contacts
         flex-basis: 380px
         .contacts-item

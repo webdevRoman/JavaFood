@@ -260,6 +260,8 @@ body, button, input, a
           color: $c-light
 .select.vs--open
   box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15)
+  .vs__dropdown-menu
+    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15)
 .select.vs--disabled
   cursor: default
   opacity: 0.7

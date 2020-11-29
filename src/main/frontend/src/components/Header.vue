@@ -85,9 +85,6 @@ export default {
       &:hover
         .user-name
           color: $c-active
-      // &:focus-within
-      //   .user-menu
-      //     display: block
       &-menu
         display: none
         width: 250px

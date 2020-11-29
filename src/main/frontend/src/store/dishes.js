@@ -2,6 +2,7 @@ import Vue from 'vue'
 import axios from 'axios'
 
 export default {
+
   state: {
     // categories: [{
     //   name: 'Название категории 1',
@@ -151,7 +152,9 @@ export default {
     //   name: '9',
     //   dishes:[]
     // }],
-    categories: [],
+    // todo:
+    categories: new Map(),
+    // categories: [],
     meta: {},
     links: {},
     favourites: {},
@@ -159,43 +162,22 @@ export default {
     refuseOrder: false,
     acceptOrder: false
   },
+
   mutations: {
     SET_CATEGORIES(state, data) {
-      function checkCategories(categories, name) {
-        for (let i = 0; i < categories.length; i++) {
-          if (categories[i].name == name) {
-            return i
-          }
-        }
-        return -1
-      }
-      let categories = []
-      if (data != 'err') {
-        // data.categories.forEach(cat => {
-        //   categories.push({ id: cat.id, name: cat.name, dishes: [] })
-        // })
-        // data.dishes.forEach(dish => {
-        //   for (let i = 0; i < categories.length; i++) {
-        //     if (dish.category == categories[i].name) {
-        //       categories[i].dishes.push(dish)
-        //       break
-        //     }
-        //   }
-        // })
-        // state.meta = data._meta
-        // state.links = data._links
-        data.dishes.forEach(dish => {
-          let index = checkCategories(categories, dish.category)
-          if (index == -1) {
-            categories.push({ name: dish.category, dishes: [] })
-            categories[categories.length - 1].dishes.push(dish)
-          } else {
-            categories[index].dishes.push(dish)
-          }
+      let categories = new Map()
+      if (data != 'err')
+        data.forEach(dish => {
+          // todo: order, favourite
+          if (categories.has(dish.dishTypeName))
+            categories.set(dish.dishTypeName, [...categories.get(dish.dishTypeName), dish])
+          else
+            categories.set(dish.dishTypeName, [dish])
         })
-      }
       state.categories = categories
     },
+
+    // todo:
     SET_FAVOURITES(state, data) {
       if (data != 'err') {
         data.dishes.forEach(dish => {
@@ -205,6 +187,8 @@ export default {
         state.favourites = {}
       }
     },
+
+    // todo:
     ADD_FAVOURITE(state, dish) {
       dish.active = dish.hide == 0 ? true : false
       Vue.set(state.favourites, dish.id, dish)
@@ -218,6 +202,8 @@ export default {
       if (state.cart[dish.id] != undefined)
         Vue.set(state.cart[dish.id], 'elect', true)
     },
+
+    // todo:
     REMOVE_FAVOURITE(state, dish) {
       let newFavs = state.favourites
       Vue.set(state.favourites, dish.id, null)
@@ -233,6 +219,8 @@ export default {
       if (state.cart[dish.id] != undefined)
         Vue.set(state.cart[dish.id], 'elect', false)
     },
+
+    // todo:
     SET_CART(state, data) {
       state.refuseOrder = data.refuse
       state.acceptOrder = data.accept
@@ -243,6 +231,8 @@ export default {
         })
       }
     },
+
+    // todo:
     SET_OREDER(state, dish) {
       if (dish.amount != 0) {
         Vue.set(state.cart, dish.id, dish)
@@ -262,6 +252,8 @@ export default {
       if (state.favourites[dish.id] != undefined)
         Vue.set(state.favourites[dish.id], 'amount', dish.amount)
     },
+
+    // todo:
     CONFIRM_ORDER(state) {
       state.acceptOrder = true
       state.cart = {}
@@ -275,29 +267,12 @@ export default {
       }
     }
   },
+
   actions: {
-    LOAD_DISHES({commit, dispatch}, data) {
+    LOAD_DISHES({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        // dispatch('SET_DATE', data.date)
-        let requestParams = {}
-        // if (data.link == undefined) {
-          // const url = '/backend/modules/menu'
-        const url = '/menu'             // SHOW!!!
-          const parameters = {}
-          parameters.date = data.date
-          // if (data.category != 'all')
-          //   parameters.category = data.category
-          // parameters.page = data.page
-          requestParams = {
-            url: url,
-            method: 'GET',
-            params: parameters
-          }
-        // } else {
-        //   requestParams = { url: data.link, method: 'GET' }
-        // }
-        axios(requestParams)
+        axios({ url: '/api/dish', method: 'GET'} )
         .then(resp => {
           commit('SET_CATEGORIES', resp.data)
           commit('SET_PROCESSING', false)
@@ -310,6 +285,8 @@ export default {
         })
       })
     },
+
+    // todo:
     LOAD_FAVOURITES({commit, dispatch}, date) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -335,6 +312,8 @@ export default {
         })
       })
     },
+
+    // todo:
     TOGGLE_FAVOURITE({commit}, data) {
       return new Promise((resolve, reject) => {
         // axios({ url: '/backend/modules/account/edit', data: { id: data.dish.id }, method: 'POST' })
@@ -351,6 +330,8 @@ export default {
         })
       })
     },
+
+    // todo:
     LOAD_CART({commit, dispatch}, date) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -376,6 +357,8 @@ export default {
         })
       })
     },
+
+    // todo:
     SET_OREDER({commit, getters}, dish) {
       return new Promise((resolve, reject) => {
         let parameters = { data: { date: getters.date, id: dish.id }, method: 'POST' }
@@ -404,6 +387,8 @@ export default {
         })
       })
     },
+
+    // todo:
     CONFIRM_ORDER({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -434,11 +419,14 @@ export default {
       })
     }
   },
+
   getters: {
+    // todo:
     categories: (state) => state.categories,
     favourites: (state) => state.favourites,
     cart: (state) => state.cart,
     refuseOrder: (state) => state.refuseOrder,
     acceptOrder: (state) => state.acceptOrder
   }
+
 }

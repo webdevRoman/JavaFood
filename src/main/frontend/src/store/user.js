@@ -11,7 +11,7 @@ export default {
     phone: '',
     token: '',
     isAdmin: false,
-    // todo
+    // todo:
     limit: 0,
     order: true,
     start: null,
@@ -45,7 +45,7 @@ export default {
       delete axios.defaults.headers.common['Authorization']
     },
 
-    // todo
+    // todo:
     SET_USER_ACCOUNT(state, data) {
       state.name = data.firstname
       state.surname = data.lastname
@@ -56,7 +56,7 @@ export default {
       Vue.$cookies.set('username', { name: data.firstname, surname: data.lastname, role: state.isAdmin ? 'admin' : 'user' }, '1m')
     },
 
-    // todo
+    // todo:
     SET_LIMIT(state, limit) {
       Vue.set(state, 'limit', limit)
     }
@@ -79,7 +79,7 @@ export default {
       })
     },
 
-    CHECK_AUTHORIZED_ADMIN({commit, dispatch, getters}) {
+    CHECK_AUTHORIZED_ADMIN({commit, dispatch}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
         dispatch('CHECK_AUTHORIZED')
@@ -170,7 +170,7 @@ export default {
       })
     },
 
-    // todo
+    // todo:
     LOAD_ACCOUNT({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -189,7 +189,7 @@ export default {
       })
     },
 
-    // todo
+    // todo:
     UPDATE_USER({commit, dispatch, getters}, data) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -209,7 +209,7 @@ export default {
       })
     },
 
-    // todo
+    // todo:
     SEND_LINK({commit}) {
       return new Promise((resolve, reject) => {
         if (Vue.$cookies.get('email') != null) {
@@ -229,7 +229,7 @@ export default {
       })
     },
 
-    // todo
+    // todo:
     SEND_EMAIL({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -247,7 +247,7 @@ export default {
       })
     },
 
-    // todo
+    // todo:
     SEND_PASSWORDS({commit}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
@@ -275,7 +275,7 @@ export default {
     phone: state => state.phone,
     isAuthenticated: state => !!state.token,
     isAdmin: state => state.isAdmin,
-    // todo
+    // todo:
     limit: state => state.limit,
     order: state => state.order,
     start: state => state.start,

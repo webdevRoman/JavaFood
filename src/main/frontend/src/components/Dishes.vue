@@ -1,24 +1,32 @@
 <template lang="pug">
 .dishes
+
   .container
     .select-container
       v-select.select(v-model="selectCategory", label="name", index="name", :options="selectCategories", :clearable="false", :searchable="false")
         template(v-slot:option="option")
           span.select-option {{ option.name }}
+
   .container
-    .title.favourites-no(v-if="categories.length == 0") На этот день нет блюд
-    .category(v-for="category in currentCategories")
-      .title.category-title {{ category.name }}
-      .title.favourites-no(v-if="category.dishes.length == 0") В этой категории нет блюд
+
+    .title.favourites-no(v-if="categories.size == 0") Блюд нет
+
+    .category(v-for="[key, val] of currentCategories")
+
+      .title.category-title {{ key }}
+      .title.favourites-no(v-if="val.length == 0") В этой категории нет блюд
+
       .category-dishes(v-else)
-        .dish(v-for="dish in category.dishes", :class="{'dish_inactive': dish.hide == 1}")
+        .dish(v-for="dish in val")
           .dish-top
-            .dish-img(:style="{'background-image': `url(https://edatomsk.ru${dish.image})`}")
-              //- img(src="../assets/img/dish.svg", alt="Dish image")
+            .dish-img(v-if="!!dish.imageAddress" :style="{'background-image': `url(http://localhost:8087/${dish.imageAddress})`}")
+            .dish-img(v-else)
+              img(src="../assets/img/dish-default.svg", alt="Dish image")
             .dish-title {{ dish.name }}
-            //- .dish-descr {{ dish.description }}
-            .dish-descr(v-html="formatDescr(dish.description)")
+            .dish-descr {{ dish.description }}
+
           .dish-bottom
+
             .dish-info
               .dish-info__text
                 span.dish-info__price {{ dish.price }} Р
@@ -27,6 +35,8 @@
                 .dish-info__dot
                 .dish-info__dot
                 .dish-info__dot
+
+            //- todo:
             .dish-footer
               div(:class="{'dish-footer__cart': true, 'dish-footer__cart_active': dish.amount > 0}")
                 button.cart-btn(@click.prevent="incrementOrder(dish)", :disabled="dish.amount > 0 || dish.hide == 1 || refuseOrder")
@@ -36,9 +46,11 @@
                   button.cart-number__btn(@click.prevent="decrementOrder(dish)", :disabled="dish.amount <= 0 || dish.hide == 1 || refuseOrder") -
                   input.cart-number__value(type="text", v-model.trim="dish.amount", v-mask="'##'", @focusout="checkOrder(dish)", :disabled="dish.hide == 1 || refuseOrder")
                   button.cart-number__btn(@click.prevent="incrementOrder(dish)", :disabled="dish.amount >= 99 || dish.hide == 1 || refuseOrder") +
+
               button.dish-footer__favourite(@click.prevent="toggleFavourite(dish)")
                 img(src="../assets/img/star-active.svg", alt="Star image", v-if="dish.elect")
                 img(src="../assets/img/star.svg", alt="Star image", v-else)
+
   .overlay(v-if="showPopup")
     .popup {{ showingDescr }}
       button.popup-close(@click.prevent="hideDescr()") &times;
@@ -46,18 +58,19 @@
 
 <script>
 export default {
+
   data() {
     return {
-      selectCategory: { name: 'Все категории' },
+      selectCategory: 'Все категории',
+      // todo:
       showPopup: false,
       showingDescr: '',
       timeoutId: null
     }
   },
+
   methods: {
-    formatDescr(text) {
-      return text.split('\n').join('<br>')
-    },
+      // todo:
     toggleFavourite(dish) {
       let data = {}
       if (!dish.elect) {
@@ -76,6 +89,8 @@ export default {
         }, 5000)
       })
     },
+
+      // todo:
     incrementOrder(dish) {
       dish.amount = parseInt(dish.amount) + 1
       if (this.timeoutId != null) {
@@ -93,6 +108,8 @@ export default {
       //   }, 5000)
       // })
     },
+
+      // todo:
     decrementOrder(dish) {
       dish.amount = parseInt(dish.amount) - 1
       if (this.timeoutId != null) {
@@ -110,6 +127,7 @@ export default {
       //   }, 5000)
       // })
     },
+      // todo:
     checkOrder(dish) {
       // let data = {}
       // if (dish.amount == '' || !dish.amount.match(/\d+/)) {
@@ -143,6 +161,8 @@ export default {
       //   }, 5000)
       // })
     },
+
+      // todo:
     setOrder(dish) {
       this.$store.dispatch('SET_OREDER', dish)
       .catch(err => {
@@ -153,34 +173,57 @@ export default {
         }, 5000)
       })
     },
+
+      // todo:
     showDescr(descr) {
       this.showPopup = true
       this.showingDescr = descr
     },
+
+      // todo:
     hideDescr() {
       this.showPopup = false
       this.showingDescr = ''
     }
   },
+
   computed: {
     categories() {
       return this.$store.getters.categories
     },
+
     currentCategories() {
-      if (this.selectCategory.name == 'Все категории')
+      if (this.selectCategory == 'Все категории')
         return this.categories
-      else
-        return this.categories.filter(c => c.name == this.selectCategory.name)
+      else {
+        const currentCategories = new Map()
+        for (const [key, val] of this.categories) {
+          console.log(this.selectCategory, key)
+          if (key === this.selectCategory)
+            currentCategories.set(key, val)
+        }
+        return currentCategories
+      }
     },
+
     selectCategories() {
-      let selectCategories = this.categories.slice()
-      selectCategories.unshift({ name: 'Все категории' })
+      let selectCategories = [ ...this.categories.keys() ]
+      selectCategories.unshift('Все категории')
       return selectCategories
     },
+
+      // todo:
     refuseOrder() {
       return this.$store.getters.refuseOrder
     }
   },
+
+  beforeCreate() {
+    this.$store.dispatch('LOAD_DISHES').catch(err => {
+      console.log("Dishes loader rejected: " + err.message)
+    })
+  }
+
 }
 </script>
 
@@ -219,8 +262,6 @@ export default {
       margin-right: 30px
       margin-bottom: 30px
       transition: 0.2s
-      &_inactive
-        opacity: 0.5
       &:nth-child(4n)
         margin-right: 0
       &:hover
@@ -232,8 +273,9 @@ export default {
         background-position: center
         background-size: cover
         margin-bottom: 12px
-        // img
-        //   width: 140px
+        img
+          height: 100%
+          width: auto
       &-title
         width: 90%
         font-weight: bold

@@ -1,7 +1,9 @@
 <template lang="pug">
 div
   Header
+
   .navigation
+
     .container
       .logo
         | JavaF
@@ -18,14 +20,21 @@ div
               .cart-img
                 img(src="../assets/img/cart.svg", alt="Cart image")
               .cart-sum {{ currentSum }} Р
+
+    //- todo:
     Cart
+
   .image(:class="{'image_favourites': showFavourites}")
     img(src="../assets/img/top-dish-1.png", alt="Dish image", v-if="showFavourites")
     img(src="../assets/img/top-dish.png", alt="Dish image", v-else)
-  Weekdays
+
+    //- todo:
   Favourites(v-if="showFavourites")
+
   Dishes(v-else)
+
   Footer
+
   .notification-popup(v-if="notification.msg != ''")
     .notification-info {{ notification.msg }}
     .notification-img(v-if="notification.err")
@@ -33,6 +42,7 @@ div
     .notification-img(v-else)
       img(src="../assets/img/tick-success.svg", alt="Tick")
     button.notification-close(@click.prevent="closeNotification()") &times;
+
   .processing-overlay(v-if="processing")
     .processing-indicator
 </template>
@@ -40,18 +50,20 @@ div
 <script>
 import Header from '../components/Header'
 import Cart from '../components/Cart'
-import Weekdays from '../components/Weekdays'
 import Favourites from '../components/Favourites'
 import Dishes from '../components/Dishes'
 import Footer from '../components/Footer'
 
 export default {
+
   name: 'home',
+
   data() {
     return {
       showFavourites: false
     }
   },
+
   methods: {
     showCart() {
       const cart = document.querySelector('.cart-popup')
@@ -59,20 +71,24 @@ export default {
       if (document.body.clientWidth <= 768)
         this.toggleMenu()
     },
+
     toggleMenu() {
       const burgerBtn = document.querySelector('.nav-burger')
       const navMenu = document.querySelector('.nav')
       navMenu.style.display != 'block' ? burgerBtn.classList.add('nav-burger_active') : burgerBtn.classList.remove('nav-burger_active')
       navMenu.style.display != 'block' ? navMenu.style.display = 'block' : navMenu.style.display = 'none'
     },
+
     closeNotification() {
       this.$store.dispatch('SET_NOTIFICATION', { msg: '', err: false })
     }
   },
+
   computed: {
     cartItems() {
       return this.$store.getters.cart
     },
+
     currentSum() {
       let sum = 0
       for (const key in this.cartItems) {
@@ -80,27 +96,31 @@ export default {
       }
       return sum
     },
+
     processing() {
       return this.$store.getters.processing
     },
+
     notification() {
       return this.$store.getters.notification
     }
   },
+
   watch: {
     showFavourites() {
       if (document.body.clientWidth <= 768)
         this.toggleMenu()
     }
   },
+
   components: {
     Header,
     Cart,
-    Weekdays,
     Favourites,
     Dishes,
     Footer
   }
+
 }
 </script>
 
@@ -193,6 +213,7 @@ export default {
   justify-content: flex-end
   height: 240px
   background-color: $c-middle
+  margin-bottom: 50px
   &_favourites
     background-color: #E8ECEF
   img
