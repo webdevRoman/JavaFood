@@ -48,7 +48,7 @@
                   button.cart-number__btn(@click.prevent="incrementOrder(dish)", :disabled="dish.amount >= 99 || dish.hide == 1 || refuseOrder") +
 
               button.dish-footer__favourite(@click.prevent="toggleFavourite(dish)")
-                img(src="../assets/img/star-active.svg", alt="Star image", v-if="dish.elect")
+                img(src="../assets/img/star-active.svg", alt="Star image", v-if="dish.favourite")
                 img(src="../assets/img/star.svg", alt="Star image", v-else)
 
   .overlay(v-if="showPopup")
@@ -70,15 +70,14 @@ export default {
   },
 
   methods: {
-      // todo:
     toggleFavourite(dish) {
-      let data = {}
-      if (!dish.elect) {
-        data = { dish: dish, remove: false }
-        dish.elect = true
+      let data = { dish: dish }
+      if (!dish.favourite) {
+        data.remove = false
+        dish.favourite = true
       } else {
-        data = { dish: dish, remove: true }
-        dish.elect = false
+        data.remove = true
+        dish.favourite = false
       }
       this.$store.dispatch('TOGGLE_FAVOURITE', data)
       .catch(err => {
@@ -216,12 +215,6 @@ export default {
     refuseOrder() {
       return this.$store.getters.refuseOrder
     }
-  },
-
-  beforeCreate() {
-    this.$store.dispatch('LOAD_DISHES').catch(err => {
-      console.log("Dishes loader rejected: " + err.message)
-    })
   }
 
 }

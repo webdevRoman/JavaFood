@@ -113,6 +113,15 @@ export default {
     }
   },
 
+  beforeCreate() {
+    this.$store.dispatch('LOAD_DISHES').catch(err => {
+      console.log("Dishes loader rejected: " + err.message)
+    })
+    this.$store.dispatch('LOAD_FAVOURITES').catch(err => {
+      console.log("Favourites loader rejected: " + err.message)
+    })
+  },
+
   components: {
     Header,
     Cart,

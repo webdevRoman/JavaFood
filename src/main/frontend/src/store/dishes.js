@@ -152,12 +152,11 @@ export default {
     //   name: '9',
     //   dishes:[]
     // }],
-    // todo:
     categories: new Map(),
-    // categories: [],
+    favourites: [],
+    // todo:
     meta: {},
     links: {},
-    favourites: {},
     cart: {},
     refuseOrder: false,
     acceptOrder: false
@@ -168,7 +167,8 @@ export default {
       let categories = new Map()
       if (data != 'err')
         data.forEach(dish => {
-          // todo: order, favourite
+          dish.favourite = false
+          // todo: order
           if (categories.has(dish.dishTypeName))
             categories.set(dish.dishTypeName, [...categories.get(dish.dishTypeName), dish])
           else
@@ -177,47 +177,50 @@ export default {
       state.categories = categories
     },
 
-    // todo:
     SET_FAVOURITES(state, data) {
       if (data != 'err') {
-        data.dishes.forEach(dish => {
-          Vue.set(state.favourites, dish.id, dish)
+        data.forEach(dish => {
+          for (const [key, val] of state.categories) {
+            val.forEach(d => {
+              if (d.id === dish.id)
+                d.favourite = true
+            })
+          }
         })
+        state.favourites = data
+        state.categories = new Map(state.categories)
       } else {
-        state.favourites = {}
+        state.favourites = []
       }
     },
 
-    // todo:
     ADD_FAVOURITE(state, dish) {
-      dish.active = dish.hide == 0 ? true : false
-      Vue.set(state.favourites, dish.id, dish)
-      for (let i = 0; i < state.categories.length; i++) {
-        for (let j = 0; j < state.categories[i].dishes.length; j++) {
-          const d = state.categories[i].dishes[j]
-          if (d.id == dish.id)
-            Vue.set(state.categories[i].dishes[j], 'elect', true)
-        }
+      Vue.set(state.favourites, state.favourites.findIndex(f => f.id === dish.id), dish)
+      for (const [key, val] of state.categories) {
+        val.forEach(d => {
+          if (d.id === dish.id)
+            d.favourite = true
+        })
       }
-      if (state.cart[dish.id] != undefined)
-        Vue.set(state.cart[dish.id], 'elect', true)
+      state.categories = new Map(state.categories)
+      // todo: order
+      // if (state.cart[dish.id] != undefined)
+      //   Vue.set(state.cart[dish.id], 'elect', true)
     },
 
-    // todo:
     REMOVE_FAVOURITE(state, dish) {
-      let newFavs = state.favourites
-      Vue.set(state.favourites, dish.id, null)
-      delete newFavs[dish.id]
+      const newFavs = state.favourites.splice(state.favourites.findIndex(f => f.id === dish.id), 1)
       state.favourites = newFavs
-      for (let i = 0; i < state.categories.length; i++) {
-        for (let j = 0; j < state.categories[i].dishes.length; j++) {
-          const d = state.categories[i].dishes[j]
-          if (d.id == dish.id)
-            Vue.set(state.categories[i].dishes[j], 'elect', false)
-        }
+      for (const [key, val] of state.categories) {
+        val.forEach(d => {
+          if (d.id === dish.id)
+            d.favourite = false
+        })
       }
-      if (state.cart[dish.id] != undefined)
-        Vue.set(state.cart[dish.id], 'elect', false)
+      state.categories = new Map(state.categories)
+      // todo: order
+      // if (state.cart[dish.id] != undefined)
+      //   Vue.set(state.cart[dish.id], 'elect', false)
     },
 
     // todo:
@@ -286,20 +289,10 @@ export default {
       })
     },
 
-    // todo:
-    LOAD_FAVOURITES({commit, dispatch}, date) {
+    LOAD_FAVOURITES({commit, getters}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        // dispatch('SET_DATE', date)
-        let requestParams = {}
-        // const url = '/backend/modules/account/elect'
-        const url = '/account/elect'             // SHOW!!!
-        requestParams = {
-          url: url,
-          method: 'GET',
-          params: { date: date }
-        }
-        axios(requestParams)
+        axios({ url: '/api/favourite', method: 'GET', params: { userLogin: getters.login } })
         .then(resp => {
           commit('SET_FAVOURITES', resp.data)
           commit('SET_PROCESSING', false)
@@ -313,12 +306,15 @@ export default {
       })
     },
 
-    // todo:
-    TOGGLE_FAVOURITE({commit}, data) {
+    TOGGLE_FAVOURITE({commit, getters}, data) {
       return new Promise((resolve, reject) => {
-        // axios({ url: '/backend/modules/account/edit', data: { id: data.dish.id }, method: 'POST' })
-        axios({ url: '/account/edit', data: { id: data.dish.id }, method: 'POST' })             // SHOW!!!
+        axios({
+          url: '/api/favourite',
+          data: { userLogin: getters.login, dishId: data.dish.id },
+          method: data.remove ? 'DELETE' : 'POST'
+        })
         .then(resp => {
+          console.log(resp)
           if (data.remove)
             commit('REMOVE_FAVOURITE', data.dish)
           else
@@ -421,9 +417,9 @@ export default {
   },
 
   getters: {
-    // todo:
     categories: (state) => state.categories,
     favourites: (state) => state.favourites,
+    // todo:
     cart: (state) => state.cart,
     refuseOrder: (state) => state.refuseOrder,
     acceptOrder: (state) => state.acceptOrder
