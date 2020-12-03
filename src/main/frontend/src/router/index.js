@@ -16,24 +16,24 @@ Vue.use(VueRouter)
 
 const ifNotAuthenticated = (to, from, next) => {
   Store.dispatch('CHECK_AUTHORIZED')
-  .then(
-    resp => next('/'),
-    err => next()
-  )
+    .then(
+      resp => next('/'),
+      err => next()
+    )
 }
 const ifAuthenticated = (to, from, next) => {
   Store.dispatch('CHECK_AUTHORIZED')
-  .then(
-    resp => next(),
-    err => next('/signin')
-  )
+    .then(
+      resp => next(),
+      err => next('/signin')
+    )
 }
 const ifAuthenticatedAdmin = (to, from, next) => {
   Store.dispatch('CHECK_AUTHORIZED_ADMIN')
-  .then(
-    resp => next(),
-    err => next('/signin')
-  )
+    .then(
+      resp => next(),
+      err => next('/signin')
+    )
 }
 
 const routes = [
@@ -72,18 +72,6 @@ const routes = [
     // component: SignUp,
     beforeEnter: ifNotAuthenticated
   },
-  // {
-  //   path: '/email-confirmation',
-  //   name: 'email-confirmation',
-  //   component: EmailConfirmation,
-  //   beforeEnter: ifNotAuthenticated
-  // },
-  // {
-  //   path: '/password-confirmation',
-  //   name: 'password-confirmation',
-  //   component: PasswordConfirmation,
-  //   beforeEnter: ifNotAuthenticated
-  // },
   {
     path: '/admin',
     name: 'admin',

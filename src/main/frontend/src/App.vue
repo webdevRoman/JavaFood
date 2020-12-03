@@ -1,6 +1,6 @@
 <template lang="pug">
-#app
-  router-view
+  #app
+    router-view
 </template>
 
 <style lang="sass">
@@ -12,9 +12,11 @@
 // Common
 body, button, input, a
   color: $c-dark
+
 .container
   width: 1140px
   margin: 0 auto
+
   &_center
     display: flex
     justify-content: center
@@ -22,6 +24,7 @@ body, button, input, a
     padding: 30px 0
     min-height: 100vh
     max-width: 100vw
+
 .logo
   display: flex
   justify-content: center
@@ -31,13 +34,16 @@ body, button, input, a
   text-transform: uppercase
   letter-spacing: 10px
   margin: 0 auto
+
   &__img
     width: 60px
     margin-right: 10px
+
 .title
   font-weight: bold
   font-size: 24px
   text-transform: uppercase
+
 .btn
   width: 184px
   padding: 15px
@@ -47,35 +53,47 @@ body, button, input, a
   color: $c-light
   text-align: center
   transition: 0.2s
+
   &:hover
     background-color: lighten($c-dark, 10)
     border: 1px solid lighten($c-dark, 10)
+
   &[disabled]
     filter: opacity(50%)
+
     &:hover
       background-color: $c-dark
       color: $c-light
+
   &_o
     background-color: transparent
     color: $c-dark
+
     &:hover
       background-color: lighten($c-middle, 10)
+
     &[disabled]:hover
       background-color: transparent
       color: $c-dark
+
 .form
   &-block
     margin-bottom: 65px
     position: relative
     transition: 0.2s
+
     &_disabled
       opacity: 0.5
+
       .form-label
         cursor: default
+
         &:hover
           color: lighten($c-dark, 40)
+
   div.form-block_error
     margin-bottom: 75px
+
   &-label
     display: block
     font-weight: 500
@@ -84,8 +102,10 @@ body, button, input, a
     color: lighten($c-dark, 40)
     transition: 0.2s
     cursor: pointer
+
     &:hover
       color: $c-active
+
   &-input
     width: 100%
     padding: 10px 0
@@ -95,18 +115,23 @@ body, button, input, a
     font-weight: 500
     font-size: 18px
     transition: 0.2s
+
     &:focus
       border-bottom: 2px solid $c-active
+
     &[type="password"]
       padding-right: 30px
+
   &-password
     position: relative
+
     &__eye
       width: 24px
       position: absolute
       top: 50%
       transform: translateY(-50%)
       right: 0
+
   &-error
     font-weight: 500
     font-size: 13px
@@ -114,6 +139,7 @@ body, button, input, a
     position: absolute
     top: calc(100% + 10px)
     left: 0
+
   &-submit
     width: 100%
     padding: 20px
@@ -123,14 +149,18 @@ body, button, input, a
     font-size: 18px
     color: $c-light
     transition: 0.2s
+
     &:hover
       background-color: darken($c-active, 15)
       border: 1px solid darken($c-active, 15)
+
     &[disabled]
       opacity: 0.5
+
       &:hover
         background-color: $c-active
         border: 1px solid $c-active
+
 .notification
   &-popup
     display: flex
@@ -144,17 +174,21 @@ body, button, input, a
     bottom: 30px
     right: 15px
     z-index: 10
+
   &-info
     font-size: 14px
     color: $c-light
     margin-right: 10px
+
   &-img
     width: 20px
+
   &-close
     font-size: 24px
     position: absolute
     top: -30px
     right: 0
+
 .processing
   &-overlay
     display: flex
@@ -168,12 +202,14 @@ body, button, input, a
     top: 0
     left: 0
     z-index: 25
+
   &-indicator
     width: 200px
     height: 200px
     background: url("./assets/img/loader.svg") center no-repeat
     background-size: contain
-    animation: loading  1.5s infinite ease-in-out
+    animation: loading 1.5s infinite ease-in-out
+
 @keyframes loading
   from
     transform: scale(1) rotate(0)
@@ -184,10 +220,12 @@ body, button, input, a
 
 .select-container
   margin-bottom: 50px
+
 .select
   width: 360px
   background-color: $c-bg
   font-size: 16px
+
 .v-select
   cursor: pointer
   position: relative
@@ -199,28 +237,34 @@ body, button, input, a
     top: 2px
     left: 2px
     z-index: -1
+
   .vs__dropdown-toggle
     display: flex
     justify-content: space-between
     align-items: center
     border: 3px solid $c-middle
     z-index: 3
+
   .select-arrow
     transition: 0.2s
     width: 14px
     height: 12px
     background: url("./assets/img/arrow-select.svg") center no-repeat
     background-size: contain
+
 .v-select.vs--open
   .select-arrow
     transform: rotateX(180deg)
+
 .select
   transition: 0.2s
+
   .vs
     &__dropdown
       &-toggle
         padding: 15px 24px
         color: darken($c-middle, 40)
+
       &-menu
         width: 100%
         max-height: 400px
@@ -232,69 +276,90 @@ body, button, input, a
         top: 100%
         left: 0
         z-index: 5
+
         &::-webkit-scrollbar
           width: 4px
+
         &::-webkit-scrollbar-button
           height: 0
+
         &::-webkit-scrollbar-track
           background-color: $c-middle
+
         &::-webkit-scrollbar-track-piece
           background-color: $c-middle
+
         &::-webkit-scrollbar-thumb
           height: 50px
           background-color: $c-dark
+
         &::-webkit-scrollbar-corner
           background-color: $c-dark
+
         &::-webkit-resizer
           background-color: $c-dark
+
       &-option
         padding: 15px 25px
         font-weight: 500
         font-size: 18px
         transition: 0.2s
+
         &--selected
           background-color: $c-active
           color: $c-light
+
         &:hover
           background-color: $c-active
           color: $c-light
+
 .select.vs--open
   box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15)
+
   .vs__dropdown-menu
     box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15)
+
 .select.vs--disabled
   cursor: default
   opacity: 0.7
+
 .admin-docs
   .vs
     &__dropdown
       &-toggle
         padding: 14px
         background-color: $c-light
+
       &-menu
         max-height: 300px
         background-color: $c-light
+
       &-option
         padding: 14px
+
 .admin-users
   .select-arrow
     width: 10px
     height: 9px
+
   .vs
     &__dropdown
       &-toggle
         background-color: $c-light
         border: 1px solid $c-middle
         padding: 8px 6px
+
       &-menu
         overflow-y: visible
         background-color: $c-light
         border-left: 1px solid $c-middle
         border-bottom: 1px solid $c-middle
         border-right: 1px solid $c-middle
+
       &-option
         padding: 8px 6px
         font-size: 12px
+
 .popup-admin
   // .select-arrow
   //   width: 10px
@@ -304,16 +369,19 @@ body, button, input, a
       &-toggle
         border: 1px solid $c-middle
         padding: 10px 15px
+
       &-menu
         overflow-y: visible
         border-left: 1px solid $c-middle
         border-bottom: 1px solid $c-middle
         border-right: 1px solid $c-middle
+
       &-option
         padding: 10px 15px
 
 .calendar
   z-index: 10
+
   .vfc
     &-main
       &-container
@@ -321,9 +389,11 @@ body, button, input, a
         height: auto !important
         background-color: $c-light
         box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2)
+
     &-calendars
       &-container
         position: relative
+
     &-navigation
       &-buttons
         display: flex
@@ -334,6 +404,7 @@ body, button, input, a
         position: absolute
         top: 0
         left: 0
+
         & > div
           display: flex
           justify-content: center
@@ -343,41 +414,52 @@ body, button, input, a
           border: 2px solid lighten($c-dark, 40)
           border-radius: 50%
           transition: 0.2s
+
           .vfc-arrow-left, .vfc-arrow-right
             width: 8px
             height: 8px
             border-top: 2px solid lighten($c-dark, 40)
             border-right: 2px solid lighten($c-dark, 40)
             transition: 0.2s
+
           .vfc-arrow-right
             transform: rotate(45deg)
             margin-right: 3px
+
           .vfc-arrow-left
             transform: rotate(225deg)
             margin-right: -3px
+
         .vfc-cursor
           &-pointer
             border: 2px solid $c-dark
             cursor: pointer
+
             &:hover
               border: 2px solid lighten($c-dark, 40)
+
               .vfc-arrow-left, .vfc-arrow-right
                 border-top: 2px solid lighten($c-dark, 40)
                 border-right: 2px solid lighten($c-dark, 40)
+
             .vfc-arrow-left, .vfc-arrow-right
               border-top: 2px solid $c-dark
               border-right: 2px solid $c-dark
+
     &-top
       &-date
         padding: 8px
         text-align: center
+
         a
           font-weight: 500
           font-size: 18px
+
     &-dayNames
       display: flex
       justify-content: space-between
       align-items: center
+
       span
         display: block
         width: 44px
@@ -387,14 +469,16 @@ body, button, input, a
         font-size: 13px
         color: $c-light
         text-align: center
-        // &:last-child
-        //   background-color: lighten($c-dark, 40)
+    // &:last-child
+    //   background-color: lighten($c-dark, 40)
     &-week
       display: flex
       justify-content: space-between
       align-items: center
+
     &-day
       width: 44px
+
       span
         display: block
         width: 100%
@@ -403,26 +487,34 @@ body, button, input, a
         text-align: center
         transition: 0.2s
         cursor: pointer
+
         &:hover
           background-color: $c-active
           color: $c-light
+
       .vfc-today
         background-color: lighten($c-active, 30)
+
       .vfc-cursor-not-allowed
         color: lighten($c-dark, 40)
         cursor: default
+
         &:hover
           background-color: transparent
           color: lighten($c-dark, 40)
+
       .vfc-hide
         color: lighten($c-dark, 40)
         cursor: default
+
         &:hover
           background-color: transparent
           color: lighten($c-dark, 40)
+
       .vfc-marked
         background-color: lighten($c-active, 10)
         color: $c-light
+
       .vfc-start-marked, .vfc-end-marked
         background-color: $c-active
         color: $c-light
@@ -434,16 +526,16 @@ import axios from 'axios'
 export default {
   created() {
     axios.interceptors.response.use(undefined, function (err) {
-    return new Promise(function (resolve, reject) {
-      if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-        this.$store.dispatch('AUTH_LOGOUT').then(
-          resp => this.$router.push('/signin'),
-          err => console.log('Error when logging out: ' + err)
-        )
-      }
-      throw err;
+      return new Promise(function (resolve, reject) {
+        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+          this.$store.dispatch('AUTH_LOGOUT').then(
+              resp => this.$router.push('/signin'),
+              err => console.log('Error when logging out: ' + err)
+          )
+        }
+        throw err;
+      });
     });
-  });
   }
 }
 </script>

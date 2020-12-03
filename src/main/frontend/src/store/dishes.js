@@ -4,154 +4,6 @@ import axios from 'axios'
 export default {
 
   state: {
-    // categories: [{
-    //   name: 'Название категории 1',
-    //   dishes: [{
-    //     id: 1,
-    //     name: 'Бигус',
-    //     price: 85,
-    //     weight: 250,
-    //     weighty: 0,
-    //     single: 1,
-    //     description: 'Капуста тушеная со свининой',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: false
-    //   }, {
-    //     id: 2,
-    //     name: 'Салат "Витаминный"',
-    //     price: 32,
-    //     weight: 150,
-    //     weighty: 0,
-    //     single: 1,
-    //     description: 'Lorem ipsum, or lipsum as it is sometimes known',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: true
-    //   }, {
-    //     id: 3,
-    //     name: 'Овощи на пару',
-    //     price: 53,
-    //     weight: 100,
-    //     weighty: 1,
-    //     single: 0,
-    //     description: 'Зеленый горошек, брокколи, цветная капуста, картофель, морковь, перец болгарский, стручковая фасоль, чеснок',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: true
-    //   }, {
-    //     id: 4,
-    //     name: 'Окорочок фаршированный',
-    //     price: 53,
-    //     weight: 80,
-    //     weighty: 0,
-    //     single: 0,
-    //     description: 'Куриный фарш, грибы, специи',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: false
-    //   }, {
-    //     id: 5,
-    //     name: 'Вок с курицей',
-    //     price: 135,
-    //     weight: 250,
-    //     weighty: 0,
-    //     single: 1,
-    //     description: 'Лапша удон, куриное филе, лук репчатый, лук зеленый, перец болгарский, морковь, капуста, чеснок, кунжут',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: true
-    //   }]
-    // }, {
-    //   name: 'Название категории 2',
-    //   dishes: [{
-    //     id: 6,
-    //     name: 'Салат "Овощное попурри"',
-    //     price: 36,
-    //     weight: 100,
-    //     weighty: 0,
-    //     single: 1,
-    //     description: 'Капуста, помидор, огурцы, масло',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: true
-    //   }, {
-    //     id: 7,
-    //     name: 'Салат "Цезарь" с пекинской капустой',
-    //     price: 66,
-    //     weight: 100,
-    //     weighty: 1,
-    //     single: 0,
-    //     description: 'Помидоры, сыр, курица, пекинская капуста, соус "Цезарь"',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: false
-    //   }]
-    // }, {
-    //   name: 'Название категории 3',
-    //   dishes: [{
-    //     id: 8,
-    //     name: 'Суп "Том Ям" с морепродуктами',
-    //     price: 154,
-    //     weight: 250,
-    //     weighty: 1,
-    //     single: 0,
-    //     description: 'Морепродукты, корень галангала, лемонграсс, сливки, кокосовое молоко, шампиньоны, красный лук, помидоры, кинза, соус Том Ям. Подается с рисом.',
-    //     hide: 0,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: false
-    //   }, {
-    //     id: 9,
-    //     name: 'Салат 9',
-    //     price: 32,
-    //     weight: 150,
-    //     weighty: 0,
-    //     single: 1,
-    //     description: 'Lorem ipsum, or lipsum as it is sometimes known',
-    //     hide: 1,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: true
-    //   }, {
-    //     id: 10,
-    //     name: 'Салат 10',
-    //     price: 32,
-    //     weight: 150,
-    //     weighty: 0,
-    //     single: 1,
-    //     description: 'Lorem ipsum, or lipsum as it is sometimes known',
-    //     hide: 1,
-    //     image: '/images/delivery/items/199.jpg',
-    //     order: 0,
-    //     favourite: true
-    //   }]
-    // }, {
-    //   name: 'Длинное название категории (не вмещается в одну строку)',
-    //   dishes:[]
-    // }, {
-    //   name: '5',
-    //   dishes:[]
-    // }, {
-    //   name: '6',
-    //   dishes:[]
-    // }, {
-    //   name: '7',
-    //   dishes:[]
-    // }, {
-    //   name: '8',
-    //   dishes:[]
-    // }, {
-    //   name: '9',
-    //   dishes:[]
-    // }],
     categories: new Map(),
     favourites: [],
     // todo:
@@ -196,10 +48,10 @@ export default {
 
     ADD_FAVOURITE(state, dish) {
       let newFavs = []
-      if (state.favourites.length === 0){
+      if (state.favourites.length === 0) {
         newFavs.push(dish)
-      }else{
-        newFavs = [...state.favourites,dish]
+      } else {
+        newFavs = [...state.favourites, dish]
       }
       state.favourites = newFavs
       for (const [key, val] of state.categories) {

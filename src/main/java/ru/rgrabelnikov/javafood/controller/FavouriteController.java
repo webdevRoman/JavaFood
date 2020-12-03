@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.rgrabelnikov.javafood.entity.Dish;
 import ru.rgrabelnikov.javafood.entity.Favourite;
-import ru.rgrabelnikov.javafood.entity.User;
 import ru.rgrabelnikov.javafood.entity.Views;
 import ru.rgrabelnikov.javafood.service.FavouriteService;
 
