@@ -6,11 +6,10 @@ export default {
   state: {
     categories: new Map(),
     favourites: [],
+    cart: [],
     // todo:
     meta: {},
     links: {},
-    cart: {},
-    refuseOrder: false,
     acceptOrder: false
   },
 
@@ -20,7 +19,7 @@ export default {
       if (data != 'err')
         data.forEach(dish => {
           dish.favourite = false
-          // todo: order
+          dish.amount = 0
           if (categories.has(dish.dishTypeName))
             categories.set(dish.dishTypeName, [...categories.get(dish.dishTypeName), dish])
           else
@@ -32,6 +31,7 @@ export default {
     SET_FAVOURITES(state, data) {
       if (data != 'err') {
         data.forEach(dish => {
+          dish.amount = 0
           for (const [key, val] of state.categories) {
             val.forEach(d => {
               if (d.id === dish.id)
@@ -63,9 +63,8 @@ export default {
       const tempCategories = state.categories
       state.categories = new Map()
       state.categories = new Map(tempCategories)
-      // todo: order
-      // if (state.cart[dish.id] != undefined)
-      //   Vue.set(state.cart[dish.id], 'elect', true)
+      if (state.cart.findIndex(d => d.id === dish.id) !== -1)
+        state.cart.splice(state.cart.findIndex(d => d.id === dish.id), 1, dish)
     },
 
     REMOVE_FAVOURITE(state, dish) {
@@ -79,25 +78,35 @@ export default {
       const tempCategories = state.categories
       state.categories = new Map()
       state.categories = new Map(tempCategories)
-      // todo: order
-      // if (state.cart[dish.id] != undefined)
-      //   Vue.set(state.cart[dish.id], 'elect', false)
+      if (state.cart.findIndex(d => d.id === dish.id) !== -1)
+        state.cart.splice(state.cart.findIndex(d => d.id === dish.id), 1, dish)
     },
 
-    // todo:
     SET_CART(state, data) {
-      state.refuseOrder = data.refuse
-      state.acceptOrder = data.accept
-      state.cart = {}
       if (data != 'err') {
-        data.dishes.forEach(dish => {
-          Vue.set(state.cart, dish.id, dish)
+        const newFavs = state.favourites.slice(0)
+        data.forEach(basketDish => {
+          for (const [key, val] of state.categories) {
+            val.forEach(d => {
+              if (d.id === basketDish.dish.id)
+                d.amount = basketDish.amount
+            })
+          }
+          newFavs.forEach(favDish => {
+            if (favDish.id === basketDish.dish.id)
+              favDish.amount = basketDish.amount
+          })
         })
+        state.cart = data
+        state.categories = new Map(state.categories)
+        state.favourites = newFavs
+      } else {
+        state.cart = []
       }
     },
 
     // todo:
-    SET_OREDER(state, dish) {
+    SET_ORDER(state, dish) {
       if (dish.amount != 0) {
         Vue.set(state.cart, dish.id, dish)
       } else {
@@ -187,22 +196,12 @@ export default {
       })
     },
 
-    // todo:
-    LOAD_CART({commit, dispatch}, date) {
+    LOAD_CART({commit, getters}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        let requestParams = {}
-        // const url = '/backend/modules/basket'
-        const url = '/basket'             // SHOW!!!
-        requestParams = {
-          url: url,
-          method: 'GET',
-          params: { date: date }
-        }
-        axios(requestParams)
+        axios({ url: '/api/basket', method: 'GET', params: { userLogin: getters.login } })
         .then(resp => {
           commit('SET_CART', resp.data)
-          commit('SET_LIMIT', resp.data.total + resp.data.balance)
           commit('SET_PROCESSING', false)
           resolve()
         })
@@ -215,7 +214,7 @@ export default {
     },
 
     // todo:
-    SET_OREDER({commit, getters}, dish) {
+    SET_ORDER({commit, getters}, dish) {
       return new Promise((resolve, reject) => {
         let parameters = { data: { date: getters.date, id: dish.id }, method: 'POST' }
         if (dish.amount != 0) {
@@ -229,7 +228,7 @@ export default {
         axios(parameters)
         .then(resp => {
           if (resp.data == 'success') {
-            commit('SET_OREDER', dish)
+            commit('SET_ORDER', dish)
             resolve()
           } else {
             let errStr = ''
@@ -264,7 +263,7 @@ export default {
         // axios(parameters)
         // .then(resp => {
         //   data.dish.amount = data.amount
-        //   commit('SET_OREDER', data)
+        //   commit('SET_ORDER', data)
         //   commit('SET_PROCESSING', false)
         //   resolve()
         // })
@@ -279,9 +278,8 @@ export default {
   getters: {
     categories: (state) => state.categories,
     favourites: (state) => state.favourites,
-    // todo:
     cart: (state) => state.cart,
-    refuseOrder: (state) => state.refuseOrder,
+    // todo:
     acceptOrder: (state) => state.acceptOrder
   }
 

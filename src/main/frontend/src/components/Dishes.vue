@@ -46,30 +46,29 @@
                   .dish-info__dot
                   .dish-info__dot
 
-              //- todo:
               .dish-footer
                 div(:class="{'dish-footer__cart': true, 'dish-footer__cart_active': dish.amount > 0}")
                   button.cart-btn(
                     @click.prevent="incrementOrder(dish)",
-                    :disabled="dish.amount > 0 || dish.hide == 1 || refuseOrder"
+                    :disabled="dish.amount > 0 || buttonsDisabled"
                   )
                     img(src="../assets/img/cart-active.svg", alt="Cart image", v-if="dish.amount > 0")
                     img(src="../assets/img/cart.svg", alt="Cart image", v-else)
                   div(:class="{'cart-number': true, 'cart-number_active': dish.amount > 0}")
                     button.cart-number__btn(
                       @click.prevent="decrementOrder(dish)",
-                      :disabled="dish.amount <= 0 || dish.hide == 1 || refuseOrder"
+                      :disabled="dish.amount <= 0 || buttonsDisabled"
                     ) -
                     input.cart-number__value(
                       type="text",
                       v-model.trim="dish.amount",
                       v-mask="'##'",
                       @focusout="checkOrder(dish)",
-                      :disabled="dish.hide == 1 || refuseOrder"
+                      :disabled="buttonsDisabled"
                     )
                     button.cart-number__btn(
                       @click.prevent="incrementOrder(dish)",
-                      :disabled="dish.amount >= 99 || dish.hide == 1 || refuseOrder"
+                      :disabled="dish.amount >= 99 || buttonsDisabled"
                     ) +
 
                 button.dish-footer__favourite(@click.prevent="toggleFavourite(dish)")
@@ -87,10 +86,9 @@ export default {
   data() {
     return {
       selectCategory: 'Все категории',
-      // todo:
       showPopup: false,
       showingDescr: '',
-      timeoutId: null
+      buttonsDisabled: false
     }
   },
 
@@ -112,83 +110,31 @@ export default {
               this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
             }, 5000)
           })
+          .finally(() => console.log(this.$store.getters.cart))
     },
 
-    // todo:
     incrementOrder(dish) {
       dish.amount = parseInt(dish.amount) + 1
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
-      // this.$store.dispatch('SET_OREDER', { dish: dish, amount: parseInt(dish.amount) + 1 })
-      // this.$store.dispatch('SET_OREDER', { dish: dish, amount: parseInt(dish.amount) })
-      // .catch(err => {
-      //   console.log('Error on incrementing dish amount: ' + err)
-      //   this.$store.dispatch('SET_NOTIFICATION', { msg: `Ошибка: ${err}`, err: true })
-      //   setTimeout(() => {
-      //     this.$store.dispatch('SET_NOTIFICATION', { msg: '', err: false })
-      //   }, 5000)
-      // })
+      this.setOrder(dish)
     },
 
-    // todo:
     decrementOrder(dish) {
       dish.amount = parseInt(dish.amount) - 1
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
-      // this.$store.dispatch('SET_OREDER', { dish: dish, amount: parseInt(dish.amount) - 1 })
-      // this.$store.dispatch('SET_OREDER', { dish: dish, amount: parseInt(dish.amount) })
-      // .catch(err => {
-      //   console.log('Error on decrementing dish amount: ' + err)
-      //   this.$store.dispatch('SET_NOTIFICATION', { msg: `Ошибка: ${err}`, err: true })
-      //   setTimeout(() => {
-      //     this.$store.dispatch('SET_NOTIFICATION', { msg: '', err: false })
-      //   }, 5000)
-      // })
+      this.setOrder(dish)
     },
-    // todo:
+
     checkOrder(dish) {
-      // let data = {}
-      // if (dish.amount == '' || !dish.amount.match(/\d+/)) {
-      //   data = { dish: dish, amount: 0 }
-      // } else if (dish.amount.length > 1 && dish.amount[0] == '0') {
-      //   data = { dish: dish, amount: parseInt(dish.amount[1]) }
-      // } else {
-      //   data = { dish: dish, amount: dish.amount }
-      // }
       if (dish.amount == '' || !dish.amount.match(/\d+/)) {
         dish.amount = 0
       } else if (dish.amount.length > 1 && dish.amount[0] == '0') {
         dish.amount = parseInt(dish.amount[1])
       }
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      // if (dish.amount > 0) {
-      //   let fakeDish = Object.assign({}, dish)
-      //   fakeDish.amount = 0
-      //   this.setOrder(fakeDish)
-      // }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
-      // this.$store.dispatch('SET_OREDER', data)
-      // .catch(err => {
-      //   console.log('Error on changing dish amount: ' + err)
-      //   this.$store.dispatch('SET_NOTIFICATION', { msg: `Ошибка: ${err}`, err: true })
-      //   setTimeout(() => {
-      //     this.$store.dispatch('SET_NOTIFICATION', { msg: '', err: false })
-      //   }, 5000)
-      // })
+      this.setOrder(dish)
     },
 
-    // todo:
     setOrder(dish) {
-      this.$store.dispatch('SET_OREDER', dish)
+      this.buttonsDisabled = true
+      this.$store.dispatch('SET_ORDER', dish)
           .catch(err => {
             console.log('Error on setting order: ' + err)
             this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
@@ -196,15 +142,14 @@ export default {
               this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
             }, 5000)
           })
+          .finally(() => this.buttonsDisabled = false)
     },
 
-    // todo:
     showDescr(descr) {
       this.showPopup = true
       this.showingDescr = descr
     },
 
-    // todo:
     hideDescr() {
       this.showPopup = false
       this.showingDescr = ''
@@ -233,11 +178,6 @@ export default {
       let selectCategories = [...this.categories.keys()]
       selectCategories.unshift('Все категории')
       return selectCategories
-    },
-
-    // todo:
-    refuseOrder() {
-      return this.$store.getters.refuseOrder
     }
   }
 
@@ -410,7 +350,7 @@ export default {
 
               &_active
                 .cart-number__btn
-                border: 1px solid $c-light
+                  border: 1px solid $c-light
 
                 .cart-number__btn, .cart-number__value
                   color: $c-light

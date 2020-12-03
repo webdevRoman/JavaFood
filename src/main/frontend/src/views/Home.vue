@@ -97,11 +97,7 @@ export default {
     },
 
     currentSum() {
-      let sum = 0
-      for (const key in this.cartItems) {
-        sum += this.cartItems[key].price * this.cartItems[key].amount
-      }
-      return sum
+      return this.cartItems.reduce((acc, item) => acc + item.dish.price * item.amount, 0)
     },
 
     processing() {
@@ -126,6 +122,9 @@ export default {
     })
     this.$store.dispatch('LOAD_FAVOURITES').catch(err => {
       console.log("Favourites loader rejected: " + err.message)
+    })
+    this.$store.dispatch('LOAD_CART').catch(err => {
+      console.log("Cart loader rejected: " + err.message)
     })
   },
 

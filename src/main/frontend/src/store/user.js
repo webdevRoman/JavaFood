@@ -12,7 +12,6 @@ export default {
     token: '',
     isAdmin: false,
     // todo:
-    limit: 0,
     order: true,
     start: null,
     end: null
@@ -58,11 +57,6 @@ export default {
         surname: data.lastname,
         role: state.isAdmin ? 'admin' : 'user'
       }, '1m')
-    },
-
-    // todo:
-    SET_LIMIT(state, limit) {
-      Vue.set(state, 'limit', limit)
     }
   },
 
@@ -242,7 +236,6 @@ export default {
     isAuthenticated: state => !!state.token,
     isAdmin: state => state.isAdmin,
     // todo:
-    limit: state => state.limit,
     order: state => state.order,
     start: state => state.start,
     end: state => state.end,

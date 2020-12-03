@@ -18,7 +18,7 @@ public class BasketController {
 
   @GetMapping
   @JsonView(Views.BasketDish.class)
-  public List<BasketDish> getBasket(@RequestBody String userLogin) {
+  public List<BasketDish> getBasket(@RequestParam String userLogin) {
     return basketService.getBasket(userLogin);
   }
 

@@ -1,7 +1,9 @@
 <template lang="pug">
   .favourites
     .container
+
       .title.favourites-no(v-if="favourites.length == 0") В избранном нет блюд
+
       .category(v-if="favourites.length > 0")
         .category-dishes
           .dish(v-for="dish in favourites")
@@ -17,6 +19,7 @@
               .dish-descr {{ dish.description }}
 
             .dish-bottom
+
               .dish-info
                 .dish-info__text
                   span.dish-info__price {{ dish.price }} Р
@@ -30,25 +33,25 @@
                 div(:class="{'dish-footer__cart': true, 'dish-footer__cart_active': dish.amount > 0}")
                   button.cart-btn(
                     @click.prevent="incrementOrder(dish)",
-                    :disabled="dish.amount > 0 || refuseOrder"
+                    :disabled="dish.amount > 0 || buttonsDisabled"
                   )
                     img(src="../assets/img/cart-active.svg", alt="Cart image", v-if="dish.amount > 0")
                     img(src="../assets/img/cart.svg", alt="Cart image", v-else)
                   div(:class="{'cart-number': true, 'cart-number_active': dish.amount > 0}")
                     button.cart-number__btn(
                       @click.prevent="decrementOrder(dish)",
-                      :disabled="dish.amount <= 0 || refuseOrder"
+                      :disabled="dish.amount <= 0 || buttonsDisabled"
                     ) -
                     input.cart-number__value(
                       type="text",
                       v-model.trim="dish.amount",
                       v-mask="'##'",
                       @focusout="checkOrder(dish)",
-                      :disabled="refuseOrder"
+                      :disabled="buttonsDisabled"
                     )
                     button.cart-number__btn(
                       @click.prevent="incrementOrder(dish)",
-                      :disabled="dish.amount >= 99 || refuseOrder"
+                      :disabled="dish.amount >= 99 || buttonsDisabled"
                     ) +
                 button.dish-footer__favourite(@click.prevent="toggleFavourite(dish)")
                   img(src="../assets/img/star-active.svg", alt="Star image")
@@ -60,12 +63,15 @@
 
 <script>
 export default {
+
   data() {
     return {
       showPopup: false,
-      showingDescr: ''
+      showingDescr: '',
+      buttonsDisabled: false
     }
   },
+
   methods: {
     toggleFavourite(dish) {
       this.$store.dispatch('TOGGLE_FAVOURITE', {dish: dish, remove: true})
@@ -77,36 +83,29 @@ export default {
             }, 5000)
           })
     },
+
     incrementOrder(dish) {
       dish.amount = parseInt(dish.amount) + 1
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
+      this.setOrder(dish)
     },
+
     decrementOrder(dish) {
       dish.amount = parseInt(dish.amount) - 1
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
+      this.setOrder(dish)
     },
+
     checkOrder(dish) {
       if (dish.amount == '' || !dish.amount.match(/\d+/)) {
         dish.amount = 0
       } else if (dish.amount.length > 1 && dish.amount[0] == '0') {
         dish.amount = parseInt(dish.amount[1])
       }
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
+      this.setOrder(dish)
     },
+
     setOrder(dish) {
-      this.$store.dispatch('SET_OREDER', dish)
+      this.buttonsDisabled = true
+      this.$store.dispatch('SET_ORDER', dish)
           .catch(err => {
             console.log('Error on setting order: ' + err)
             this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
@@ -114,24 +113,26 @@ export default {
               this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
             }, 5000)
           })
+          .finally(() => this.buttonsDisabled = false)
     },
+
     showDescr(descr) {
       this.showPopup = true
       this.showingDescr = descr
     },
+
     hideDescr() {
       this.showPopup = false
       this.showingDescr = ''
     }
   },
+
   computed: {
     favourites() {
       return this.$store.getters.favourites
-    },
-    refuseOrder() {
-      return this.$store.getters.refuseOrder
     }
   }
+
 }
 </script>
 
@@ -175,9 +176,6 @@ export default {
       margin-right: 30px
       margin-bottom: 30px
       transition: 0.2s
-
-      &_inactive
-        opacity: 0.5
 
       &:nth-child(4n)
         margin-right: 0
@@ -305,17 +303,10 @@ export default {
 
               &_active
                 .cart-number__btn
-                border: 1px solid $c-light
+                  border: 1px solid $c-light
 
                 .cart-number__btn, .cart-number__value
                   color: $c-light
-
-              &_inactive
-                .cart-number__btn
-                border: 1px solid darken($c-middle, 10)
-
-                .cart-number__btn, .cart-number__value
-                  color: darken($c-middle, 10)
 
         &__favourite
           display: flex
