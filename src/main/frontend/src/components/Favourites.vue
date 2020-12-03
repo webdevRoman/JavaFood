@@ -1,16 +1,18 @@
 <template lang="pug">
 .favourites
   .container
-    .title.favourites-no(v-if="availableFavs.length == 0 && unavailableFavs.length == 0") В избранном нет блюд
-    .category(v-if="availableFavs.length > 0")
-      .title.category-title Доступные блюда
+    .title.favourites-no(v-if="favourites.length == 0") В избранном нет блюд
+    .category(v-if="favourites.length > 0")
       .category-dishes
-        .dish(v-for="dish in availableFavs")
+        .dish(v-for="dish in favourites")
+
           .dish-top
-            .dish-img(:style="{'background-image': `url(https://edatomsk.ru${dish.image})`}")
-              //- img(src="../assets/img/dish.svg", alt="Dish image")
+            .dish-img(v-if="!!dish.imageAddress" :style="{'background-image': `url(http://localhost:8087/${dish.imageAddress})`}")
+            .dish-img(v-else)
+              img(src="../assets/img/dish-default.svg", alt="Dish image")
             .dish-title {{ dish.name }}
             .dish-descr {{ dish.description }}
+
           .dish-bottom
             .dish-info
               .dish-info__text
@@ -20,6 +22,7 @@
                 .dish-info__dot
                 .dish-info__dot
                 .dish-info__dot
+
             .dish-footer
               div(:class="{'dish-footer__cart': true, 'dish-footer__cart_active': dish.amount > 0}")
                 button.cart-btn(@click.prevent="incrementOrder(dish)", :disabled="dish.amount > 0 || refuseOrder")
@@ -31,33 +34,7 @@
                   button.cart-number__btn(@click.prevent="incrementOrder(dish)", :disabled="dish.amount >= 99 || refuseOrder") +
               button.dish-footer__favourite(@click.prevent="toggleFavourite(dish)")
                 img(src="../assets/img/star-active.svg", alt="Star image")
-    .category(v-if="unavailableFavs.length > 0")
-      .title.category-title Недоступные блюда
-      .category-dishes
-        .dish.dish_inactive(v-for="dish in unavailableFavs")
-          .dish-top
-            .dish-img(:style="{'background-image': `url(https://edatomsk.ru${dish.image})`}")
-            .dish-title {{ dish.name }}
-            .dish-descr {{ dish.description }}
-          .dish-bottom
-            .dish-info
-              .dish-info__text
-                span.dish-info__price {{ dish.price }} Р
-                span.dish-info__weight {{ dish.weight }} г
-              button.dish-info__show(@click.prevent="showDescr(dish.description)", v-if="dish.description != ''")
-                .dish-info__dot
-                .dish-info__dot
-                .dish-info__dot
-            .dish-footer
-              .dish-footer__cart
-                button.cart-btn(disabled)
-                  img(src="../assets/img/cart-inactive.svg", alt="Cart image")
-                .cart-number.cart-number_inactive
-                  button.cart-number__btn(disabled) -
-                  input.cart-number__value(v-model.trim="dish.amount", disabled)
-                  button.cart-number__btn(disabled) +
-              button.dish-footer__favourite(@click.prevent="toggleFavourite(dish)")
-                img(src="../assets/img/star-active.svg", alt="Star image")
+
   .overlay(v-if="showPopup")
     .popup {{ showingDescr }}
       button.popup-close(@click.prevent="hideDescr()") &times;
@@ -133,24 +110,6 @@ export default {
     favourites() {
       return this.$store.getters.favourites
     },
-    availableFavs() {
-      let availableFavs = []
-      for (const key in this.favourites) {
-        const el = this.favourites[key]
-        if (el.active)
-          availableFavs.push(el)
-      }
-      return availableFavs
-    },
-    unavailableFavs() {
-      let unavailableFavs = []
-      for (const key in this.favourites) {
-        const el = this.favourites[key]
-        if (!el.active)
-          unavailableFavs.push(el)
-      }
-      return unavailableFavs
-    },
     refuseOrder() {
       return this.$store.getters.refuseOrder
     }
@@ -166,6 +125,7 @@ export default {
   &-no
     text-align: center
     margin: 50px 0
+    min-height: 30vh
 
 .category
   margin-bottom: 80px
@@ -206,6 +166,9 @@ export default {
         background-position: center
         background-size: cover
         margin-bottom: 12px
+        img
+          height: 100%
+          width: auto
       &-title
         width: 90%
         font-weight: bold

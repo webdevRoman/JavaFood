@@ -195,29 +195,38 @@ export default {
     },
 
     ADD_FAVOURITE(state, dish) {
-      Vue.set(state.favourites, state.favourites.findIndex(f => f.id === dish.id), dish)
+      let newFavs = []
+      if (state.favourites.length === 0){
+        newFavs.push(dish)
+      }else{
+        newFavs = [...state.favourites,dish]
+      }
+      state.favourites = newFavs
       for (const [key, val] of state.categories) {
         val.forEach(d => {
           if (d.id === dish.id)
             d.favourite = true
         })
       }
-      state.categories = new Map(state.categories)
+      const tempCategories = state.categories
+      state.categories = new Map()
+      state.categories = new Map(tempCategories)
       // todo: order
       // if (state.cart[dish.id] != undefined)
       //   Vue.set(state.cart[dish.id], 'elect', true)
     },
 
     REMOVE_FAVOURITE(state, dish) {
-      const newFavs = state.favourites.splice(state.favourites.findIndex(f => f.id === dish.id), 1)
-      state.favourites = newFavs
+      state.favourites.splice(state.favourites.findIndex(f => f.id === dish.id), 1)
       for (const [key, val] of state.categories) {
         val.forEach(d => {
           if (d.id === dish.id)
             d.favourite = false
         })
       }
-      state.categories = new Map(state.categories)
+      const tempCategories = state.categories
+      state.categories = new Map()
+      state.categories = new Map(tempCategories)
       // todo: order
       // if (state.cart[dish.id] != undefined)
       //   Vue.set(state.cart[dish.id], 'elect', false)
@@ -314,7 +323,6 @@ export default {
           method: data.remove ? 'DELETE' : 'POST'
         })
         .then(resp => {
-          console.log(resp)
           if (data.remove)
             commit('REMOVE_FAVOURITE', data.dish)
           else

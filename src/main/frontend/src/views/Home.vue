@@ -143,9 +143,8 @@ export default {
     display: flex
     justify-content: space-between
     align-items: center
-    // .logo
-    //   width: 310px
-    //   margin: 0
+    .logo
+      margin: 0
     .right
       display: flex
       justify-content: flex-end
