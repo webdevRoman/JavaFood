@@ -63,6 +63,7 @@
                       type="text",
                       v-model.trim="dish.amount",
                       v-mask="'##'",
+                      @focusin="rememberOldVal(dish)",
                       @focusout="checkOrder(dish)",
                       :disabled="buttonsDisabled"
                     )
@@ -88,7 +89,8 @@ export default {
       selectCategory: 'Все категории',
       showPopup: false,
       showingDescr: '',
-      buttonsDisabled: false
+      buttonsDisabled: false,
+      oldDishAmount: null
     }
   },
 
@@ -110,39 +112,47 @@ export default {
               this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
             }, 5000)
           })
-          .finally(() => console.log(this.$store.getters.cart))
     },
 
     incrementOrder(dish) {
+      const oldVal = parseInt(dish.amount)
       dish.amount = parseInt(dish.amount) + 1
-      this.setOrder(dish)
+      this.setOrder(oldVal, dish)
     },
 
     decrementOrder(dish) {
+      const oldVal = parseInt(dish.amount)
       dish.amount = parseInt(dish.amount) - 1
-      this.setOrder(dish)
+      this.setOrder(oldVal, dish)
+    },
+
+    rememberOldVal(dish) {
+      this.oldDishAmount = dish.amount
     },
 
     checkOrder(dish) {
-      if (dish.amount == '' || !dish.amount.match(/\d+/)) {
+      if (dish.amount == '' || !String(dish.amount).match(/\d+/)) {
         dish.amount = 0
       } else if (dish.amount.length > 1 && dish.amount[0] == '0') {
         dish.amount = parseInt(dish.amount[1])
       }
-      this.setOrder(dish)
+      this.setOrder(this.oldDishAmount, dish)
+      this.oldDishAmount = null
     },
 
-    setOrder(dish) {
-      this.buttonsDisabled = true
-      this.$store.dispatch('SET_ORDER', dish)
-          .catch(err => {
-            console.log('Error on setting order: ' + err)
-            this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
-            setTimeout(() => {
-              this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-            }, 5000)
-          })
-          .finally(() => this.buttonsDisabled = false)
+    setOrder(oldDishAmount, dish) {
+      if (this.oldDishAmount !== dish.amount) {
+        this.buttonsDisabled = true
+        this.$store.dispatch('SET_ORDER', {oldDishAmount: oldDishAmount, dish: dish})
+            .catch(err => {
+              console.log('Error on setting order: ' + err)
+              this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+              setTimeout(() => {
+                this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+              }, 5000)
+            })
+            .finally(() => this.buttonsDisabled = false)
+      }
     },
 
     showDescr(descr) {

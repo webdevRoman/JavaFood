@@ -13,7 +13,7 @@ public class BasketRequest {
   public void setAmount(int amount) { this.amount = amount; }
 
   public BasketRequest() {}
-  public BasketRequest(String userLogin, int dishId, int amount) {
+  public BasketRequest(String userLogin, long dishId, int amount) {
     this.userLogin = userLogin;
     this.dishId = dishId;
     this.amount = amount;

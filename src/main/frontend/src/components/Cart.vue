@@ -1,123 +1,181 @@
 <template lang="pug">
   .cart-popup
+
     .cart-close
       button.cart-close__btn(@click.prevent="hideCart()") &times;
-    .cart-items__confirmed(v-if="acceptOrder") Заказ подтвержден
-    .cart-items__no(v-else-if="Object.keys(cartItems).length < 1") Ваша корзина пуста
+
+    .cart-items__no(v-if="cartItems.length < 1") Ваша корзина пуста
+
     .cart-items(v-else)
       .cart-item(v-for="dish in cartItems")
         .cart-item__block
           .cart-item__main
-            .cart-item__img(:style="{'background-image': `url(https://edatomsk.ru${dish.image})`}")
+
+            .cart-item__img(
+              v-if="!!dish.imageAddress"
+              :style="{'background-image': `url(http://localhost:8087/${dish.imageAddress})`}"
+            )
+            .cart-item__img(v-else)
+              img(src="../assets/img/dish-default.svg", alt="Dish image")
+
             .cart-item__text
               .cart-item__info
                 .cart-item__price {{ dish.price }} Р
                 .cart-item__name {{ dish.name }}
+
                 .cart-item__number
-                  button.cart-number__btn(@click.prevent="decrementOrder(dish)", :disabled="dish.amount <= 0 || refuseOrder") -
-                  input.cart-number__value(type="text", v-model.trim="dish.amount", v-mask="'##'", @focusout="checkOrder(dish)", :disabled="refuseOrder")
-                  button.cart-number__btn(@click.prevent="incrementOrder(dish)", :disabled="dish.amount >= 99 || refuseOrder") +
-                button.cart-item__fav(@click.prevent="toggleFavourite(dish)", v-if="dish.elect")
+                  button.cart-number__btn(
+                    @click.prevent="decrementOrder(dish)",
+                    :disabled="dish.amount <= 0 || buttonsDisabled"
+                  ) -
+                  input.cart-number__value(
+                    type="text",
+                    v-model.trim="dish.amount",
+                    v-mask="'##'",
+                    @focusin="rememberOldVal(dish)",
+                    @focusout="checkOrder(dish)",
+                    :disabled="buttonsDisabled"
+                  )
+                  button.cart-number__btn(
+                    @click.prevent="incrementOrder(dish)",
+                    :disabled="dish.amount >= 99 || buttonsDisabled"
+                  ) +
+
+                button.cart-item__fav(@click.prevent="toggleFavourite(dish)", v-if="dish.favourite")
                   .cart-fav__img
                     img(src="../assets/img/star-active.svg", alt="Star image")
                   .cart-fav__text В избранном
+
                 button.cart-item__fav.cart-item__fav_active(@click.prevent="toggleFavourite(dish)", v-else)
                   .cart-fav__img
                     img(src="../assets/img/star.svg", alt="Star image")
                   .cart-fav__text В избранное
+
           button.cart-item__delete(@click.prevent="deleteOrder(dish)") &times;
+
         .cart-item__sum
           div Всего: <span class="cart-sum__value">{{ dish.price * dish.amount }}</span> Р
-    .cart-price(v-if="!acceptOrder")
+
+    .cart-price
       .cart-price__line.cart-price__sum
         .cart-price__text Итого
         .cart-price__value <span class="cart-value__value">{{ currentSum }}</span> Р
-      .cart-price__line.cart-price__left(:class="{'cart-price__left_minus': currentSum > priceLimit}")
-        .cart-price__text(v-if="currentSum > priceLimit") Превышение лимита
-        .cart-price__text(v-else) Оставшийся лимит
-        .cart-price__value(v-if="currentSum > priceLimit") <span class="cart-value__value">{{ currentSum - priceLimit }}</span> Р
-        .cart-price__value(v-else) <span class="cart-value__value">{{ priceLimit - currentSum }}</span> Р
-    .cart-buttons(v-if="!acceptOrder")
-      button.btn.btn_o(@click.prevent="clearCart()", :disabled="Object.keys(cartItems).length < 1") Очистить корзину
-      button.btn(@click.prevent="confirmOrder()", :disabled="Object.keys(cartItems).length < 1 || refuseOrder") Подтвердить заказ
-      .error(v-if="refuseOrder") Вы отказались от заказа на этот день
+
+    .cart-buttons
+      button.btn.btn_o(
+        @click.prevent="clearCart()",
+        :disabled="cartItems.length < 1"
+      ) Очистить корзину
+      button.btn(
+        @click.prevent="confirmOrder()",
+        :disabled="cartItems.length < 1 || buttonsDisabled"
+      ) Подтвердить заказ
 </template>
 
 <script>
 export default {
+
+  data() {
+    return {
+      buttonsDisabled: false,
+      oldDishAmount: null
+    }
+  },
+
   methods: {
     hideCart() {
       const cart = document.querySelector('.cart-popup')
       cart.style.display = 'none'
     },
+
     toggleFavourite(dish) {
-      if (!dish.elect) {
-        this.$store.dispatch('TOGGLE_FAVOURITE', {dish: dish, remove: false})
-        dish.elect = true
+      let data = {dish: dish}
+      if (!dish.favourite) {
+        data.remove = false
+        dish.favourite = true
       } else {
-        this.$store.dispatch('TOGGLE_FAVOURITE', {dish: dish, remove: true})
-        dish.elect = false
+        data.remove = true
+        dish.favourite = false
       }
-    },
-    incrementOrder(dish) {
-      dish.amount = parseInt(dish.amount) + 1
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
-    },
-    decrementOrder(dish) {
-      dish.amount = parseInt(dish.amount) - 1
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
-    },
-    checkOrder(dish) {
-      if (dish.amount == '' || !dish.amount.match(/\d+/)) {
-        dish.amount = 0
-      } else if (dish.amount.length > 1 && dish.amount[0] == '0') {
-        dish.amount = parseInt(dish.amount[1])
-      }
-      if (this.timeoutId != null) {
-        clearTimeout(this.timeoutId)
-        this.timeoutId = null
-      }
-      this.timeoutId = setTimeout(this.setOrder, 500, dish)
-    },
-    deleteOrder(dish) {
-      // this.$store.dispatch('SET_ORDER', { dish: dish, amount: 0 })
-      dish.amount = 0
-      this.setOrder(dish)
-    },
-    clearCart() {
-      for (const key in this.cartItems) {
-        const dish = this.cartItems[key]
-        dish.amount = 0
-        this.setOrder(dish)
-      }
-    },
-    setOrder(dish) {
-      this.$store.dispatch('SET_ORDER', dish)
+      this.$store.dispatch('TOGGLE_FAVOURITE', data)
           .catch(err => {
-            console.log('Error on setting order: ' + err)
+            console.log('Error on adding or removing favourite dish: ' + err)
             this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
             setTimeout(() => {
               this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
             }, 5000)
           })
     },
+
+    incrementOrder(dish) {
+      const oldVal = parseInt(dish.amount)
+      dish.amount = parseInt(dish.amount) + 1
+      this.setOrder(oldVal, dish)
+    },
+
+    decrementOrder(dish) {
+      const oldVal = parseInt(dish.amount)
+      dish.amount = parseInt(dish.amount) - 1
+      this.setOrder(oldVal, dish)
+    },
+
+    rememberOldVal(dish) {
+      this.oldDishAmount = dish.amount
+    },
+
+    checkOrder(dish) {
+      if (dish.amount == '' || !String(dish.amount).match(/\d+/)) {
+        dish.amount = 0
+      } else if (dish.amount.length > 1 && dish.amount[0] == '0') {
+        dish.amount = parseInt(dish.amount[1])
+      }
+      this.setOrder(this.oldDishAmount, dish)
+      this.oldDishAmount = null
+    },
+
+    deleteOrder(dish) {
+      this.rememberOldVal(dish)
+      dish.amount = 0
+      this.setOrder(this.oldDishAmount, dish)
+    },
+
+    clearCart() {
+      this.cartItems.forEach(d => d.amount = 0)
+      this.$store.dispatch('CLEAR_ORDER')
+          .catch(err => {
+            console.log('Error on clearing cart: ' + err)
+            this.$store.dispatch(
+                'SET_NOTIFICATION',
+                {msg: `Ошибка при очистке корзины: ${err.message}`, err: true}
+            )
+            setTimeout(() => {
+              this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+            }, 5000)
+          })
+    },
+
+    setOrder(oldDishAmount, dish) {
+      if (this.oldDishAmount !== dish.amount) {
+        this.buttonsDisabled = true
+        this.$store.dispatch('SET_ORDER', {oldDishAmount: oldDishAmount, dish: dish})
+            .catch(err => {
+              console.log('Error on setting order: ' + err)
+              this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+              setTimeout(() => {
+                this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+              }, 5000)
+            })
+            .finally(() => this.buttonsDisabled = false)
+      }
+    },
+
+    //todo
     confirmOrder() {
       // dispatch some confirming method
-      // acceptOrder = true !!!
       this.$store.dispatch('CONFIRM_ORDER')
           .then(resp => {
                 const cart = document.querySelector('.cart-popup')
-                setTimeout(() => {
-                  cart.style.display = 'none'
-                }, 3000)
+                setTimeout(() => cart.style.display = 'none', 3000)
               },
               err => {
                 console.log('Error on sending order: ' + err)
@@ -128,27 +186,21 @@ export default {
               })
     }
   },
+
   computed: {
     cartItems() {
       return this.$store.getters.cart
     },
+
     currentSum() {
       let sum = 0
       for (const key in this.cartItems) {
         sum += this.cartItems[key].price * this.cartItems[key].amount
       }
       return sum
-    },
-    priceLimit() {
-      return this.$store.getters.limit
-    },
-    refuseOrder() {
-      return this.$store.getters.refuseOrder
-    },
-    acceptOrder() {
-      return this.$store.getters.acceptOrder
     }
   }
+
 }
 </script>
 
@@ -182,7 +234,7 @@ export default {
       margin-top: -8px
 
   &-items
-    height: calc(100vh - 250px)
+    height: calc(100vh - 220px)
     overflow-y: scroll
 
     &::-webkit-scrollbar
@@ -208,13 +260,7 @@ export default {
       background-color: $c-dark
 
     &__no
-      height: calc(100vh - 250px)
-      padding: 50px 0
-      font-weight: bold
-      font-size: 24px
-      text-align: center
-
-    &__confirmed
+      height: calc(100vh - 220px)
       padding: 50px 0
       font-weight: bold
       font-size: 24px
@@ -240,7 +286,6 @@ export default {
       flex-basis: 134px
       width: 134px
       height: 134px
-      // border: 2px solid $c-middle
       background-repeat: no-repeat
       background-position: center
       background-size: cover
@@ -342,23 +387,12 @@ export default {
 
     &__sum
       font-weight: bold
-      margin-bottom: 14px
 
       .cart-price__text
         font-size: 24px
 
       .cart-price__value
         font-size: 20px
-
-    &__left
-      font-size: 20px
-      color: $c-active
-
-      .cart-price__value
-        font-weight: bold
-
-      &_minus
-        color: $c-warning
 
   &-buttons
     padding: 26px 38px 38px 38px
@@ -369,14 +403,6 @@ export default {
 
     .btn:first-child
       margin-right: 20px
-
-.error
-  position: absolute
-  left: 38px
-  bottom: 15px
-  font-weight: 500
-  font-size: 13px
-  color: $c-warning
 
 @media(max-width: 992px)
   html
@@ -406,10 +432,10 @@ export default {
         width: 100%
 
       &-items
-        height: calc(100vh - 200px)
+        height: calc(100vh - 170px)
 
         &__no
-          height: calc(100vh - 200px)
+          height: calc(100vh - 170px)
 
       &-item
         padding: 10px
@@ -438,16 +464,11 @@ export default {
         padding: 15px 20px
 
         &__sum
-          margin-bottom: 8px
-
           .cart-price__text
             font-size: 20px
 
           .cart-price__value
             font-size: 18px
-
-        &__left
-          font-size: 18px
 
       &-buttons
         padding: 15px 20px
