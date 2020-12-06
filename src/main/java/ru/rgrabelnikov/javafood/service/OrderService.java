@@ -6,6 +6,7 @@ import ru.rgrabelnikov.javafood.entity.*;
 import ru.rgrabelnikov.javafood.repository.BasketDishRepository;
 import ru.rgrabelnikov.javafood.repository.BasketRepository;
 import ru.rgrabelnikov.javafood.repository.OrderRepository;
+import ru.rgrabelnikov.javafood.repository.UserRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,15 +19,20 @@ public class OrderService {
   private BasketRepository basketRepository;
   @Autowired
   private BasketDishRepository basketDishRepository;
+  @Autowired
+  private UserRepository userRepository;
 
   public boolean createOrder(OrderRequest orderRequest) {
-    Basket basketFromDb = basketRepository.findById(orderRequest.getBasketId()).orElse(null);
-    if (basketFromDb != null) {
-      Order newOrder = orderRepository.save(new Order(basketFromDb, orderRequest.getAddress(), orderRequest.getDeliveryTime()));
-      if (newOrder != null) {
-        basketFromDb.setUnordered(false);
-        basketRepository.save(basketFromDb);
-        return true;
+    User userFromDb = userRepository.findByLogin(orderRequest.getUserLogin());
+    if (userFromDb != null) {
+      Basket basketFromDb = basketRepository.findByUserAndUnordered(userFromDb.getId(), true);
+      if (basketFromDb != null) {
+        Order newOrder = orderRepository.save(new Order(basketFromDb, orderRequest.getAddress(), orderRequest.getDeliveryTime()));
+        if (newOrder != null) {
+          basketFromDb.setUnordered(false);
+          basketRepository.save(basketFromDb);
+          return true;
+        }
       }
     }
     return false;

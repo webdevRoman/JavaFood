@@ -196,7 +196,7 @@ body, button, input, a
     align-items: center
     width: 100vw
     height: 100vh
-    overflow: hodden
+    overflow: hidden
     background-color: rgba(255, 255, 255, 0.7)
     position: fixed
     top: 0
@@ -389,6 +389,35 @@ body, button, input, a
         height: auto !important
         background-color: $c-light
         box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2)
+        border-radius: 0
+        .vfc-content
+          margin: 0
+          &>div:last-child
+            &>div:last-child
+              height: 5px !important
+        .vfc-calendar
+          width: 100%
+        .vfc-separately-navigation-buttons
+          margin-top: -28px
+        .vfc-top-date
+          margin: 0 25px 0 25px
+        .vfc-dayNames
+          margin-bottom: 0
+        .vfc-day
+          margin: 0
+        .vfc-week .vfc-day
+          span.vfc-span-day
+            margin: 0
+            border-radius: 0
+            width: 44px
+            height: 30px
+            line-height: normal
+            &:hover
+              background-color: $c-active
+          span.vfc-span-day.vfc-today
+            background-color: lighten($c-active, 20)
+          span.vfc-span-day.vfc-marked
+            background-color: $c-active
 
     &-calendars
       &-container

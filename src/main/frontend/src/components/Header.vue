@@ -5,13 +5,17 @@
         button.user(@click.prevent="toggleMenu()")
           .user-img
             img(src="../assets/img/user.svg", alt="User Image")
-          .user-name {{ login }}
+          .user-name(v-if="isAuthenticated") {{ login }}
+          .user-name(v-else) Неавторизованный пользователь
           .user-triangle
             img(src="../assets/img/triangle-down.svg", alt="Triangle down")
         .user-menu
-          router-link.user-menu__item(tag="button", to="/account") Личный кабинет
-          router-link.user-menu__item(tag="button", to="/admin", v-if="isAdmin") Администрирование
-          button.user-menu__item(@click.prevent="signout()") Выход
+          router-link.user-menu__item(v-if="!isAuthenticated", tag="button", to="/signin") Вход
+          router-link.user-menu__item(v-if="!isAuthenticated", tag="button", to="/signup") Регистрация
+          router-link.user-menu__item(v-if="isAuthenticated", tag="button", to="/account") Личный кабинет
+          router-link.user-menu__item(tag="button", to="/company") О компании
+          router-link.user-menu__item(v-if="isAuthenticated && isAdmin", tag="button", to="/admin") Администрирование
+          button.user-menu__item(v-if="isAuthenticated", @click.prevent="signout()") Выход
 </template>
 
 <script>
@@ -41,6 +45,9 @@ export default {
   },
 
   computed: {
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated
+    },
     login() {
       return this.$store.getters.login
     },
@@ -64,7 +71,7 @@ export default {
 
     &_active
       .user-triangle
-      transform: rotateX(180deg)
+        transform: rotateX(180deg)
 
       div.user-menu
         display: block

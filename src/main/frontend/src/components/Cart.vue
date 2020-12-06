@@ -1,78 +1,84 @@
 <template lang="pug">
-  .cart-popup
+  .cart
+    .cart-popup
 
-    .cart-close
-      button.cart-close__btn(@click.prevent="hideCart()") &times;
+      .cart-close
+        button.cart-close__btn(@click.prevent="hideCart()") &times;
 
-    .cart-items__no(v-if="cartItems.length < 1") Ваша корзина пуста
+      .cart-items__no(v-if="cartItems.length < 1") Ваша корзина пуста
 
-    .cart-items(v-else)
-      .cart-item(v-for="dish in cartItems")
-        .cart-item__block
-          .cart-item__main
+      .cart-items(v-else)
+        .cart-item(v-for="dish in cartItems")
+          .cart-item__block
+            .cart-item__main
 
-            .cart-item__img(
-              v-if="!!dish.imageAddress"
-              :style="{'background-image': `url(http://localhost:8087/${dish.imageAddress})`}"
-            )
-            .cart-item__img(v-else)
-              img(src="../assets/img/dish-default.svg", alt="Dish image")
+              .cart-item__img(
+                v-if="!!dish.imageAddress"
+                :style="{'background-image': `url(http://localhost:8087/${dish.imageAddress})`}"
+              )
+              .cart-item__img(v-else)
+                img(src="../assets/img/dish-default.svg", alt="Dish image")
 
-            .cart-item__text
-              .cart-item__info
-                .cart-item__price {{ dish.price }} Р
-                .cart-item__name {{ dish.name }}
+              .cart-item__text
+                .cart-item__info
+                  .cart-item__price {{ dish.price }} Р
+                  .cart-item__name {{ dish.name }}
 
-                .cart-item__number
-                  button.cart-number__btn(
-                    @click.prevent="decrementOrder(dish)",
-                    :disabled="dish.amount <= 0 || buttonsDisabled"
-                  ) -
-                  input.cart-number__value(
-                    type="text",
-                    v-model.trim="dish.amount",
-                    v-mask="'##'",
-                    @focusin="rememberOldVal(dish)",
-                    @focusout="checkOrder(dish)",
-                    :disabled="buttonsDisabled"
-                  )
-                  button.cart-number__btn(
-                    @click.prevent="incrementOrder(dish)",
-                    :disabled="dish.amount >= 99 || buttonsDisabled"
-                  ) +
+                  .cart-item__number
+                    button.cart-number__btn(
+                      @click.prevent="decrementOrder(dish)",
+                      :disabled="dish.amount <= 0 || buttonsDisabled"
+                    ) -
+                    input.cart-number__value(
+                      type="text",
+                      v-model.trim="dish.amount",
+                      v-mask="'##'",
+                      @focusin="rememberOldVal(dish)",
+                      @focusout="checkOrder(dish)",
+                      :disabled="buttonsDisabled"
+                    )
+                    button.cart-number__btn(
+                      @click.prevent="incrementOrder(dish)",
+                      :disabled="dish.amount >= 99 || buttonsDisabled"
+                    ) +
 
-                button.cart-item__fav(@click.prevent="toggleFavourite(dish)", v-if="dish.favourite")
-                  .cart-fav__img
-                    img(src="../assets/img/star-active.svg", alt="Star image")
-                  .cart-fav__text В избранном
+                  button.cart-item__fav(@click.prevent="toggleFavourite(dish)", v-if="dish.favourite")
+                    .cart-fav__img
+                      img(src="../assets/img/star-active.svg", alt="Star image")
+                    .cart-fav__text В избранном
 
-                button.cart-item__fav.cart-item__fav_active(@click.prevent="toggleFavourite(dish)", v-else)
-                  .cart-fav__img
-                    img(src="../assets/img/star.svg", alt="Star image")
-                  .cart-fav__text В избранное
+                  button.cart-item__fav.cart-item__fav_active(@click.prevent="toggleFavourite(dish)", v-else)
+                    .cart-fav__img
+                      img(src="../assets/img/star.svg", alt="Star image")
+                    .cart-fav__text В избранное
 
-          button.cart-item__delete(@click.prevent="deleteOrder(dish)") &times;
+            button.cart-item__delete(@click.prevent="deleteOrder(dish)") &times;
 
-        .cart-item__sum
-          div Всего: <span class="cart-sum__value">{{ dish.price * dish.amount }}</span> Р
+          .cart-item__sum
+            div Всего: <span class="cart-sum__value">{{ dish.price * dish.amount }}</span> Р
 
-    .cart-price
-      .cart-price__line.cart-price__sum
-        .cart-price__text Итого
-        .cart-price__value <span class="cart-value__value">{{ currentSum }}</span> Р
+      .cart-price
+        .cart-price__line.cart-price__sum
+          .cart-price__text Итого
+          .cart-price__value <span class="cart-value__value">{{ currentSum }}</span> Р
 
-    .cart-buttons
-      button.btn.btn_o(
-        @click.prevent="clearCart()",
-        :disabled="cartItems.length < 1"
-      ) Очистить корзину
-      button.btn(
-        @click.prevent="confirmOrder()",
-        :disabled="cartItems.length < 1 || buttonsDisabled"
-      ) Подтвердить заказ
+      .cart-buttons
+        button.btn.btn_o(
+          @click.prevent="clearCart()",
+          :disabled="cartItems.length < 1"
+        ) Очистить корзину
+        button.btn(
+          @click.prevent="showConfirm()",
+          :disabled="cartItems.length < 1 || buttonsDisabled"
+        ) Подтвердить заказ
+
+    .cart-overlay
+      OrderConfirmation
 </template>
 
 <script>
+import OrderConfirmation from './OrderConfirmation'
+
 export default {
 
   data() {
@@ -169,21 +175,9 @@ export default {
       }
     },
 
-    //todo
-    confirmOrder() {
-      // dispatch some confirming method
-      this.$store.dispatch('CONFIRM_ORDER')
-          .then(resp => {
-                const cart = document.querySelector('.cart-popup')
-                setTimeout(() => cart.style.display = 'none', 3000)
-              },
-              err => {
-                console.log('Error on sending order: ' + err)
-                this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
-                setTimeout(() => {
-                  this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-                }, 5000)
-              })
+    showConfirm() {
+      const confirm = document.querySelector('.cart-overlay')
+      confirm.style.display = 'flex'
     }
   },
 
@@ -199,6 +193,10 @@ export default {
       }
       return sum
     }
+  },
+
+  components: {
+    OrderConfirmation
   }
 
 }
@@ -403,6 +401,20 @@ export default {
 
     .btn:first-child
       margin-right: 20px
+
+
+  &-overlay
+    display: none
+    justify-content: center
+    align-items: center
+    width: 100vw
+    height: 100vh
+    overflow: hidden
+    background-color: rgba(255, 255, 255, 0.7)
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 25
 
 @media(max-width: 992px)
   html

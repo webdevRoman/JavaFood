@@ -229,34 +229,23 @@ export default {
       })
     },
 
-    // todo:
-    CONFIRM_ORDER({commit}) {
+    CONFIRM_ORDER({commit, getters}, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        commit('CONFIRM_ORDER')
-        commit('SET_PROCESSING', false)
-        resolve()
-        // let parameters = { data: { date: getters.date, id: data.dish.id }, method: 'POST' }
-        // if (data.amount != 0) {
-        //   if (data.amount >= data.dish.amount)
-        //     parameters.url = '/backend/modules/basket/add'
-        //   else
-        //     parameters.url = '/backend/modules/basket/reduce'
-        //   parameters.data.amount = data.amount
-        // } else {
-        //   parameters.url = '/backend/modules/basket/delete'
-        // }
-        // axios(parameters)
-        // .then(resp => {
-        //   data.dish.amount = data.amount
-        //   commit('SET_ORDER', data)
-        //   commit('SET_PROCESSING', false)
-        //   resolve()
-        // })
-        // .catch(err => {
-        //   commit('SET_PROCESSING', false)
-        //   reject(err)
-        // })
+        axios({
+          url: '/api/order',
+          method: 'POST',
+          data: { userLogin: getters.login, address: payload.address, deliveryTime: payload.deliveryTime }
+        })
+          .then(resp => {
+            commit('CLEAR_ORDER')
+            commit('SET_PROCESSING', false)
+            resolve()
+          })
+          .catch(err => {
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
       })
     }
   },

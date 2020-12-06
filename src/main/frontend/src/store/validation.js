@@ -7,7 +7,8 @@ export default {
     nameMask: /^[А-Яа-яё]{0,35}$/,
     loginMask: /^[A-Za-z0-9]{0,35}$/,
     passwordMask: /^[A-Za-z0-9]{6,25}$/,
-    phoneMask: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/
+    phoneMask: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
+    timeMask: /^\d{2}:\d{2}$/
   },
 
 
@@ -69,6 +70,22 @@ export default {
         Vue.set(state.errors, 'phone', 'empty')
       } else if (!phone.match(state.phoneMask)) {
         Vue.set(state.errors, 'phone', 'wrong')
+      }
+    },
+
+    CHECK_ADDRESS(state, address) {
+      Vue.set(state.errors, 'address', undefined)
+      if (address.length == 0) {
+        Vue.set(state.errors, 'address', 'empty')
+      }
+    },
+
+    CHECK_TIME(state, time) {
+      Vue.set(state.errors, 'time', undefined)
+      if (time.length == 0) {
+        Vue.set(state.errors, 'time', 'empty')
+      } else if (!time.match(state.timeMask)) {
+        Vue.set(state.errors, 'time', 'wrong')
       }
     },
 
@@ -141,6 +158,26 @@ export default {
       return new Promise((resolve) => {
         if (getters.errors.phone != undefined)
           resolve(getters.errors.phone)
+        else
+          resolve('correct')
+      })
+    },
+
+    CHECK_ADDRESS({commit, getters}, address) {
+      commit('CHECK_ADDRESS', address)
+      return new Promise((resolve) => {
+        if (getters.errors.address != undefined)
+          resolve(getters.errors.address)
+        else
+          resolve('correct')
+      })
+    },
+
+    CHECK_TIME({commit, getters}, time) {
+      commit('CHECK_TIME', time)
+      return new Promise((resolve) => {
+        if (getters.errors.time != undefined)
+          resolve(getters.errors.time)
         else
           resolve('correct')
       })

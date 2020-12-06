@@ -3,6 +3,7 @@ package ru.rgrabelnikov.javafood.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -27,10 +28,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
         .authorizeRequests()
         .antMatchers("/api/*/admin*").hasRole("ADMIN")
-        .antMatchers("/api/*").authenticated()
-        .antMatchers("/api/auth/*", "/").permitAll()
+        .antMatchers(
+            "/api/basket", "/api/basket/add", "/api/basket/amount", "/api/basket/dish", "/api/basket/basket",
+            "/api/favourite",
+            "/api/order",
+            "/api/user", "/api/user/password"
+        ).authenticated()
+        .antMatchers("/api/auth/*", "/", "/api/dish", "/api/company").permitAll()
         .and()
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//        .antMatchers("/api/*").authenticated()
+
 //    .antMatchers("/api/basket*", "/api/company", "/api/dish", "/api/favourite", "/api/user", "/api/user/password").hasRole("USER")
 //    .antMatchers("/api/admin/*", "/api/user/admin*", "/api/dish/admin*").hasRole("ADMIN")
 //        .antMatchers("/api/admin/*", "/api/user/admin", "/api/user/admin/*", "/api/dish/admin", "/api/dish/admin/*").hasRole("ADMIN")

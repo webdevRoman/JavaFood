@@ -10,11 +10,7 @@ export default {
     middleName: '',
     phone: '',
     token: '',
-    isAdmin: false,
-    // todo:
-    order: true,
-    start: null,
-    end: null
+    isAdmin: false
   },
 
 
@@ -125,18 +121,6 @@ export default {
       return new Promise((resolve, reject) => {
         commit('AUTH_LOGOUT')
         resolve()
-        // commit('SET_PROCESSING', true)
-        // const url = 'api/auth/logout'
-        // axios({ url: url, method: 'POST' })
-        // .then(resp => {
-        //   commit('AUTH_LOGOUT')
-        //   commit('SET_PROCESSING', false)
-        //   resolve()
-        // })
-        // .catch(err => {
-        //   commit('SET_PROCESSING', false)
-        //   reject(err)
-        // })
       })
     },
 
@@ -205,25 +189,7 @@ export default {
             reject(err)
           })
       })
-    },
-
-    // todo:
-    SEND_EMAIL({commit}, payload) {
-      return new Promise((resolve, reject) => {
-        commit('SET_PROCESSING', true)
-        // const url = '/backend/modules/auth/reset-request'
-        const url = '/auth/reset-request'             // SHOW!!!
-        axios({url: url, data: payload, method: 'POST'})
-          .then(resp => {
-              commit('SET_PROCESSING', false)
-              resolve()
-            },
-            err => {
-              commit('SET_PROCESSING', false)
-              reject(err)
-            })
-      })
-    },
+    }
   },
 
 
@@ -234,10 +200,6 @@ export default {
     middleName: state => state.middleName,
     phone: state => state.phone,
     isAuthenticated: state => !!state.token,
-    isAdmin: state => state.isAdmin,
-    // todo:
-    order: state => state.order,
-    start: state => state.start,
-    end: state => state.end,
+    isAdmin: state => state.isAdmin
   }
 }

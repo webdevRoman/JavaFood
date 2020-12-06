@@ -5,10 +5,7 @@ import Store from '../store/index'
 // import Home from '../views/Home.vue'
 // import Account from '../views/Account.vue'
 // import SignIn from '../views/SignIn.vue'
-// import Password from '../views/Password.vue'
 // import SignUp from '../views/SignUp.vue'
-// import EmailConfirmation from '../views/EmailConfirmation.vue'
-// import PasswordConfirmation from '../views/PasswordConfirmation.vue'
 // import Admin from '../views/Admin.vue'
 // import Page404 from '../views/404.vue'
 
@@ -40,9 +37,8 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/Home.vue'),
+    component: () => import('../views/Home.vue')
     // component: Home,
-    beforeEnter: ifAuthenticated
   },
   {
     path: '/account',
@@ -52,17 +48,15 @@ const routes = [
     beforeEnter: ifAuthenticated
   },
   {
+    path: '/company',
+    name: 'company',
+    component: () => import('../views/Company.vue')
+  },
+  {
     path: '/signin',
     name: 'signin',
     component: () => import('../views/SignIn.vue'),
     // component: SignIn,
-    beforeEnter: ifNotAuthenticated
-  },
-  {
-    path: '/password',
-    name: 'password',
-    component: () => import('../views/Password.vue'),
-    // component: Password,
     beforeEnter: ifNotAuthenticated
   },
   {

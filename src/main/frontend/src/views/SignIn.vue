@@ -28,7 +28,6 @@
               img(src="../assets/img/eye.svg", alt="Eye")
             button.form-password__eye(v-if="passwordFocus && passwordShow", @click.prevent="togglePasswordShow()")
               img(src="../assets/img/eye-closed.svg", alt="Closed eye")
-          button.signin-form__forget(@click.prevent="goToPassword()") Забыли пароль?
           .form-error(v-if="passwordError != ''") {{ passwordError }}
           .form-error(v-if="authError != ''") {{ authError }}
 
@@ -63,11 +62,6 @@ export default {
   },
 
   methods: {
-    goToPassword() {
-      this.$store.dispatch('CLEAR_ERRORS', 'all')
-      this.$router.push('/password')
-    },
-
     goToSignup() {
       this.$store.dispatch('CLEAR_ERRORS', 'all')
       this.$router.push('/signup')

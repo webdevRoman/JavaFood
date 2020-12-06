@@ -18,10 +18,11 @@
               @click.prevent="showFavourites = false"
             ) Меню
             li.nav-item(
+              v-if="isAuthenticated",
               :class="{'nav-item_active': showFavourites}",
               @click.prevent="showFavourites = true"
             ) Избранное
-            li.nav-item(@click.prevent="showCart()")
+            li.nav-item(v-if="isAuthenticated", @click.prevent="showCart()")
               button.cart
                 .cart-img
                   img(src="../assets/img/cart.svg", alt="Cart image")
@@ -57,6 +58,7 @@ import Cart from '../components/Cart'
 import Favourites from '../components/Favourites'
 import Dishes from '../components/Dishes'
 import Footer from '../components/Footer'
+import Store from "../store";
 
 export default {
 
@@ -91,6 +93,10 @@ export default {
   },
 
   computed: {
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated
+    },
+
     cartItems() {
       return this.$store.getters.cart
     },
@@ -115,7 +121,20 @@ export default {
     }
   },
 
-  beforeCreate() {
+  created() {
+    this.$store.dispatch('CHECK_AUTHORIZED').catch(err => {
+      if (err) {
+        console.log("Authorization checker rejected: " + err.message)
+        this.$store.dispatch(
+            'SET_NOTIFICATION',
+            {msg: `Ошибка проверки авторизации: ${err.message}`, err: true}
+        )
+        setTimeout(() => {
+          this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+        }, 5000)
+      }
+    })
+
     this.$store.dispatch('LOAD_DISHES').catch(err => {
       console.log("Dishes loader rejected: " + err.message)
       this.$store.dispatch(
@@ -126,26 +145,30 @@ export default {
         this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
       }, 5000)
     })
-    this.$store.dispatch('LOAD_FAVOURITES').catch(err => {
-      console.log("Favourites loader rejected: " + err.message)
-      this.$store.dispatch(
-          'SET_NOTIFICATION',
-          { msg: `Ошибка при загрузке избранного: ${err.message}`, err: true }
-      )
-      setTimeout(() => {
-        this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-      }, 5000)
-    })
-    this.$store.dispatch('LOAD_CART').catch(err => {
-      console.log("Cart loader rejected: " + err.message)
-      this.$store.dispatch(
-          'SET_NOTIFICATION',
-          { msg: `Ошибка при загрузке корзины: ${err.message}`, err: true }
-      )
-      setTimeout(() => {
-        this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-      }, 5000)
-    })
+
+    if (this.isAuthenticated) {
+      this.$store.dispatch('LOAD_FAVOURITES').catch(err => {
+        console.log("Favourites loader rejected: " + err.message)
+        this.$store.dispatch(
+            'SET_NOTIFICATION',
+            {msg: `Ошибка при загрузке избранного: ${err.message}`, err: true}
+        )
+        setTimeout(() => {
+          this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+        }, 5000)
+      })
+
+      this.$store.dispatch('LOAD_CART').catch(err => {
+        console.log("Cart loader rejected: " + err.message)
+        this.$store.dispatch(
+            'SET_NOTIFICATION',
+            {msg: `Ошибка при загрузке корзины: ${err.message}`, err: true}
+        )
+        setTimeout(() => {
+          this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+        }, 5000)
+      })
+    }
   },
 
   components: {
