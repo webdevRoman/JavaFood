@@ -1,5 +1,5 @@
 <template lang="pug">
-  div
+  .home
     Header
 
     .navigation
@@ -14,13 +14,17 @@
             .nav-burger
           ul.nav
             li.nav-item(
-              :class="{'nav-item_active': !showFavourites}",
-              @click.prevent="showFavourites = false"
+              :class="{'nav-item_active': shownCompany}",
+              @click.prevent="showCompany()"
+            ) О компании
+            li.nav-item(
+              :class="{'nav-item_active': !shownCompany && !shownFavourites}",
+              @click.prevent="showMenu()"
             ) Меню
             li.nav-item(
               v-if="isAuthenticated",
-              :class="{'nav-item_active': showFavourites}",
-              @click.prevent="showFavourites = true"
+              :class="{'nav-item_active': shownFavourites}",
+              @click.prevent="showFavourites()"
             ) Избранное
             li.nav-item(v-if="isAuthenticated", @click.prevent="showCart()")
               button.cart
@@ -30,11 +34,20 @@
 
       Cart
 
-    .image(:class="{'image_favourites': showFavourites}")
-      img(src="../assets/img/top-dish-1.png", alt="Dish image", v-if="showFavourites")
+    .image(:class="{'image_company': shownCompany, 'image_favourites': shownFavourites}")
+      .company-image__container(v-if="shownCompany")
+        .container
+          .company-image__title Доставка полезной еды
+          .company-image__subtitle Поможем сэкономить время на питание без ущерба для фигуры
+      img(src="../assets/img/top-dish-1.png", alt="Dish image", v-else-if="shownFavourites")
       img(src="../assets/img/top-dish.png", alt="Dish image", v-else)
 
-    Favourites(v-if="showFavourites")
+    Company(v-if="shownCompany")
+    .company-menu(v-if="shownCompany")
+      .company-menu__title Наше меню
+      button.company-menu__link.form-submit(@click.prevent="showMenu()") Смотреть
+
+    Favourites(v-else-if="shownFavourites")
 
     Dishes(v-else)
 
@@ -55,10 +68,10 @@
 <script>
 import Header from '../components/Header'
 import Cart from '../components/Cart'
+import Company from '../components/Company'
 import Favourites from '../components/Favourites'
 import Dishes from '../components/Dishes'
 import Footer from '../components/Footer'
-import Store from "../store";
 
 export default {
 
@@ -66,11 +79,27 @@ export default {
 
   data() {
     return {
-      showFavourites: false
+      shownCompany: false,
+      shownFavourites: false
     }
   },
 
   methods: {
+    showCompany() {
+      this.shownCompany = true
+      this.shownFavourites = false
+    },
+
+    showMenu() {
+      this.shownCompany = false
+      this.shownFavourites = false
+    },
+
+    showFavourites() {
+      this.shownCompany = false
+      this.shownFavourites = true
+    },
+
     showCart() {
       const cart = document.querySelector('.cart-popup')
       cart.style.display = 'block'
@@ -146,6 +175,18 @@ export default {
       }, 5000)
     })
 
+    this.$store.dispatch('LOAD_COMPANY')
+        .catch(err => {
+          console.log("Company loader rejected: " + err.message)
+          this.$store.dispatch(
+              'SET_NOTIFICATION',
+              {msg: `Ошибка при загрузке информации о компании: ${err.message}`, err: true}
+          )
+          setTimeout(() => {
+            this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+          }, 5000)
+        })
+
     if (this.isAuthenticated) {
       this.$store.dispatch('LOAD_FAVOURITES').catch(err => {
         console.log("Favourites loader rejected: " + err.message)
@@ -174,6 +215,7 @@ export default {
   components: {
     Header,
     Cart,
+    Company,
     Favourites,
     Dishes,
     Footer
@@ -292,10 +334,54 @@ export default {
   background-color: $c-middle
   margin-bottom: 50px
 
+  &_company
+    height: auto
+    margin-bottom: 100px
+    .company-image
+      &__container
+        flex-basis: 100%
+        background: no-repeat center url("../assets/img/company-top.jpg") $c-middle
+        background-size: cover
+      &__title
+        max-width: 50%
+        font-weight: bold
+        font-size: 64px
+        color: $c-light
+        line-height: 80px
+        text-transform: uppercase
+        margin-top: 100px
+        margin-bottom: 10px
+      &__subtitle
+        max-width: 50%
+        font-weight: 300
+        font-size: 24px
+        color: $c-light
+        line-height: 30px
+        margin-bottom: 150px
+
   &_favourites
     background-color: #E8ECEF
 
   img
     width: auto
     height: 100%
+
+.company
+  &-menu
+    background: no-repeat center url("../assets/img/company-bot.jpg") $c-middle
+    background-size: cover
+    padding: 210px 0 140px 0
+    display: flex
+    justify-content: center
+    align-items: center
+    flex-direction: column
+    &__title
+      font-weight: bold
+      font-size: 64px
+      color: $c-light
+      line-height: 75px
+      text-transform: uppercase
+      margin-bottom: 30px
+    &__link
+      width: 262px
 </style>

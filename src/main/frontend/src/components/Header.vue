@@ -13,7 +13,6 @@
           router-link.user-menu__item(v-if="!isAuthenticated", tag="button", to="/signin") Вход
           router-link.user-menu__item(v-if="!isAuthenticated", tag="button", to="/signup") Регистрация
           router-link.user-menu__item(v-if="isAuthenticated", tag="button", to="/account") Личный кабинет
-          router-link.user-menu__item(tag="button", to="/company") О компании
           router-link.user-menu__item(v-if="isAuthenticated && isAdmin", tag="button", to="/admin") Администрирование
           button.user-menu__item(v-if="isAuthenticated", @click.prevent="signout()") Выход
 </template>
@@ -31,16 +30,13 @@ export default {
 
     signout() {
       this.$store.dispatch('AUTH_LOGOUT')
-          .then(resp => {
-                this.$router.push('/signin')
-              },
-              err => {
-                console.log('Error on signing out: ' + err)
-                this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
-                setTimeout(() => {
-                  this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-                }, 5000)
-              })
+          .catch(err => {
+            console.log('Error on signing out: ' + err)
+            this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+            setTimeout(() => {
+              this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+            }, 5000)
+          })
     }
   },
 

@@ -8,10 +8,10 @@
         .footer-contacts
           .contacts-item
             .contacts-item__title Доставка:
-            a.contacts-item__contact(href="tel:+73822214111") +7 (3822) 214-111
+            a.contacts-item__contact(href="tel:+73822214111") {{ companyPhone }}
           .contacts-item
             .contacts-item__title Служба поддержки:
-            a.contacts-item__contact(href="mailto:mail@edatomsk.ru") mail@edatomsk.ru
+            a.contacts-item__contact(href="mailto:mail@edatomsk.ru") {{ companyEmail }}
 
         .logo
           | JavaF
@@ -31,6 +31,15 @@ export default {
     scrollToTop() {
       document.body.scrollTop = 0
       document.documentElement.scrollTop = 0
+    }
+  },
+
+  computed: {
+    companyPhone() {
+      return this.$store.getters.companyPhone
+    },
+    companyEmail() {
+      return this.$store.getters.companyEmail
     }
   }
 }

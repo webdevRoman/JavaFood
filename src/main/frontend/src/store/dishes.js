@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import axios from 'axios'
 
 export default {
@@ -73,20 +72,6 @@ export default {
     CLEAR_ORDER(state) {
       state.dishes.forEach(d => d.amount = 0)
       state.dishes = [...state.dishes]
-    },
-
-    // todo:
-    CONFIRM_ORDER(state) {
-      state.acceptOrder = true
-      state.cart = {}
-      for (const key in state.favourites) {
-        Vue.set(state.favourites[key], 'amount', 0)
-      }
-      for (let i = 0; i < state.categories.length; i++) {
-        for (let j = 0; j < state.categories[i].dishes.length; j++) {
-          Vue.set(state.categories[i].dishes[j], 'amount', 0)
-        }
-      }
     }
   },
 
