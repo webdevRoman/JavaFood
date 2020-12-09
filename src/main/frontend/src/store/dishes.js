@@ -46,6 +46,11 @@ export default {
       state.dishes = [...state.dishes]
     },
 
+    CLEAR_FAVOURITES(state) {
+      state.dishes.forEach(d => d.favourite = false)
+      state.dishes = [...state.dishes]
+    },
+
     SET_CART(state, data) {
       if (data && data != 'err') {
         data.forEach(dish => {

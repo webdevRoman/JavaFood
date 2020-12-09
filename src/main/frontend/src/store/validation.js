@@ -36,7 +36,7 @@ export default {
     },
 
     CHECK_OLD_PASSWORD(state, password) {
-      Vue.set(state.errors, 'oldPassword', undefined)       // Change!
+      Vue.set(state.errors, 'oldPassword', undefined)
       if (password.length == 0) {
         Vue.set(state.errors, 'oldPassword', 'empty')
       }

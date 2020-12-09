@@ -17,13 +17,11 @@ public class UserController {
 
   @GetMapping("/admin")
   @JsonView(Views.User.class)
-  public List<User> getDishes() { return userService.getUsers(); }
+  public List<User> getUsers() { return userService.getUsers(); }
 
   @PutMapping
   @JsonView(Views.User.class)
-  public User updateUser(@RequestBody User user) {
-    return userService.updateUser(user);
-  }
+  public User updateUser(@RequestBody User user) { return userService.updateUser(user); }
 
   @PutMapping("/password")
   @JsonView(Views.User.class)
@@ -37,7 +35,7 @@ public class UserController {
     return userService.updateUserRole(user);
   }
 
-  @DeleteMapping
+  @DeleteMapping("/admin")
   public boolean deleteUser(@RequestBody String login) {
     return userService.deleteUser(login);
   }

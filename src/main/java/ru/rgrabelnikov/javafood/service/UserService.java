@@ -58,7 +58,11 @@ public class UserService {
   }
 
   public User updateUser(User user) {
-    User userFromDb = findByLogin(user.getLogin());
+    User userFromDb;
+    if (user.getOldLogin() != null)
+      userFromDb = findByLogin(user.getOldLogin());
+    else
+      userFromDb = findByLogin(user.getLogin());
     if (userFromDb != null) {
       BeanUtils.copyProperties(user, userFromDb, "id", "password", "role");
       userFromDb.setRoleName(userFromDb.getRole().getName().equals("ROLE_USER") ? "user" : "admin");

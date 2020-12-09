@@ -39,6 +39,8 @@ public class User {
   private String roleName;
   @Transient
   private String oldPassword;
+  @Transient
+  private String oldLogin;
 
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }
@@ -62,6 +64,8 @@ public class User {
   public void setRoleName(String roleName) { this.roleName = roleName; }
   public String getOldPassword() { return oldPassword; }
   public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
+  public String getOldLogin() { return oldLogin; }
+  public void setOldLogin(String oldLogin) { this.oldLogin = User.this.oldLogin; }
 
   public User() {}
   public User(String login, String password, Role role, String firstName, String lastName, String midName, String phone) {

@@ -18,7 +18,7 @@ export default {
     SET_USER(state, user) {
       state.login = user.login
       state.name = user.firstName
-      state.surname = user.lasName
+      state.surname = user.lastName
       state.middleName = user.midName
       state.phone = user.phone
       state.token = user.token
@@ -26,6 +26,17 @@ export default {
         state.isAdmin = true
       Vue.$cookies.set('user', user, '1m')
       axios.defaults.headers.common['Authorization'] = 'Bearer ' + user.token
+    },
+
+    UPDATE_USER(state, user) {
+      state.login = user.login
+      state.name = user.firstName
+      state.surname = user.lastName
+      state.middleName = user.midName
+      state.phone = user.phone
+      user.token = state.token
+      user.roleName = state.isAdmin ? 'admin' : 'user'
+      Vue.$cookies.set('user', user, '1m')
     },
 
     AUTH_LOGOUT(state) {
@@ -38,27 +49,12 @@ export default {
       state.isAdmin = false
       Vue.$cookies.remove('user')
       delete axios.defaults.headers.common['Authorization']
-    },
-
-    // todo:
-    SET_USER_ACCOUNT(state, data) {
-      state.name = data.firstname
-      state.surname = data.lastname
-      state.middleName = data.midname
-      state.order = data.order
-      state.start = data.start != null ? data.start.split('/').join('.') : data.start
-      state.end = data.end != null ? data.end.split('/').join('.') : data.end
-      Vue.$cookies.set('username', {
-        name: data.firstname,
-        surname: data.lastname,
-        role: state.isAdmin ? 'admin' : 'user'
-      }, '1m')
     }
   },
 
 
   actions: {
-    CHECK_AUTHORIZED({commit}) {
+    CHECK_AUTHORIZED({commit, dispatch}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
         if (Vue.$cookies.get('user') != null) {
@@ -66,7 +62,7 @@ export default {
           commit('SET_PROCESSING', false)
           resolve()
         } else {
-          commit('AUTH_LOGOUT')
+          dispatch('AUTH_LOGOUT')
           commit('SET_PROCESSING', false)
           reject()
         }
@@ -89,7 +85,7 @@ export default {
       })
     },
 
-    AUTH_REQUEST({commit}, user) {
+    AUTH_REQUEST({commit, dispatch}, user) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
         const url = '/api/auth/login'
@@ -100,17 +96,17 @@ export default {
                 commit('SET_PROCESSING', false)
                 resolve()
               } else if (resp.data === "") {
-                commit('AUTH_LOGOUT')
+                dispatch('AUTH_LOGOUT')
                 commit('SET_PROCESSING', false)
                 reject('password')
               } else {
-                commit('AUTH_LOGOUT')
+                dispatch('AUTH_LOGOUT')
                 commit('SET_PROCESSING', false)
                 reject()
               }
             },
             err => {
-              commit('AUTH_LOGOUT')
+              dispatch('AUTH_LOGOUT')
               commit('SET_PROCESSING', false)
               reject(err)
             })
@@ -120,11 +116,13 @@ export default {
     AUTH_LOGOUT({commit}) {
       return new Promise((resolve, reject) => {
         commit('AUTH_LOGOUT')
+        commit('CLEAR_FAVOURITES')
+        commit('CLEAR_ORDER')
         resolve()
       })
     },
 
-    REG_REQUEST({commit}, user) {
+    REG_REQUEST({commit, dispatch}, user) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
         const url = '/api/auth/register'
@@ -135,57 +133,95 @@ export default {
                 commit('SET_PROCESSING', false)
                 resolve()
               } else if (resp.data === "") {
-                commit('AUTH_LOGOUT')
+                dispatch('AUTH_LOGOUT')
                 commit('SET_PROCESSING', false)
                 reject('login')
               } else {
-                commit('AUTH_LOGOUT')
+                dispatch('AUTH_LOGOUT')
                 commit('SET_PROCESSING', false)
                 reject()
               }
             },
             err => {
-              commit('AUTH_LOGOUT')
+              dispatch('AUTH_LOGOUT')
               commit('SET_PROCESSING', false)
               reject(err)
             })
       })
     },
 
-    // todo:
-    LOAD_ACCOUNT({commit}) {
+    UPDATE_USER({commit, dispatch}, newUser) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        // const url = '/backend/modules/account'
-        const url = '/account'             // SHOW!!!
-        axios({url: url, method: 'GET'})
+        if (newUser.oldPassword && newUser.password) {
+          dispatch('UPDATE_USER_PASSWORD', newUser)
+            .then(resp => {
+              if (resp.data) {
+                dispatch('UPDATE_USER_DATA', newUser)
+                  .then(resp => {
+                    if (resp.data) {
+                      commit('UPDATE_USER', resp.data)
+                      commit('SET_PROCESSING', false)
+                      resolve()
+                    } else {
+                      commit('SET_PROCESSING', false)
+                      reject('Ошибка при обновлении данных пользователя.')
+                    }
+                  })
+                  .catch(err => {
+                    commit('SET_PROCESSING', false)
+                    reject(err)
+                  })
+              } else {
+                commit('SET_PROCESSING', false)
+                reject('Ошибка при обновлении пароля.')
+              }
+            })
+            .catch(err => {
+              commit('SET_PROCESSING', false)
+              reject(err)
+            })
+        } else {
+          dispatch('UPDATE_USER_DATA', newUser)
+            .then(resp => {
+              if (resp.data) {
+                commit('UPDATE_USER', resp.data)
+                commit('SET_PROCESSING', false)
+                resolve()
+              } else {
+                commit('SET_PROCESSING', false)
+                reject('Ошибка при обновлении данных пользователя.')
+              }
+            })
+            .catch(err => {
+              commit('SET_PROCESSING', false)
+              reject(err)
+            })
+        }
+      })
+    },
+
+    // eslint-disable-next-line no-empty-pattern
+    UPDATE_USER_DATA({}, newUser) {
+      return new Promise((resolve, reject) => {
+        axios({url: '/api/user', data: newUser, method: 'PUT'})
           .then(resp => {
-            commit('SET_USER_ACCOUNT', resp.data)
-            commit('SET_PROCESSING', false)
-            resolve()
+            resolve(resp)
           })
           .catch(err => {
-            commit('SET_PROCESSING', false)
             reject(err)
           })
       })
     },
 
-    // todo:
-    UPDATE_USER({commit, dispatch, getters}, data) {
+    // eslint-disable-next-line no-empty-pattern
+    UPDATE_USER_PASSWORD({}, newUser) {
       return new Promise((resolve, reject) => {
-        commit('SET_PROCESSING', true)
-        // const url = '/backend/modules/account/update'
-        const url = '/account/update'             // SHOW!!!
-        axios({url: url, data: data, method: 'POST'})
-          .then(() => {
-            commit('SET_USER_ACCOUNT', data)
-            dispatch('LOAD_CART', getters.date)
-            commit('SET_PROCESSING', false)
-            resolve()
+        axios({url: '/api/user/password', data: newUser, method: 'PUT'})
+          .then(resp => {
+            resolve(resp)
           })
           .catch(err => {
-            commit('SET_PROCESSING', false)
             reject(err)
           })
       })
