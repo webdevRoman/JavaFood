@@ -241,6 +241,7 @@ export default {
   },
 
   getters: {
+    dishes: (state) => state.dishes,
     categories: (state) => {
       const categories = state.dishes.reduce((acc, item) => {
         if (!acc.has(item.dishTypeName))
