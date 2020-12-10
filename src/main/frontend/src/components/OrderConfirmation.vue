@@ -68,6 +68,18 @@ export default {
     hideConfirm() {
       const confirm = document.querySelector('.cart-overlay')
       confirm.style.display = 'none'
+      this.address = ''
+      this.time = ''
+      const date = new Date()
+      let dateStr = `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`
+      this.calendarDate = {
+        selectedDate: dateStr,
+        dateRange: {
+          end: '',
+          start: ''
+        }
+      }
+      this.date = this.formatDateInput(dateStr)
     },
 
     checkForm() {

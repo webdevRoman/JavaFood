@@ -27,6 +27,7 @@ public class OrderService {
     if (orders.size() > 0) {
       return orders.stream().map(order -> {
         OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setId(order.getId());
         orderRequest.setAddress(order.getAddress());
         orderRequest.setDeliveryTime(order.getDeliveryTime());
         Basket basket = basketRepository.findById(order.getBasket().getId()).orElse(null);

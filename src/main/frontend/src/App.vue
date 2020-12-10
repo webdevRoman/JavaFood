@@ -161,6 +161,93 @@ body, button, input, a
         background-color: $c-active
         border: 1px solid $c-active
 
+.overlay
+  display: flex
+  justify-content: center
+  align-items: center
+  width: 100vw
+  min-height: 100vh
+  // change!
+  background-color: rgba(0, 0, 0, 0.5)
+  position: fixed
+  top: 0
+  left: 0
+
+  .popup
+    width: 700px
+    padding: 60px 45px 45px 45px
+    background-color: $c-bg
+    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.35)
+    margin: 0 auto
+    position: relative
+
+    .form
+      &-title
+        font-weight: bold
+        font-size: 24px
+        text-align: center
+        text-transform: uppercase
+        margin-bottom: 50px
+
+      &-inputs
+        display: flex
+        justify-content: space-between
+        flex-wrap: wrap
+        margin-bottom: 45px
+
+      &-block
+        flex-basis: 262px
+        margin-right: 80px
+        margin-bottom: 28px
+
+        &:nth-child(2n)
+          margin-right: 0
+
+        &_error
+          margin-bottom: 50px
+
+        &_last
+          margin-bottom: 0
+        // &-line
+        //   display: flex
+        //   justify-content: space-between
+        // &__item
+        //   &:first-child
+        //     margin-right: 20px
+        //     .form-label
+        //       margin-bottom: 10px
+        &__line
+          display: flex
+          align-items: center
+          // .form-input
+          //   width: 85px
+          span
+            font-weight: 500
+            font-size: 18px
+            margin-left: 10px
+
+        .select
+          width: 262px
+          // font-size: 12px
+          &-container
+            margin-bottom: 0
+
+      &-label
+        &__role
+          margin-bottom: 3px
+
+      &-submit
+        width: 262px
+        margin: 0 auto
+
+    &-close
+      font-size: 38px
+      font-weight: 100
+      color: $c-dark
+      position: absolute
+      top: 5px
+      right: 18px
+
 .notification
   &-popup
     display: flex
