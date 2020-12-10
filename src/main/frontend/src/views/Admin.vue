@@ -8,113 +8,6 @@
     Users(v-if="chosenSection == 'users'")   
 
 
-    //- .admin-main.admin-users(v-if="chosenSection == 'users'")
-    //-   //- form.users-container(action="#", @submit.prevent="saveChanges()")
-    //-   .users-container
-    //-     .users-title Управление пользователями
-    //-     table.users-table
-    //-       tr.users-table__header
-    //-         th.name Фамилия и имя
-    //-         th.email Почта
-    //-         th.role Роль
-    //-         th.status Статус учетной записи
-    //-         th.limit Лимит
-    //-         th(colspan="3")
-    //-       tr.users-table__line(v-for="user in users")
-    //-         //- td.name {{ user.firstname }} {{ user.midname }} {{ user.lastname }}
-    //-         td.name {{ user.firstname }} {{ user.lastname }}
-    //-         td.email {{ user.email }}
-    //-         td.role
-    //-           .select-container
-    //-             v-select.select(v-model="user.role", label="name", index="name", :options="roles", :clearable="false", :searchable="false", @input="changeUserRole(user)")
-    //-               template(v-slot:option="option")
-    //-                 span.select-option {{ option.name }}
-    //-         td.status
-    //-           .select-container
-    //-             v-select.select(v-model="user.status", label="name", index="name", :options="statuses", :clearable="false", :searchable="false", @input="changeUserStatus(user)", :disabled="user.status == 'Подтвержден'")
-    //-               template(v-slot:option="option")
-    //-                 span.select-option {{ option.name }}
-    //-         td.limit(:class="{'form-block_error': userLimitError(user) != ''}")
-    //-           input.form-input(type="text", v-model="user.limit", v-mask="'####'", @focusout="changeUserLimit(user)")
-    //-           .form-error(v-if="userLimitError(user) != ''") {{ userLimitError(user) }}
-    //-         td.no-order.form-block.account-form__block.account-form__block__checkbox
-    //-           input.form-input.account-form__checkbox(type="checkbox", :id="`account-checkbox-${user.id}`", @change.prevent="toggleCalendar(user)")
-    //-           label.form-label(:for="`account-checkbox-${user.id}`", :class="{'form-label__checkbox_active': !user.order}") Не заказывать
-    //-         td.no-order.form-block.account-form__block.account-form__block__calendar(:class="[calendarClass(user.id), {'form-block_disabled': user.order, 'form-block_error': calendarError(user) != ''}]")
-    //-           label.form-label(@click.prevent="showCalendar(user)") Начало и окончание периода
-    //-           .inputs-container
-    //-             input.form-input(type="text", :id="`account-date-start-${user.id}`", v-mask="'##.##.####'", v-model.trim="user.inputsDates.start", @focus="showCalendar(user)", @focusout="checkInputs(user)", , :disabled="user.order")
-    //-             .account-form__separator
-    //-             input.form-input(type="text", :id="`account-date-end-${user.id}`", v-mask="'##.##.####'", v-model.trim="user.inputsDates.end", @focus="showCalendar(user)", @focusout="checkInputs(user)", , :disabled="user.order")
-    //-           FunctionalCalendar.calendar.account-form__calendar(:id="`account-form__calendar-${user.id}`", v-model="user.calendarDates", :configs="calendarConfig2")
-    //-           .form-error(v-if="calendarError(user) != ''") {{ calendarError(user) }}
-    //-         td.delete
-    //-           button.btn(@click.prevent="deleteUser(user.id)") Удалить
-    //-     button.users-btn(@click.prevent="showPopup = true") +
-    //-     .users-bottom
-    //-       .form-block
-    //-         label.form-label(for="users-limit") Установить лимит всем пользователями
-    //-         .form-block__line
-    //-           input.form-input(type="text", v-model.trim="allLimit", v-mask="'#####'", @change="setAllLimit()")
-    //-           span Р
-    //-       //- button.form-submit(type="submit") Сохранить изменения
-
-    //- .overlay(v-if="showPopup")
-    //-   form.form.popup.popup-admin(action="#", @submit.prevent="checkForm()")
-    //-     .form-title Добавление пользователя
-    //-     .form-inputs
-    //-       .form-block(:class="{'form-block_error': surnameError != ''}")
-    //-         label.form-label(for="account-surname") Фамилия
-    //-         input.form-input(type="text", id="account-surname", v-model.trim="surname", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkSurname()")
-    //-         .form-error(v-if="surnameError != ''") {{ surnameError }}
-    //-       .form-block(:class="{'form-block_error': nameError != ''}")
-    //-         label.form-label(for="account-name") Имя
-    //-         input.form-input(type="text", id="account-name", v-model.trim="name", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkName()")
-    //-         .form-error(v-if="nameError != ''") {{ nameError }}
-    //-       .form-block(:class="{'form-block_error': middlenameError != ''}")
-    //-         label.form-label(for="account-middlename") Отчество (не обязательно)
-    //-         input.form-input(type="text", id="account-middlename", v-model.trim="middlename", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkMiddlename()")
-    //-         .form-error(v-if="middlenameError != ''") {{ middlenameError }}
-    //-       .form-block(:class="{'form-block_error': emailError != ''}")
-    //-         label.form-label(for="account-email") Корпоративная почта SmartWorld
-    //-         input.form-input(type="text", id="account-email", placeholder="@smartworld.team", v-model.trim="email", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkEmail()")
-    //-         .form-error(v-if="emailError != ''") {{ emailError }}
-    //-       .form-block.form-block_last
-    //-         label.form-label.form-label__role Роль пользователя
-    //-         .select-container
-    //-           v-select.select(v-model="role", label="name", index="name", :options="roles", :clearable="false", :searchable="false")
-    //-             template(v-slot:option="option")
-    //-               span.select-option {{ option.name }}
-    //-       .form-block.form-block_last(:class="{'form-block_error': limitError != ''}")
-    //-         label.form-label(for="account-limit") Лимит заказа
-    //-         .form-block__line
-    //-           input.form-input(type="text", id="account-limit", v-model.trim="limit", v-mask="'#####'", @focusout="checkLimit()")
-    //-           span Р
-    //-         .form-error(v-if="limitError != ''") {{ limitError }}
-    //-       //- .form-block.form-block-line(:class="{'form-block_error': limitError != ''}")
-    //-       //-   .form-block__item
-    //-       //-     label.form-label Роль пользователя
-    //-       //-     .select-container
-    //-       //-       v-select.select(v-model="role", label="name", index="name", :options="roles", :clearable="false", :searchable="false")
-    //-       //-         template(v-slot:option="option")
-    //-       //-           span.select-option {{ option.name }}
-    //-       //-   .form-block__item
-    //-       //-     label.form-label(for="account-limit") Лимит заказа
-    //-       //-     .form-block__line
-    //-       //-       input.form-input(type="text", id="account-limit", v-model.trim="limit", v-mask="'#####'", @focusout="checkLimit()")
-    //-       //-       span Р
-    //-       //-   .form-error(v-if="limitError != ''") {{ limitError }}
-    //-       //- .form-block(:class="{'form-block_error': passwordError != ''}")
-    //-       //-   label.form-label(for="account-password") Пароль
-    //-       //-   .form-password
-    //-       //-     input.form-input(type="password", id="account-password", v-model.trim="password", @focusout="checkPassword()")
-    //-       //-     button.form-password__eye(v-if="passwordFocus && !passwordShow", @click.prevent="togglePasswordShow()")
-    //-       //-       img(src="../assets/img/eye.svg", alt="Eye")
-    //-       //-     button.form-password__eye(v-if="passwordFocus && passwordShow", @click.prevent="togglePasswordShow()")
-    //-       //-       img(src="../assets/img/eye-closed.svg", alt="Closed eye")
-    //-       //-   .form-error(v-if="passwordError != ''") {{ passwordError }}
-    //-     button.form-submit(type="submit", :disabled="errors") Добавить пользователя
-    //-     button.popup-close(@click.prevent="hidePopup()") &times;
     .notification-popup(v-if="notification.msg != ''")
       .notification-info {{ notification.msg }}
       .notification-img(v-if="notification.err")
@@ -122,6 +15,7 @@
       .notification-img(v-else)
         img(src="../assets/img/tick-success.svg", alt="Tick")
       button.notification-close(@click.prevent="closeNotification()") &times;
+      
     .processing-overlay(v-if="processing")
       .processing-indicator
 </template>
@@ -226,16 +120,7 @@ export default {
           })
     },
 
-    changeUserStatus(user) {
-      this.$store.dispatch('CHANGE_USER_STATUS', user)
-          .catch(err => {
-            console.log('Error on changing user status: ' + err)
-            this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
-            setTimeout(() => {
-              this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-            }, 5000)
-          })
-    },
+
 
     checkInputs(user) {
       const startInput = document.getElementById(`account-date-start-${user.id}`)

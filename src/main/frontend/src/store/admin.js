@@ -17,71 +17,71 @@ export default {
       else
         user.role = 'Подтвержден'
     },
-    SET_USERS(state, data) {
-      function formatDateCalendar(dateStr) {
-        let dateArr = dateStr.split('.')
-        if (dateArr[1].length > 1 && dateArr[1][0] == '0') {
-          dateArr[1] = dateArr[1][1]
-        }
-        if (dateArr[2].length > 1 && dateArr[2][0] == '0') {
-          dateArr[2] = dateArr[2][1]
-        }
-        return dateArr.join('.')
-      }
-      function formatDateInputs(dateStr) {
-        let dateArr = dateStr.split('.')
-        return dateArr[2] + '.' + dateArr[1] + '.' + dateArr[0]
-      }
-      let loadedUsers = []
-      data.users.forEach(user => {
-        let newUser = Object.assign({}, user)
-        if (user.role == 'admin') {
-          newUser.role = 'Администратор'
-        } else if (user.role == 'user' || user.role == null) {
-          newUser.role = 'Пользователь'
-        } else if (user.role == 'banned') {
-          newUser.role = 'Удален'
-        }
-        newUser.status = data.statuses[user.status].name
-        if (user.start == null || user.end == null) {
-          newUser.order = true
-          newUser.calendarDates = {
-            dateRange: {
-              start: {
-                date: false
-              },
-              end: {
-                date: false
-              }
-            }
-          }
-          newUser.inputsDates = {
-            start: '',
-            end: ''
-          }
-        } else {
-          newUser.order = false
-          newUser.calendarDates = {
-            dateRange: {
-              start: {
-                date: formatDateCalendar(user.start)
-              },
-              end: {
-                date: formatDateCalendar(user.end)
-              }
-            }
-          }
-          newUser.inputsDates = {
-            start: formatDateInputs(user.start),
-            end: formatDateInputs(user.end)
-          }
-        }
-        delete newUser.start
-        delete newUser.end
-        loadedUsers.push(newUser)
-      })
-      state.users = loadedUsers
-    },
+    // SET_USERS(state, data) {
+    //   function formatDateCalendar(dateStr) {
+    //     let dateArr = dateStr.split('.')
+    //     if (dateArr[1].length > 1 && dateArr[1][0] == '0') {
+    //       dateArr[1] = dateArr[1][1]
+    //     }
+    //     if (dateArr[2].length > 1 && dateArr[2][0] == '0') {
+    //       dateArr[2] = dateArr[2][1]
+    //     }
+    //     return dateArr.join('.')
+    //   }
+    //   function formatDateInputs(dateStr) {
+    //     let dateArr = dateStr.split('.')
+    //     return dateArr[2] + '.' + dateArr[1] + '.' + dateArr[0]
+    //   }
+    //   let loadedUsers = []
+    //   data.users.forEach(user => {
+    //     let newUser = Object.assign({}, user)
+    //     if (user.role == 'admin') {
+    //       newUser.role = 'Администратор'
+    //     } else if (user.role == 'user' || user.role == null) {
+    //       newUser.role = 'Пользователь'
+    //     } else if (user.role == 'banned') {
+    //       newUser.role = 'Удален'
+    //     }
+    //     newUser.status = data.statuses[user.status].name
+    //     if (user.start == null || user.end == null) {
+    //       newUser.order = true
+    //       newUser.calendarDates = {
+    //         dateRange: {
+    //           start: {
+    //             date: false
+    //           },
+    //           end: {
+    //             date: false
+    //           }
+    //         }
+    //       }
+    //       newUser.inputsDates = {
+    //         start: '',
+    //         end: ''
+    //       }
+    //     } else {
+    //       newUser.order = false
+    //       newUser.calendarDates = {
+    //         dateRange: {
+    //           start: {
+    //             date: formatDateCalendar(user.start)
+    //           },
+    //           end: {
+    //             date: formatDateCalendar(user.end)
+    //           }
+    //         }
+    //       }
+    //       newUser.inputsDates = {
+    //         start: formatDateInputs(user.start),
+    //         end: formatDateInputs(user.end)
+    //       }
+    //     }
+    //     delete newUser.start
+    //     delete newUser.end
+    //     loadedUsers.push(newUser)
+    //   })
+    //   state.users = loadedUsers
+    // },
     DELETE_USER(state, id) {
       let arrIndex
       for (let i = 0; i < state.users.length; i++) {
@@ -131,22 +131,22 @@ export default {
         })
       })
     },
-    LOAD_USERS({commit}) {
-      return new Promise((resolve, reject) => {
-        commit('SET_PROCESSING', true)
-        // axios({ url: '/backend/modules/admin/index', method: 'GET' })
-        axios({ url: '/admin/index', method: 'GET' })             // SHOW!!!
-        .then(resp => {
-          commit('SET_USERS', resp.data)
-          commit('SET_PROCESSING', false)
-          resolve()
-        })
-        .catch(err => {
-          commit('SET_PROCESSING', false)
-          reject(err)
-        })
-      })
-    },
+    // LOAD_USERS({commit}) {
+    //   return new Promise((resolve, reject) => {
+    //     commit('SET_PROCESSING', true)
+    //     // axios({ url: '/backend/modules/admin/index', method: 'GET' })
+    //     axios({ url: '/admin/index', method: 'GET' })             // SHOW!!!
+    //     .then(resp => {
+    //       commit('SET_USERS', resp.data)
+    //       commit('SET_PROCESSING', false)
+    //       resolve()
+    //     })
+    //     .catch(err => {
+    //       commit('SET_PROCESSING', false)
+    //       reject(err)
+    //     })
+    //   })
+    // },
     CHANGE_USER_ROLE({commit}, user) {
       return new Promise((resolve, reject) => {
         // axios({ url: '/backend/modules/admin/reset-role', data: { id: user.id, role: user.role == 'Администратор' ? 'admin' : 'user' }, method: 'POST' })
