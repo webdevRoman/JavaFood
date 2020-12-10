@@ -10,7 +10,8 @@ export default {
     middleName: '',
     phone: '',
     token: '',
-    isAdmin: false
+    isAdmin: false,
+    users:[]
   },
 
 
