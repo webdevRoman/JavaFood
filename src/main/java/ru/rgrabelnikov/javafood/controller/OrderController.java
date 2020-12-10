@@ -5,11 +5,16 @@ import org.springframework.web.bind.annotation.*;
 import ru.rgrabelnikov.javafood.entity.OrderRequest;
 import ru.rgrabelnikov.javafood.service.OrderService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/order")
 public class OrderController {
   @Autowired
   private OrderService orderService;
+
+  @GetMapping("/admin")
+  public List<OrderRequest> getOrders() { return orderService.getOrders(); }
 
   @PostMapping
   public boolean createOrder(@RequestBody OrderRequest orderRequest) {

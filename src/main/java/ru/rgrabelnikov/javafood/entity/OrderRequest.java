@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class OrderRequest {
   private String userLogin;
   private String address;
+  private String phone;
   @JsonFormat(pattern="dd.MM.yyyy HH:mm")
   private LocalDateTime deliveryTime;
 
@@ -14,6 +15,8 @@ public class OrderRequest {
   public void setUserLogin(String userLogin) { this.userLogin = userLogin; }
   public String getAddress() { return address; }
   public void setAddress(String address) { this.address = address; }
+  public String getPhone() { return phone; }
+  public void setPhone(String phone) { this.phone = phone; }
   public LocalDateTime getDeliveryTime() { return deliveryTime; }
   public void setDeliveryTime(LocalDateTime deliveryTime) { this.deliveryTime = deliveryTime; }
 
@@ -21,6 +24,12 @@ public class OrderRequest {
   public OrderRequest(String userLogin, String address, LocalDateTime deliveryTime) {
     this.userLogin = userLogin;
     this.address = address;
+    this.deliveryTime = deliveryTime;
+  }
+  public OrderRequest(String userLogin, String address, String phone, LocalDateTime deliveryTime) {
+    this.userLogin = userLogin;
+    this.address = address;
+    this.phone = phone;
     this.deliveryTime = deliveryTime;
   }
 }

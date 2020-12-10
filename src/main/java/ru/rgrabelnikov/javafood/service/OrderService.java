@@ -22,6 +22,26 @@ public class OrderService {
   @Autowired
   private UserRepository userRepository;
 
+  public List<OrderRequest> getOrders() {
+    List<Order> orders = orderRepository.findAll();
+    if (orders.size() > 0) {
+      return orders.stream().map(order -> {
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setAddress(order.getAddress());
+        orderRequest.setDeliveryTime(order.getDeliveryTime());
+        Basket basket = basketRepository.findById(order.getBasket().getId()).orElse(null);
+        if (basket != null) {
+          User user = basket.getUser();
+          orderRequest.setUserLogin(user.getLogin());
+          orderRequest.setPhone(user.getPhone());
+          return orderRequest;
+        }
+        return null;
+      }).collect(Collectors.toList());
+    }
+    return null;
+  }
+
   public boolean createOrder(OrderRequest orderRequest) {
     User userFromDb = userRepository.findByLogin(orderRequest.getUserLogin());
     if (userFromDb != null) {
