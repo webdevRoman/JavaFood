@@ -119,6 +119,23 @@ body, button, input, a
     &:focus
       border-bottom: 2px solid $c-active
 
+  &-textarea
+    width: 100%
+    padding: 10px
+    min-height: 120px
+    border: none
+    background-color: $c-light
+    box-shadow: 0 0 10px rgba(#000, 0.15)
+    font-weight: 500
+    font-size: 14px
+    transition: 0.2s
+    margin-top: 5px
+    resize: vertical
+
+  &-file
+    margin-top: 15px
+    cursor: pointer
+
     &[type="password"]
       padding-right: 30px
 

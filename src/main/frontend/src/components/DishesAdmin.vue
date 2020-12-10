@@ -11,60 +11,79 @@
             .dish-img__container(:style="{'background-image': `url(http://localhost:8087/${dish.imageAddress})`}")
           .dish-img.dish-img__default(v-else)
             img(src="../assets/img/dish-default.svg", alt="Dish image")
-          .dish-name Название блюда
-          .dish-category Категория
+          .dish-name {{ dish.name }}
+          .dish-category {{ dish.dishTypeName }}
           .dish-buttons
             button.dish-buttons__btn
               img(src="../assets/img/pencil.svg", alt="Pencil")
             button.dish-buttons__btn &times;
 
     .overlay(v-if="isPopupShown")
-      form.form.popup.popup-admin(action="#", @submit.prevent="checkForm()")
+      form.form.popup.popup-admin-dish(action="#", @submit.prevent="checkForm()")
         .form-title(v-if="editingDish") Редактирование блюда
         .form-title(v-else) Добавление блюда
         .form-inputs
-          .form-block(:class="{'form-block_error': surnameError != ''}")
-            label.form-label(for="account-surname") Фамилия
-            input.form-input(type="text", id="account-surname", v-model.trim="surname", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkSurname()")
-            .form-error(v-if="surnameError != ''") {{ surnameError }}
-          .form-block(:class="{'form-block_error': nameError != ''}")
-            label.form-label(for="account-name") Имя
-            input.form-input(type="text", id="account-name", v-model.trim="name", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkName()")
-            .form-error(v-if="nameError != ''") {{ nameError }}
-          .form-block(:class="{'form-block_error': middlenameError != ''}")
-            label.form-label(for="account-middlename") Отчество (не обязательно)
-            input.form-input(type="text", id="account-middlename", v-model.trim="middlename", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkMiddlename()")
-            .form-error(v-if="middlenameError != ''") {{ middlenameError }}
-          .form-block(:class="{'form-block_error': emailError != ''}")
-            label.form-label(for="account-email") Корпоративная почта SmartWorld
-            input.form-input(type="text", id="account-email", placeholder="@smartworld.team", v-model.trim="email", v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'", @focusout="checkEmail()")
-            .form-error(v-if="emailError != ''") {{ emailError }}
-          .form-block.form-block_last
-            label.form-label.form-label__role Роль пользователя
-            .select-container
-              v-select.select(v-model="role", label="name", index="name", :options="roles", :clearable="false", :searchable="false")
-                template(v-slot:option="option")
-                  span.select-option {{ option.name }}
-          .form-block.form-block_last(:class="{'form-block_error': limitError != ''}")
-            label.form-label(for="account-limit") Лимит заказа
+
+          .form-inputs__half
+
+            .form-block(:class="{'form-block_error': nameError != ''}")
+              label.form-label(for="dish-name") Название блюда
+              input.form-input(
+                type="text",
+                id="dish-name",
+                v-model.trim="name",
+                v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
+                @focusout="checkName()")
+              .form-error(v-if="nameError != ''") {{ nameError }}
+
+            .form-block(:class="{'form-block_error': categoryError != ''}")
+              label.form-label(for="dish-category") Категория
+              input.form-input(
+                type="text",
+                id="dish-category",
+                v-model.trim="category",
+                v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
+                @focusout="checkCategory()")
+              .form-error(v-if="categoryError != ''") {{ categoryError }}
+
             .form-block__line
-              input.form-input(type="text", id="account-limit", v-model.trim="limit", v-mask="'#####'", @focusout="checkLimit()")
-              span Р
-            .form-error(v-if="limitError != ''") {{ limitError }}
+              .form-block.form-block_last(:class="{'form-block_error': priceError != ''}")
+                label.form-label(for="dish-price") Стоимость
+                .form-block__line
+                  input.form-input(type="text", id="dish-price", v-model.trim="price", v-mask="'#####'", @focusout="checkPrice()")
+                  span Р
+                .form-error(v-if="priceError != ''") {{ priceError }}
+
+              .form-block.form-block_last(:class="{'form-block_error': weightError != ''}")
+                label.form-label(for="dish-weight") Вес
+                .form-block__line
+                  input.form-input(type="text", id="dish-weight", v-model.trim="weight", v-mask="'#####'", @focusout="checkWeight()")
+                  span гр
+                .form-error(v-if="weightError != ''") {{ weightError }}
+
+          .form-inputs__half
+
+            .form-block(:class="{'form-block_error': descrError != ''}")
+              label.form-label(for="dish-descr") Описание
+              textarea.form-textarea(
+                id="dish-descr",
+                v-model.trim="descr",
+                @focusout="checkDescr()")
+              .form-error(v-if="descrError != ''") {{ descrError }}
+
+
+            label.form-label(for="dish-img") Изображение
+            .form-block.form-block_last.form-block-img(:class="{'form-block_error': imgError != ''}")
+              input.form-file(type="file", id="dish-img", @change="checkImg($event)")
+              label.form-label(for="dish-img")
+                span.form-file-icon__wrapper
+                  img.form-file-icon(src="../assets/img/camera.svg", alt="Выбрать файл", width="25")
+                span.form-file-text Выберите изображение
+              .form-error(v-if="imgError != ''") {{ imgError }}
+
         button.form-submit(type="submit", v-if="editingDish", :disabled="errors") Сохранить изменения
         button.form-submit(type="submit", v-else, :disabled="errors") Добавить блюдо
         button.popup-close(@click.prevent="hidePopup()") &times;
-
-    .notification-popup(v-if="notification.msg != ''")
-      .notification-info {{ notification.msg }}
-      .notification-img(v-if="notification.err")
-        img(src="../assets/img/cross.svg", alt="Cross")
-      .notification-img(v-else)
-        img(src="../assets/img/tick-success.svg", alt="Tick")
-      button.notification-close(@click.prevent="closeNotification()") &times;
-
-    .processing-overlay(v-if="processing")
-      .processing-indicator
 </template>
 
 <script>
@@ -91,24 +110,12 @@ export default {
     hidePopup() {
       this.isPopupShown = false
       this.editingDish = null
-    },
-
-    closeNotification() {
-      this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
     }
   },
 
   computed: {
     dishes() {
       return this.$store.getters.dishes
-    },
-
-    processing() {
-      return this.$store.getters.processing
-    },
-
-    notification() {
-      return this.$store.getters.notification
     }
   },
 
@@ -206,4 +213,42 @@ export default {
           font-weight: bold
         &:hover
           transform: scale(1.2)
+
+.popup-admin-dish
+  .form
+    &-inputs
+      align-items: stretch
+      flex-wrap: nowrap
+      &__half
+        flex-basis: 260px
+        display: flex
+        flex-direction: column
+        justify-content: space-between
+    &-block
+      flex-basis: auto
+      margin-right: 0
+      &__line
+        justify-content: space-between
+        .form-block
+          flex-basis: 100px
+
+      &-img
+        position: relative
+        margin-top: 5px
+        .form
+          &-file
+            opacity: 0
+            visibility: hidden
+            position: absolute
+          &-label
+            padding: 10px 20px 10px 10px
+            background-color: darken($c-bg, 25)
+            color: $c-light
+            display: flex
+            justify-content: space-between
+            align-items: center
+            cursor: pointer
+            transition: 0.2s
+            &:hover
+              background-color: darken($c-bg, 40)
 </style>
