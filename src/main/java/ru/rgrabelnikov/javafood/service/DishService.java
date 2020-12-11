@@ -3,11 +3,13 @@ package ru.rgrabelnikov.javafood.service;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.rgrabelnikov.javafood.entity.Dish;
 import ru.rgrabelnikov.javafood.entity.DishType;
 import ru.rgrabelnikov.javafood.repository.DishRepository;
 import ru.rgrabelnikov.javafood.repository.DishTypeRepository;
 
+import java.io.*;
 import java.util.List;
 
 @Service
@@ -35,7 +37,44 @@ public class DishService {
   public Dish saveDish(Dish dish) {
     dish.setDishTypeName(dish.getDishTypeName());
     dish = setDishType(dish);
-    return dishRepository.save(dish);
+    Dish dishFromDb = dishRepository.save(dish);
+    if (dishFromDb != null) {
+      if (dish.isHasImage())
+        dishFromDb.setImageAddress("img-dishes/" + dishFromDb.getId() + ".jpg");
+      return dishRepository.save(dishFromDb);
+    }
+    return dishRepository.save(dishFromDb);
+  }
+
+  public Dish saveDishImg(MultipartFile file) {
+
+    InputStream inputStream = null;
+    OutputStream outputStream = null;
+    String fileName = file.getOriginalFilename();
+    File newFile = new File("src/main/resources/static/img-dishes/" + fileName);
+
+    try {
+      inputStream = file.getInputStream();
+
+      if (!newFile.exists()) {
+        newFile.createNewFile();
+      }
+      outputStream = new FileOutputStream(newFile);
+      int read = 0;
+      byte[] bytes = new byte[1024];
+
+      while ((read = inputStream.read(bytes)) != -1) {
+        outputStream.write(bytes, 0, read);
+      }
+
+      inputStream.close();
+      outputStream.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    return null;
   }
 
   public Dish updateDish(Dish dish) {

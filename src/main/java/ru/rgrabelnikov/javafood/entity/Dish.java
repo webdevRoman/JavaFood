@@ -32,6 +32,8 @@ public class Dish {
   @Transient
   @JsonView(Views.Dish.class)
   private String dishTypeName;
+  @Transient
+  private boolean hasImage;
 
   public Long getId() { return id; }
   public void setId(Long id) { this.id = id; }
@@ -49,6 +51,8 @@ public class Dish {
   public void setPrice(int price) { this.price = price; }
   public String getDishTypeName() { return dishTypeName; }
   public void setDishTypeName(String dishTypeName) { this.dishTypeName = dishTypeName; }
+  public boolean isHasImage() { return hasImage; }
+  public void setHasImage(boolean hasImage) { this.hasImage = hasImage; }
 
   public Dish() {}
   public Dish(String name, int weight, String description, String imageAddress, DishType dishType, int price) {

@@ -8,7 +8,8 @@ export default {
     loginMask: /^[A-Za-z0-9]{0,35}$/,
     passwordMask: /^[A-Za-z0-9]{6,25}$/,
     phoneMask: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
-    timeMask: /^\d{2}:\d{2}$/
+    timeMask: /^\d{2}:\d{2}$/,
+    dishNameMask: /^[А-Яа-яёA-Za-z0-9\s]{0,35}$/
   },
 
 
@@ -19,7 +20,9 @@ export default {
         Vue.set(state.errors, payload.type, 'empty')
       } else if (payload.data.length > 35) {
         Vue.set(state.errors, payload.type, 'long')
-      } else if (!payload.data.match(state.nameMask)) {
+      } else if (payload.type === 'dishName' && !payload.data.match(state.dishNameMask)) {
+        Vue.set(state.errors, payload.type, 'wrong')
+      } else if (payload.type !== 'dishName' && !payload.data.match(state.nameMask)) {
         Vue.set(state.errors, payload.type, 'wrong')
       }
     },

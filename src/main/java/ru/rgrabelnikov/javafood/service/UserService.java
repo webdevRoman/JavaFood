@@ -95,7 +95,7 @@ public class UserService {
   public boolean deleteUser(String login) {
     User userFromDb = findByLogin(login);
     if (userFromDb != null) {
-      userRepository.delete(userFromDb);
+      userRepository.deleteByLogin(login);
       return true;
     }
     return false;

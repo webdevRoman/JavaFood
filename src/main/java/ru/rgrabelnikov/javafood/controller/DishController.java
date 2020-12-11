@@ -3,6 +3,7 @@ package ru.rgrabelnikov.javafood.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.rgrabelnikov.javafood.entity.Dish;
 import ru.rgrabelnikov.javafood.entity.Views;
 import ru.rgrabelnikov.javafood.service.DishService;
@@ -22,6 +23,9 @@ public class DishController {
   @PostMapping("/admin")
   @JsonView(Views.Dish.class)
   public Dish addDish(@RequestBody Dish dish) { return dishService.saveDish(dish); }
+
+  @PostMapping("/admin/img")
+  public Dish addDishImg(@RequestBody MultipartFile file) { return dishService.saveDishImg(file); }
 
   @PutMapping("/admin")
   @JsonView(Views.Dish.class)

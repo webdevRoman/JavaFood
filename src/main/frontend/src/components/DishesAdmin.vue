@@ -14,7 +14,7 @@
           .dish-name {{ dish.name }}
           .dish-category {{ dish.dishTypeName }}
           .dish-buttons
-            button.dish-buttons__btn
+            button.dish-buttons__btn(@click.prevent="showPopup(dish)")
               img(src="../assets/img/pencil.svg", alt="Pencil")
             button.dish-buttons__btn &times;
 
@@ -71,15 +71,17 @@
                 @focusout="checkDescr()")
               .form-error(v-if="descrError != ''") {{ descrError }}
 
-
             label.form-label(for="dish-img") Изображение
-            .form-block.form-block_last.form-block-img(:class="{'form-block_error': imgError != ''}")
+            .form-block.form-block_last.form-block-img
               input.form-file(type="file", id="dish-img", @change="checkImg($event)")
-              label.form-label(for="dish-img")
+              label.form-label(for="dish-img", :class="{'form-label_success': imgChosen}")
                 span.form-file-icon__wrapper
-                  img.form-file-icon(src="../assets/img/camera.svg", alt="Выбрать файл", width="25")
+                  img.form-file-icon(v-if="!editingDish", src="../assets/img/camera.svg", alt="Выбрать файл", width="25")
+                  .form-file-icon.form-file-icon_bg(
+                    v-else-if="!!editingDish.imageAddress",
+                    :style="{'background-image': `url(http://localhost:8087/${editingDish.imageAddress})`}")
+                  img.form-file-icon(v-else, src="../assets/img/dish-default-light.svg", alt="Dish image")
                 span.form-file-text Выберите изображение
-              .form-error(v-if="imgError != ''") {{ imgError }}
 
         button.form-submit(type="submit", v-if="editingDish", :disabled="errors") Сохранить изменения
         button.form-submit(type="submit", v-else, :disabled="errors") Добавить блюдо
@@ -91,18 +93,33 @@ export default {
   data() {
     return {
       isPopupShown: false,
-      editingDish: false
+      editingDish: null,
+      name: '',
+      nameError: '',
+      category: '',
+      categoryError: '',
+      price: '',
+      priceError: '',
+      weight: '',
+      weightError: '',
+      descr: '',
+      descrError: '',
+      img: null,
+      imgChosen: false
     }
   },
 
   methods: {
     showPopup(dish) {
       if (dish) {
-        this.editingDish = true
-        console.log('edit')
+        this.editingDish = dish
+        this.name = dish.name
+        this.category = dish.dishTypeName
+        this.price = dish.price
+        this.weight = dish.weight
+        this.descr = dish.description
       } else {
-        this.editingDish = false
-        console.log('new')
+        this.editingDish = null
       }
       this.isPopupShown = true
     },
@@ -110,12 +127,132 @@ export default {
     hidePopup() {
       this.isPopupShown = false
       this.editingDish = null
+      this.name = ''
+      this.nameError = ''
+      this.category = ''
+      this.categoryError = ''
+      this.price = ''
+      this.priceError = ''
+      this.weight = ''
+      this.weightError = ''
+      this.descr = ''
+      this.descrError = ''
+      this.img = null
+      this.imgChosen = false
+      this.$store.dispatch('CLEAR_ERRORS', 'all')
+    },
+
+    checkForm() {
+      this.checkName()
+      this.checkCategory()
+      this.checkPrice()
+      this.checkWeight()
+      this.checkDescr()
+      if (!this.errors) {
+        this.$store.dispatch('ADD_DISH', {
+          dish: {
+            name: this.name,
+            weight: this.weight,
+            description: this.descr,
+            price: this.price,
+            dishTypeName: this.category,
+            hasImage: !!this.img
+          },
+          image: this.img
+        })
+            .then(() => {
+              this.hidePopup()
+              this.$store.dispatch('SET_NOTIFICATION', {msg: 'Блюдо добавлено>', err: false})
+              setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                  5000)
+            })
+            .catch(err => {
+              console.log('Error on creating dish: ' + err)
+              this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+              setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                  5000)
+            })
+      }
+    },
+
+    checkName() {
+      this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1)
+      this.$store.dispatch('CHECK_NAME', {type: 'dishName', data: this.name})
+          .then(
+              result => {
+                if (result == 'empty')
+                  this.nameError = 'Заполните название'
+                else if (result == 'long')
+                  this.nameError = 'Название должно содержать не более 35 символов'
+                else if (result == 'wrong')
+                  this.nameError = 'Название должно состоять только из букв, цифр и проеблов'
+                else
+                  this.nameError = ''
+              },
+              error => console.log("Name checker rejected: " + error.message)
+          )
+    },
+
+    checkCategory() {
+      this.category = this.category.charAt(0).toUpperCase() + this.category.slice(1).toLowerCase()
+      this.$store.dispatch('CHECK_NAME', {type: 'dishName', data: this.category})
+          .then(
+              result => {
+                if (result == 'empty')
+                  this.categoryError = 'Заполните категорию'
+                else if (result == 'long')
+                  this.categoryError = 'Название категории должна содержать не более 35 символов'
+                else if (result == 'wrong')
+                  this.categoryError = 'Название категории должна состоять только из букв, цифр и проеблов'
+                else
+                  this.categoryError = ''
+              },
+              error => console.log("Name checker rejected: " + error.message)
+          )
+    },
+
+    checkPrice() {
+      this.priceError = ''
+      if (this.price === '')
+        this.priceError = 'Введите стоимость'
+    },
+
+    checkWeight() {
+      this.weightError = ''
+      if (this.weight === '')
+        this.weightError = 'Введите вес'
+    },
+
+    checkDescr() {
+      this.descrError = ''
+      if (this.descr === '')
+        this.descrError = 'Введите описание'
+    },
+
+    checkImg(event) {
+      if (event && event.target && event.target.files)
+        this.img = event.target.files[0]
+      if (this.img !== null)
+        this.imgChosen = true
     }
   },
 
   computed: {
     dishes() {
       return this.$store.getters.dishes
+    },
+
+    errors() {
+      const errors = this.$store.getters.errors
+      if (
+          errors.dishName != undefined
+          || this.priceError != ''
+          || this.weightError != ''
+          || this.descrError != ''
+      )
+        return true
+      else
+        return false
     }
   },
 
@@ -169,6 +306,7 @@ export default {
     flex-basis: 555px
     display: flex
     align-items: center
+    background-color: $c-light
     box-shadow: 0 0 10px rgba(#000, 0.15)
     padding: 15px
     margin-right: 30px
@@ -240,6 +378,20 @@ export default {
             opacity: 0
             visibility: hidden
             position: absolute
+            &-icon
+              &__wrapper
+                flex-basis: 35px
+                height: 35px
+                overflow: hidden
+                display: flex
+                justify-content: center
+                align-items: center
+              &_bg
+                width: 100%
+                height: 100%
+                background-repeat: no-repeat
+                background-position: center
+                background-size: cover
           &-label
             padding: 10px 20px 10px 10px
             background-color: darken($c-bg, 25)
@@ -249,6 +401,8 @@ export default {
             align-items: center
             cursor: pointer
             transition: 0.2s
+            &_success
+              background-color: $c-active
             &:hover
               background-color: darken($c-bg, 40)
 </style>

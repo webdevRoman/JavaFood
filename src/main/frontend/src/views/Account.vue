@@ -175,6 +175,10 @@ export default {
     goBack() {
       this.closeNotification()
       this.$store.dispatch('CLEAR_ERRORS', 'all')
+      this.oldPassword = ''
+      this.password = ''
+      this.passwordRepeat = ''
+      this.passwordsMatch = false
       this.$router.push('/')
     },
 
