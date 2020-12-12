@@ -6,7 +6,7 @@ import userModule from './user'
 import validationModule from './validation'
 import companyModule from './company'
 import ordersModule from './adminOrders'
-import dishesAdminModule from './adminDishes'
+import usersAdminModule from './adminUsers'
 
 Vue.use(Vuex)
 
@@ -18,6 +18,6 @@ export default new Vuex.Store({
     validationModule,
     companyModule,
     ordersModule,
-    dishesAdminModule
+    usersAdminModule
   }
 })
