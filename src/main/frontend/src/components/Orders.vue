@@ -1,24 +1,28 @@
 <template lang="pug">
-    .admin-main.admin-orders
-      .orders-container
-        .orders-title Заказы
-        table.orders-table
-          tr.orders-table__header
-            th.user Пользователь
-            th.adress Адрес
-            th.phone Телефон
-            th.time Время доставки
-          tr.orders-table__line(v-for="order in orders")
-            td.user {{ order.userLogin }}
-            td.adress {{ order.address }}
-            td.phone {{ order.phone }}
-            td.time {{ order.deliveryTime}}
-            td.confirm
-              button.confirm-btn(@click.prevent="order.confirmed = true", :disabled = "order.confirmed")
-                img(v-if="order.confirmed", src="../assets/img/tick-success.svg", alt="Tick")
-                img(v-else, src="../assets/img/tick-grey.svg", alt="Tick")
-            td.delete
-              button.delete-btn(@click.prevent="deleteOrder(order.id)") &times;
+  .admin-main.admin-orders
+    .orders-container
+
+      .orders-title Заказы
+
+      table.orders-table
+
+        tr.orders-table__header
+          th.user Пользователь
+          th.adress Адрес
+          th.phone Телефон
+          th.time Время доставки
+
+        tr.orders-table__line(v-for="order in orders")
+          td.user {{ order.userLogin }}
+          td.adress {{ order.address }}
+          td.phone {{ order.phone }}
+          td.time {{ order.deliveryTime}}
+          td.confirm
+            button.confirm-btn(@click.prevent="order.confirmed = true", :disabled = "order.confirmed")
+              img(v-if="order.confirmed", src="../assets/img/tick-success.svg", alt="Tick")
+              img(v-else, src="../assets/img/tick-grey.svg", alt="Tick")
+          td.delete
+            button.delete-btn(@click.prevent="deleteOrder(order.id)") &times;
 </template>
 
 <script>
@@ -30,7 +34,6 @@ export default {
   },
 
   methods: {
-    
     deleteOrder(id) {
       this.$store.dispatch('DELETE_ORDER_ADMIN', id)
           .catch(err => {
@@ -47,7 +50,6 @@ export default {
     orders() {
       return this.$store.getters.orders
     }
-
   },
 
   created() {
@@ -110,7 +112,7 @@ export default {
 
       .time
         width: 230px
-      
+
       .confirm
         width: 33px
         padding-right: 0px
@@ -125,7 +127,7 @@ export default {
             transform: scale(1.3)
           &[disabled]:hover
             transform: none
-      
+
       .delete
         width: 33px
 
@@ -138,20 +140,14 @@ export default {
           font-size: 18px
           font-weight: bold
           transition: 0.2s
-
           &:hover
             transform: scale(1.3)
-            
-
-        
 
       &__line
-
         td
           background-color: $c-light
           padding: 26px 20px
           border-bottom: 1px solid $c-middle
           font-size: 16px
           font-color: $c-dark
-
 </style>

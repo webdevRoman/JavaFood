@@ -248,23 +248,6 @@ export default {
               },
               error => console.log("Time checker rejected: " + error.message)
           )
-    },
-
-    //todo
-    confirmOrder() {
-      // dispatch some confirming method
-      this.$store.dispatch('CONFIRM_ORDER')
-          .then(resp => {
-                const cart = document.querySelector('.cart-popup')
-                setTimeout(() => cart.style.display = 'none', 3000)
-              },
-              err => {
-                console.log('Error on sending order: ' + err)
-                this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
-                setTimeout(() => {
-                  this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-                }, 5000)
-              })
     }
   },
 

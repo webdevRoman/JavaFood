@@ -3,6 +3,26 @@
     router-view
 </template>
 
+<script>
+import axios from 'axios'
+
+export default {
+  created() {
+    axios.interceptors.response.use(undefined, function (err) {
+      return new Promise(function (resolve, reject) {
+        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
+          this.$store.dispatch('AUTH_LOGOUT').then(
+              resp => this.$router.push('/signin'),
+              err => console.log('Error when logging out: ' + err)
+          )
+        }
+        throw err;
+      });
+    });
+  }
+}
+</script>
+
 <style lang="sass">
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap')
 @import "./assets/sass/vars"
@@ -16,7 +36,6 @@ body, button, input, a
 .container
   width: 1140px
   margin: 0 auto
-
   &_center
     display: flex
     justify-content: center
@@ -34,7 +53,6 @@ body, button, input, a
   text-transform: uppercase
   letter-spacing: 10px
   margin: 0 auto
-
   &__img
     width: 60px
     margin-right: 10px
@@ -53,14 +71,11 @@ body, button, input, a
   color: $c-light
   text-align: center
   transition: 0.2s
-
   &:hover
     background-color: lighten($c-dark, 10)
     border: 1px solid lighten($c-dark, 10)
-
   &[disabled]
     filter: opacity(50%)
-
     &:hover
       background-color: $c-dark
       color: $c-light
@@ -68,15 +83,14 @@ body, button, input, a
   &_o
     background-color: transparent
     color: $c-dark
-
     &:hover
       background-color: lighten($c-middle, 10)
-
     &[disabled]:hover
       background-color: transparent
       color: $c-dark
 
 .form
+
   &-block
     margin-bottom: 65px
     position: relative
@@ -90,7 +104,6 @@ body, button, input, a
 
       .form-label
         cursor: default
-
         &:hover
           color: lighten($c-dark, 40)
 
@@ -105,7 +118,6 @@ body, button, input, a
     color: lighten($c-dark, 40)
     transition: 0.2s
     cursor: pointer
-
     &:hover
       color: $c-active
 
@@ -118,9 +130,10 @@ body, button, input, a
     font-weight: 500
     font-size: 18px
     transition: 0.2s
-
     &:focus
       border-bottom: 2px solid $c-active
+    &[type="password"]
+      padding-right: 30px
 
   &-textarea
     width: 100%
@@ -139,12 +152,8 @@ body, button, input, a
     margin-top: 15px
     cursor: pointer
 
-    &[type="password"]
-      padding-right: 30px
-
   &-password
     position: relative
-
     &__eye
       width: 24px
       position: absolute
@@ -169,14 +178,11 @@ body, button, input, a
     font-size: 18px
     color: $c-light
     transition: 0.2s
-
     &:hover
       background-color: darken($c-active, 15)
       border: 1px solid darken($c-active, 15)
-
     &[disabled]
       opacity: 0.5
-
       &:hover
         background-color: $c-active
         border: 1px solid $c-active
@@ -187,8 +193,7 @@ body, button, input, a
   align-items: center
   width: 100vw
   min-height: 100vh
-  // change!
-  background-color: rgba(0, 0, 0, 0.5)
+  background-color: rgba(#000, 0.5)
   position: fixed
   top: 0
   left: 0
@@ -197,11 +202,12 @@ body, button, input, a
     width: 700px
     padding: 60px 45px 45px 45px
     background-color: $c-bg
-    box-shadow: 0px 0px 50px rgba(0, 0, 0, 0.35)
+    box-shadow: 0px 0px 50px rgba(#000, 0.35)
     margin: 0 auto
     position: relative
 
     .form
+
       &-title
         font-weight: bold
         font-size: 24px
@@ -219,7 +225,6 @@ body, button, input, a
         flex-basis: 262px
         margin-right: 80px
         margin-bottom: 28px
-
         &:nth-child(2n)
           margin-right: 0
 
@@ -228,19 +233,10 @@ body, button, input, a
 
         &_last
           margin-bottom: 0
-        // &-line
-        //   display: flex
-        //   justify-content: space-between
-        // &__item
-        //   &:first-child
-        //     margin-right: 20px
-        //     .form-label
-        //       margin-bottom: 10px
+
         &__line
           display: flex
           align-items: center
-          // .form-input
-          //   width: 85px
           span
             font-weight: 500
             font-size: 18px
@@ -248,7 +244,6 @@ body, button, input, a
 
         .select
           width: 262px
-          // font-size: 12px
           &-container
             margin-bottom: 0
 
@@ -269,6 +264,7 @@ body, button, input, a
       right: 18px
 
 .notification
+
   &-popup
     display: flex
     justify-content: space-between
@@ -298,6 +294,7 @@ body, button, input, a
     right: 0
 
 .processing
+
   &-overlay
     display: flex
     justify-content: center
@@ -431,20 +428,6 @@ body, button, input, a
   cursor: default
   opacity: 0.7
 
-.admin-docs
-  .vs
-    &__dropdown
-      &-toggle
-        padding: 14px
-        background-color: $c-light
-
-      &-menu
-        max-height: 300px
-        background-color: $c-light
-
-      &-option
-        padding: 14px
-
 .admin-users
   .select-arrow
     width: 10px
@@ -469,9 +452,6 @@ body, button, input, a
         font-size: 12px
 
 .popup-admin
-  // .select-arrow
-  //   width: 10px
-  //   height: 9px
   .vs
     &__dropdown
       &-toggle
@@ -656,23 +636,3 @@ body, button, input, a
         background-color: $c-active
         color: $c-light
 </style>
-
-<script>
-import axios from 'axios'
-
-export default {
-  created() {
-    axios.interceptors.response.use(undefined, function (err) {
-      return new Promise(function (resolve, reject) {
-        if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
-          this.$store.dispatch('AUTH_LOGOUT').then(
-              resp => this.$router.push('/signin'),
-              err => console.log('Error when logging out: ' + err)
-          )
-        }
-        throw err;
-      });
-    });
-  }
-}
-</script>

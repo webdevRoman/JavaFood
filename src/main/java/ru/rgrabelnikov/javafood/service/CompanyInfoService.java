@@ -4,7 +4,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.rgrabelnikov.javafood.entity.CompanyInfo;
-import ru.rgrabelnikov.javafood.entity.Dish;
 import ru.rgrabelnikov.javafood.repository.CompanyInfoRepository;
 
 @Service

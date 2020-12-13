@@ -103,34 +103,34 @@ export default {
     LOAD_DISHES({commit}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        axios({ url: '/api/dish', method: 'GET'} )
-        .then(resp => {
-          commit('SET_DISHES', resp.data)
-          commit('SET_PROCESSING', false)
-          resolve()
-        },
-        err => {
-          commit('SET_DISHES', 'err')
-          commit('SET_PROCESSING', false)
-          reject(err)
-        })
+        axios({url: '/api/dish', method: 'GET'})
+          .then(resp => {
+            commit('SET_DISHES', resp.data)
+            commit('SET_PROCESSING', false)
+            resolve()
+          })
+          .catch(err => {
+            commit('SET_DISHES', 'err')
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
       })
     },
 
     LOAD_FAVOURITES({commit, getters}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        axios({ url: '/api/favourite', method: 'GET', params: { userLogin: getters.login } })
-        .then(resp => {
-          commit('SET_FAVOURITES', resp.data)
-          commit('SET_PROCESSING', false)
-          resolve()
-        })
-        .catch(err => {
-          commit('SET_FAVOURITES', 'err')
-          commit('SET_PROCESSING', false)
-          reject(err)
-        })
+        axios({ url: '/api/favourite', method: 'GET', params: {userLogin: getters.login}})
+          .then(resp => {
+            commit('SET_FAVOURITES', resp.data)
+            commit('SET_PROCESSING', false)
+            resolve()
+          })
+          .catch(err => {
+            commit('SET_FAVOURITES', 'err')
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
       })
     },
 
@@ -141,33 +141,33 @@ export default {
           data: { userLogin: getters.login, dishId: data.dish.id },
           method: data.remove ? 'DELETE' : 'POST'
         })
-        .then(resp => {
-          if (data.remove)
-            commit('REMOVE_FAVOURITE', data.dish)
-          else
-            commit('ADD_FAVOURITE', data.dish)
-          resolve()
-        })
-        .catch(err => {
-          reject(err)
-        })
+          .then(() => {
+            if (data.remove)
+              commit('REMOVE_FAVOURITE', data.dish)
+            else
+              commit('ADD_FAVOURITE', data.dish)
+            resolve()
+          })
+          .catch(err => {
+            reject(err)
+          })
       })
     },
 
     LOAD_CART({commit, getters}) {
       return new Promise((resolve, reject) => {
         commit('SET_PROCESSING', true)
-        axios({ url: '/api/basket', method: 'GET', params: { userLogin: getters.login } })
-        .then(resp => {
-          commit('SET_CART', resp.data)
-          commit('SET_PROCESSING', false)
-          resolve()
-        })
-        .catch(err => {
-          commit('SET_CART', 'err')
-          commit('SET_PROCESSING', false)
-          reject(err)
-        })
+        axios({ url: '/api/basket', method: 'GET', params: {userLogin: getters.login}})
+          .then(resp => {
+            commit('SET_CART', resp.data)
+            commit('SET_PROCESSING', false)
+            resolve()
+          })
+          .catch(err => {
+            commit('SET_CART', 'err')
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
       })
     },
 
@@ -228,7 +228,7 @@ export default {
     CLEAR_ORDER({commit, dispatch, getters}) {
       return new Promise((resolve, reject) => {
         axios({ url: '/api/basket/basket', method: 'DELETE', data: getters.login })
-          .then(resp => {
+          .then(() => {
             commit('CLEAR_ORDER')
             resolve()
           })
@@ -246,7 +246,7 @@ export default {
           method: 'POST',
           data: { userLogin: getters.login, address: payload.address, deliveryTime: payload.deliveryTime }
         })
-          .then(resp => {
+          .then(() => {
             commit('CLEAR_ORDER')
             commit('SET_PROCESSING', false)
             resolve()
@@ -262,6 +262,7 @@ export default {
   getters: {
     dishes: (state) => state.dishes
       .sort((a, b) => a.dishTypeName < b.dishTypeName ? -1 : (a.dishTypeName > b.dishTypeName ? 1 : 0)),
+
     categories: (state) => {
       const categories = state.dishes.reduce((acc, item) => {
         if (!acc.has(item.dishTypeName))
@@ -274,9 +275,11 @@ export default {
         .reduce((acc, key) => acc.set(key, categories.get(key)), new Map())
       return sortedCategories
     },
+
     favourites: (state) => state.dishes
       .filter(d => d.favourite)
       .sort((a, b) => a.dishTypeName < b.dishTypeName ? -1 : (a.dishTypeName > b.dishTypeName ? 1 : 0)),
+
     cart: (state) => state.dishes
       .filter(d => d.amount > 0)
       .sort((a, b) => a.dishTypeName < b.dishTypeName ? -1 : (a.dishTypeName > b.dishTypeName ? 1 : 0))

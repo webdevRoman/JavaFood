@@ -1,14 +1,13 @@
 @media(max-width: 1200px)
   html
-    .category
-      &-dishes
-        .dish
-          flex-basis: 296px
+    .category-dishes
+      .dish
+        flex-basis: 296px
+        margin-right: 36px
+        &:nth-child(4n)
           margin-right: 36px
-          &:nth-child(4n)
-            margin-right: 36px
-          &:nth-child(3n)
-            margin-right: 0
+        &:nth-child(3n)
+          margin-right: 0
 
 @media(max-width: 992px)
   html
@@ -21,30 +20,25 @@
     .select
       width: 345px
       font-size: 15px
-    .category
-      &-dishes
-        .dish
-          flex-basis: 280px
+    .category-dishes
+      .dish
+        flex-basis: 280px
+        margin-right: 30px
+        &:nth-child(3n)
           margin-right: 30px
-          &:nth-child(3n)
-            margin-right: 30px
-          &:nth-child(2n)
-            margin-right: 0
-          &:hover
-            box-shadow: none
-          &-footer
-            &__cart
-              .cart
-                &-btn
-                  &:hover
-                    transform: scale(1)
-                &-number
-                  &__btn
-                    &:hover
-                      transform: scale(1)
-            &__favourite
-              &:hover
+        &:nth-child(2n)
+          margin-right: 0
+        &:hover
+          box-shadow: none
+        &-footer
+          &__cart
+            .cart
+              &-btn:hover
                 transform: scale(1)
+              &-number__btn:hover
+                transform: scale(1)
+          &__favourite:hover
+            transform: scale(1)
 
 @media(max-width: 768px)
   html
@@ -57,19 +51,18 @@
       &-no
         font-size: 20px
         margin-bottom: 30px
-    .category
-      &-dishes
-        .dish
-          flex-basis: 250px
+    .category-dishes
+      .dish
+        flex-basis: 250px
+        margin-right: 40px
+        &:nth-child(3n)
           margin-right: 40px
-          &:nth-child(3n)
-            margin-right: 40px
-          &:nth-child(2n)
-            margin-right: 0
-          &-title
-            margin-bottom: 10px
-          &-descr
-            margin-bottom: 10px
+        &:nth-child(2n)
+          margin-right: 0
+        &-title
+          margin-bottom: 10px
+        &-descr
+          margin-bottom: 10px
 
 @media(max-width: 576px)
   html

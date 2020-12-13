@@ -2,13 +2,16 @@
   .page404-container
     .page404
       .page404-main
+
         .page404-main__text 404
+
         .page404-main__fork
           img(src="../assets/img/fork.png", alt="Fork")
         .page404-main__plate
           img(src="../assets/img/plate.png", alt="Plate")
         .page404-main__spoon
           img(src="../assets/img/spoon.png", alt="Spoon")
+
       .page404-error Ошибка! <br> Страница не найдена
       router-link.form-submit.page404-button(tag="button", to="/") Вернуться на сайт
 </template>

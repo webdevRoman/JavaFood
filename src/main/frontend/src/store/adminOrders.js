@@ -7,13 +7,13 @@ export default {
 
   mutations: {
     SET_ORDERS(state, data) {
-        let orders = []
-        if (data && data != 'err')
-          data.forEach(order => {
-              order.confirmed = false
-              orders.push(order)
-          })
-        state.orders = orders
+      let orders = []
+      if (data && data != 'err')
+        data.forEach(order => {
+          order.confirmed = false
+          orders.push(order)
+        })
+      state.orders = orders
     },
     
 
@@ -31,33 +31,29 @@ export default {
 
   actions: {
     LOAD_ORDERS({commit}) {
-        return new Promise((resolve, reject) => {
-          commit('SET_PROCESSING', true)
-          axios({ url: '/api/order/admin', method: 'GET'} )
+      return new Promise((resolve, reject) => {
+        commit('SET_PROCESSING', true)
+        axios({url: '/api/order/admin', method: 'GET'})
           .then(resp => {
             commit('SET_ORDERS', resp.data)
             commit('SET_PROCESSING', false)
             resolve()
-          },
-          err => {
+          })
+          .catch(err => {
             commit('SET_ORDERS', 'err')
             commit('SET_PROCESSING', false)
             reject(err)
           })
-        })
-      },
+      })
+    },
     
 
     DELETE_ORDER_ADMIN({commit}, id) {
       return new Promise((resolve, reject) => {
         commit('DELETE_ORDER_ADMIN', id)
-        axios({ url: '/api/order/admin', data: id, method: 'DELETE' })
-        .then(resp => {
-          resolve()
-        },
-        err => {
-          reject(err)
-        })
+        axios({ url: '/api/order/admin', data: id, method: 'DELETE'})
+          .then(() => resolve())
+          .catch(err => reject(err))
       })
     },
   },

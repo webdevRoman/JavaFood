@@ -44,17 +44,20 @@
 
 <script>
 export default {
+
   data() {
     return {
       chosenSection: 'dishes'
     }
   },
+
   methods: {
     changeView(viewName) {
       this.chosenSection = viewName
       this.$emit('changeView', viewName)
     }
   }
+
 }
 </script>
 

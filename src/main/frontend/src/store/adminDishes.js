@@ -4,41 +4,25 @@ export default {
 
   actions: {
     ADD_DISH({commit, dispatch}, payload) {
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         commit('SET_PROCESSING', true)
-        dispatch('CREATE_DISH', payload.dish)
-          .then(resp => {
-            if (resp.data) {
-              if (payload.image) {
-                dispatch('UPDATE_DISH_IMAGE', { dishId: resp.data.id, image: payload.image })
-                  .then(resp => {
-                    if (resp.data) {
-                      commit('ADD_DISH', resp.data)
-                      commit('SET_PROCESSING', false)
-                      resolve()
-                    } else {
-                      commit('SET_PROCESSING', false)
-                      reject('Ошибка при установке изображения блюда.')
-                    }
-                  })
-                  .catch(err => {
-                    commit('SET_PROCESSING', false)
-                    reject(err)
-                  })
-              } else {
-                commit('ADD_DISH', resp.data)
-                commit('SET_PROCESSING', false)
-                resolve()
-              }
-            } else {
-              commit('SET_PROCESSING', false)
-              reject('Ошибка при добавлении блюда.')
-            }
-          })
-          .catch(err => {
-            commit('SET_PROCESSING', false)
-            reject(err)
-          })
+        try {
+          let createDishResp, updateDishImageResp
+          createDishResp = await dispatch('CREATE_DISH', payload.dish)
+          if (createDishResp && createDishResp.data && payload.image)
+            updateDishImageResp = await dispatch('UPDATE_DISH_IMAGE', { dishId: createDishResp.data.id, image: payload.image })
+          let resp = updateDishImageResp ? updateDishImageResp : (createDishResp ? createDishResp : null)
+          commit('SET_PROCESSING', false)
+          if (resp && resp.data) {
+            commit('ADD_DISH', resp.data)
+            resolve()
+          } else {
+            reject('Ошибка при добавлении блюда.')
+          }
+        } catch (err) {
+          commit('SET_PROCESSING', false)
+          reject(err)
+        }
       })
     },
 
@@ -54,11 +38,15 @@ export default {
           if (payload.requests.some(r => r === 'img'))
             editImgResp = await dispatch('UPDATE_DISH_IMAGE', {dishId: payload.dish.id, image: payload.image})
           let resp = editImgResp ? editImgResp : (editCategoryResp ? editCategoryResp : (editDataResp ? editDataResp : null))
-          commit('UPDATE_DISH', resp.data)
           commit('SET_PROCESSING', false)
-          if (editImgResp)
-            document.location.reload(true)
-          resolve()
+          if (resp && resp.data) {
+            commit('UPDATE_DISH', resp.data)
+            if (editImgResp)
+              document.location.reload(true)
+            resolve()
+          } else {
+            reject('Ошибка при редактированни блюда.')
+          }
         } catch (err) {
           commit('SET_PROCESSING', false)
           reject(err)

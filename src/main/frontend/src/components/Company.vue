@@ -1,9 +1,10 @@
 <template lang="pug">
   .company
-
     .container.company-info
+
       .company-text
         .company-text__descr {{ companyDescr }}
+
         .company-text__contacts
           .company-text__contact
             span.company-text__contact_bold Телефон:
@@ -14,6 +15,7 @@
           .company-text__contact
             span.company-text__contact_bold Адрес:
             | {{ companyAddress }}
+
       .company-img
         img(src="../assets/img/company-mid.jpg", alt="Dish image")
 </template>

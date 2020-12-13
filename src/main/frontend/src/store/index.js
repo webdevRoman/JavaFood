@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 import generalModule from './general'
 import dishesModule from './dishes'
 import userModule from './user'

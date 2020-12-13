@@ -29,4 +29,5 @@ export default {
     processing: state => state.processing,
     notification: state => state.notification
   }
+
 }

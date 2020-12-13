@@ -180,7 +180,7 @@ export default {
           description: this.descr,
           price: this.price,
           dishTypeName: this.category,
-          hasImage: !!this.image
+          hasImage: !!this.img
         },
         image: this.img
       })

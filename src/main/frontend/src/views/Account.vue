@@ -193,7 +193,7 @@ export default {
         let newUser = {}
         newUser.firstName = this.name ? this.name : this.stateName
         newUser.lastName = this.surname ? this.surname : this.stateSurname
-        newUser.midName = this.middleName ? this.middleName : this.stateMiddleName
+        newUser.midName = this.middleName ? this.middleName : null
         if (this.oldPassword && this.passwordsMatch) {
           newUser.oldPassword = this.oldPassword
           newUser.password = this.password
@@ -207,22 +207,20 @@ export default {
         newUser.phone = this.phone ? this.phone : this.statePhone
         this.$store.dispatch('UPDATE_USER', newUser)
             .then(resp => {
-                  this.oldPassword = ''
-                  this.password = ''
-                  this.passwordRepeat = ''
-                  this.$store.dispatch('SET_NOTIFICATION', {msg: 'Изменения сохранены', err: false})
-                  setTimeout(
-                      () => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
-                      5000
-                  )
-                },
-                err => {
-                  console.log('Error on updating user data: ' + err)
-                  this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
-                  setTimeout(() => {
-                    this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
-                  }, 5000)
-                })
+              this.oldPassword = ''
+              this.password = ''
+              this.passwordRepeat = ''
+              this.$store.dispatch('SET_NOTIFICATION', {msg: 'Изменения сохранены', err: false})
+              setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                  5000)
+            })
+            .catch(err => {
+              console.log('Error on updating user data: ' + err)
+              this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+              setTimeout(() => {
+                this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false})
+              }, 5000)
+            })
       }
     },
 
@@ -534,45 +532,6 @@ export default {
       &:nth-child(3n)
         margin-right: 0
 
-      &__checkbox
-        .form-label
-        font-weight: 500
-        font-size: 13px
-        color: $c-dark
-
-      &__calendar
-        display: flex
-        align-items: center
-        flex-wrap: wrap
-        flex-basis: 275px
-        position: relative
-
-        .form-label
-          flex-basis: 100%
-
-        .form-input
-          flex-basis: 97px
-
-    &__checkbox
-      max-width: 262px
-
-    &__separator
-      width: 21px
-      height: 2px
-      background-color: $c-dark
-      margin: 0 23px
-
-    &__calendar
-      display: none
-      position: absolute
-      top: calc(100% + 15px)
-      left: 50%
-      margin-left: -154px
-      margin-bottom: 25px
-
-      &_active
-        display: block
-
     &__buttons
       display: flex
       justify-content: center
@@ -587,44 +546,6 @@ export default {
 
       &:first-child
         margin-right: 30px
-
-.account-form__checkbox
-  position: absolute
-  z-index: -1
-  opacity: 0
-
-.account-form__checkbox + label
-  position: relative
-  padding: 0 0 0 40px
-  cursor: pointer
-
-.account-form__checkbox + label:before
-  content: ''
-  position: absolute
-  top: 50%
-  left: 0
-  margin-top: -15px
-  width: 24px
-  height: 24px
-  border: 2px solid #2c3e50
-  background: transparent
-  transition: 0.1s
-
-.account-form__checkbox + label:after
-  content: ''
-  position: absolute
-  top: 50%
-  left: 4px
-  width: 20px
-  height: 20px
-  margin-top: -11px
-  background: url(../assets/img/tick.svg) center no-repeat
-  background-size: contain
-  opacity: 0
-  transition: 0.1s
-
-.account-form__checkbox:checked + label:after
-  opacity: 1
 
 @media(max-width: 1200px)
   html
@@ -658,9 +579,6 @@ export default {
           &:nth-child(2n)
             margin-right: 0
 
-        .account-form__block__calendar
-          margin-right: -13px
-
         &__btn
           width: 210px
 
@@ -690,9 +608,6 @@ export default {
 
           &:nth-child(2n)
             margin-right: auto
-
-          &__checkbox
-            margin-top: 10px
 
         &__btn
           width: 180px
@@ -729,28 +644,6 @@ export default {
         &__block
           margin-bottom: 20px
 
-          &__checkbox
-            .form-label
-            font-size: 12px
-
-        .account-form__block__calendar
-          flex-basis: 210px
-          margin-right: -10px
-
-          .form-input
-            flex-basis: 72px
-            font-size: 14px
-
-        &__checkbox
-          max-width: 200px
-
-        &__separator
-          width: 15px
-          margin: 0 20px
-
-        &__calendar
-          margin-left: -133px
-
         &__buttons
           flex-direction: column-reverse
 
@@ -761,20 +654,4 @@ export default {
           &:first-child
             margin-right: 0
             margin-top: 15px
-
-    .account-form__checkbox + label
-      padding: 0 0 0 30px
-
-    .account-form__checkbox + label:before
-      margin-top: -10px
-      width: 18px
-      height: 18px
-      border: 1px solid #2c3e50
-
-    .account-form__checkbox + label:after
-      top: 50%
-      left: 3px
-      width: 14px
-      height: 14px
-      margin-top: -6px
 </style>

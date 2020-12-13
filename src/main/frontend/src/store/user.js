@@ -92,25 +92,25 @@ export default {
         const url = '/api/auth/login'
         axios({url: url, data: user, method: 'POST'})
           .then(resp => {
-              if (resp.data) {
-                commit('SET_USER', resp.data)
-                commit('SET_PROCESSING', false)
-                resolve()
-              } else if (resp.data === "") {
-                dispatch('AUTH_LOGOUT')
-                commit('SET_PROCESSING', false)
-                reject('password')
-              } else {
-                dispatch('AUTH_LOGOUT')
-                commit('SET_PROCESSING', false)
-                reject()
-              }
-            },
-            err => {
+            if (resp.data) {
+              commit('SET_USER', resp.data)
+              commit('SET_PROCESSING', false)
+              resolve()
+            } else if (resp.data === "") {
               dispatch('AUTH_LOGOUT')
               commit('SET_PROCESSING', false)
-              reject(err)
-            })
+              reject('password')
+            } else {
+              dispatch('AUTH_LOGOUT')
+              commit('SET_PROCESSING', false)
+              reject()
+            }
+          })
+          .catch(err => {
+            dispatch('AUTH_LOGOUT')
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
       })
     },
 
@@ -129,75 +129,47 @@ export default {
         const url = '/api/auth/register'
         axios({url: url, data: user, method: 'POST'})
           .then(resp => {
-              if (resp.data) {
-                commit('SET_USER', resp.data)
-                commit('SET_PROCESSING', false)
-                resolve()
-              } else if (resp.data === "") {
-                dispatch('AUTH_LOGOUT')
-                commit('SET_PROCESSING', false)
-                reject('login')
-              } else {
-                dispatch('AUTH_LOGOUT')
-                commit('SET_PROCESSING', false)
-                reject()
-              }
-            },
-            err => {
+            if (resp.data) {
+              commit('SET_USER', resp.data)
+              commit('SET_PROCESSING', false)
+              resolve()
+            } else if (resp.data === "") {
               dispatch('AUTH_LOGOUT')
               commit('SET_PROCESSING', false)
-              reject(err)
-            })
+              reject('login')
+            } else {
+              dispatch('AUTH_LOGOUT')
+              commit('SET_PROCESSING', false)
+              reject()
+            }
+          })
+          .catch(err => {
+            dispatch('AUTH_LOGOUT')
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
       })
     },
 
     UPDATE_USER({commit, dispatch}, newUser) {
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         commit('SET_PROCESSING', true)
-        if (newUser.oldPassword && newUser.password) {
-          dispatch('UPDATE_USER_PASSWORD', newUser)
-            .then(resp => {
-              if (resp.data) {
-                dispatch('UPDATE_USER_DATA', newUser)
-                  .then(resp => {
-                    if (resp.data) {
-                      commit('UPDATE_USER', resp.data)
-                      commit('SET_PROCESSING', false)
-                      resolve()
-                    } else {
-                      commit('SET_PROCESSING', false)
-                      reject('Ошибка при обновлении данных пользователя.')
-                    }
-                  })
-                  .catch(err => {
-                    commit('SET_PROCESSING', false)
-                    reject(err)
-                  })
-              } else {
-                commit('SET_PROCESSING', false)
-                reject('Ошибка при обновлении пароля.')
-              }
-            })
-            .catch(err => {
-              commit('SET_PROCESSING', false)
-              reject(err)
-            })
-        } else {
-          dispatch('UPDATE_USER_DATA', newUser)
-            .then(resp => {
-              if (resp.data) {
-                commit('UPDATE_USER', resp.data)
-                commit('SET_PROCESSING', false)
-                resolve()
-              } else {
-                commit('SET_PROCESSING', false)
-                reject('Ошибка при обновлении данных пользователя.')
-              }
-            })
-            .catch(err => {
-              commit('SET_PROCESSING', false)
-              reject(err)
-            })
+        try {
+          let updateUserPasswordResp, updateDishUserDataResp
+          if (newUser.oldPassword && newUser.password)
+            updateUserPasswordResp = await  dispatch('UPDATE_USER_PASSWORD', newUser)
+          updateDishUserDataResp = await  dispatch('UPDATE_USER_DATA', newUser)
+          let resp = updateDishUserDataResp ? updateDishUserDataResp : (updateUserPasswordResp ? updateUserPasswordResp : null)
+          commit('SET_PROCESSING', false)
+          if (resp && resp.data) {
+            commit('UPDATE_USER', resp.data)
+            resolve()
+          } else {
+            reject('Ошибка при обновлении данных профиля.')
+          }
+        } catch (err) {
+          commit('SET_PROCESSING', false)
+          reject(err)
         }
       })
     },
@@ -206,12 +178,8 @@ export default {
     UPDATE_USER_DATA({}, newUser) {
       return new Promise((resolve, reject) => {
         axios({url: '/api/user', data: newUser, method: 'PUT'})
-          .then(resp => {
-            resolve(resp)
-          })
-          .catch(err => {
-            reject(err)
-          })
+          .then(resp => resolve(resp))
+          .catch(err => reject(err))
       })
     },
 
@@ -219,12 +187,8 @@ export default {
     UPDATE_USER_PASSWORD({}, newUser) {
       return new Promise((resolve, reject) => {
         axios({url: '/api/user/password', data: newUser, method: 'PUT'})
-          .then(resp => {
-            resolve(resp)
-          })
-          .catch(err => {
-            reject(err)
-          })
+          .then(resp => resolve(resp))
+          .catch(err => reject(err))
       })
     }
   },

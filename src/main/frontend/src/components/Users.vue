@@ -1,39 +1,44 @@
 <template lang="pug">
-.admin-main.admin-users
-  .users-container
-    .users-title Управление пользователями
-    table.users-table
-      tr.users-table__header
-        th.login Логин
-        th.name ФИО
-        th.phone Телефон
-        th.role Роль
-        th(colspan="3")
-      tr.users-table__line(v-for="user in users")
-        td.login {{ user.login }}
-        td.name {{ user.firstName }} {{ user.midName }} {{ user.lastName }}
-        td.phone {{ user.phone }}
-        td.role
-          .select-container
-            v-select.select(
-              v-model="user.roleName",
-              :options="roles",
-              :clearable="false",
-              :searchable="false",
-              @input="changeUserRole(user)"
-            )
-              template(v-slot:option="option")
-                span.select-option {{ option.label }}
-        td.delete
-          button.btn(@click.prevent="deleteUser(user.login)") Удалить
-    button.users-btn(@click.prevent="showPopup = true") +
+  .admin-main.admin-users
+    .users-container
 
-  .overlay(v-if="showPopup")
-    form.form.popup.popup-admin(action="#", @submit.prevent="checkForm()")
-      .form-title Добавление пользователя
-      .form-inputs
-      
-        .form-block.signup-form__block(:class="{'form-block_error': surnameError != ''}")
+      .users-title Управление пользователями
+
+      table.users-table
+
+        tr.users-table__header
+          th.login Логин
+          th.name ФИО
+          th.phone Телефон
+          th.role Роль
+          th(colspan="3")
+
+        tr.users-table__line(v-for="user in users")
+          td.login {{ user.login }}
+          td.name {{ user.firstName }} {{ user.midName }} {{ user.lastName }}
+          td.phone {{ user.phone }}
+          td.role
+            .select-container
+              v-select.select(
+                v-model="user.roleName",
+                :options="roles",
+                :clearable="false",
+                :searchable="false",
+                @input="changeUserRole(user)"
+              )
+                template(v-slot:option="option")
+                  span.select-option {{ option.label }}
+          td.delete
+            button.btn(@click.prevent="deleteUser(user.login)") Удалить
+
+      button.users-btn(@click.prevent="showPopup = true") +
+
+    .overlay(v-if="showPopup")
+      form.form.popup.popup-admin(action="#", @submit.prevent="checkForm()")
+        .form-title Добавление пользователя
+        .form-inputs
+
+          .form-block.signup-form__block(:class="{'form-block_error': surnameError != ''}")
             label.form-label(for="signup-surname") Фамилия
             input.form-input(
               type="text",
@@ -44,114 +49,114 @@
             )
             .form-error(v-if="surnameError != ''") {{ surnameError }}
 
-        .form-block.signup-form__block(:class="{'form-block_error': nameError != ''}")
-          label.form-label(for="signup-name") Имя
-          input.form-input(
-            type="text",
-            id="signup-name",
-            v-model.trim="name",
-            v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
-            @focusout="checkName()"
-          )
-          .form-error(v-if="nameError != ''") {{ nameError }}
-
-        .form-block.signup-form__block(:class="{'form-block_error': middlenameError != ''}")
-          label.form-label(for="signup-middlename") Отчество (не обязательно)
-          input.form-input(
-            type="text",
-            id="signup-middlename",
-            v-model.trim="middlename",
-            v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
-            @focusout="checkMiddlename()"
-          )
-          .form-error(v-if="middlenameError != ''") {{ middlenameError }}
-
-        .form-block.signup-form__block(:class="{'form-block_error': loginError != ''}")
-          label.form-label(for="signup-login") Логин
-          input.form-input(
-            type="text",
-            id="signup-login",
-            v-model.trim="login",
-            v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
-            @focusout="checkLogin()"
-          )
-          .form-error(v-if="loginError != ''") {{ loginError }}
-
-        .form-block.signup-form__block(:class="{'form-block_error': phoneError != ''}")
-          label.form-label(for="signup-phone") Телефон
-          input.form-input(
-            type="text", id="signup-phone",
-            v-model.trim="phone",
-            v-mask="'+7 (###) ###-##-##'",
-            @focusout="checkPhone()"
-          )
-          .form-error(v-if="phoneError != ''") {{ phoneError }}
-
-        .form-block.form-block_last
-          label.form-label.form-label__role Роль пользователя
-          .select-container
-            v-select.select(
-              v-model="role",
-              :options="roles",
-              :clearable="false",
-              :searchable="false"
-            )
-             template(v-slot:option="option")
-              span.select-option {{ option.label }}
-
-        .form-block.signup-form__block(:class="{'form-block_error': passwordError != ''}")
-          label.form-label(for="signup-password") Пароль
-          .form-password
+          .form-block.signup-form__block(:class="{'form-block_error': nameError != ''}")
+            label.form-label(for="signup-name") Имя
             input.form-input(
-              type="password",
-              id="signup-password",
-              v-model.trim="password",
-              @focusout="checkPassword()"
+              type="text",
+              id="signup-name",
+              v-model.trim="name",
+              v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
+              @focusout="checkName()"
             )
-            button.form-password__eye(
-              v-if="!passwordsMatch && passwordFocus && !passwordShow",
-              @click.prevent="togglePasswordShow()"
-            )
-              img(src="../assets/img/eye.svg", alt="Eye")
-            button.form-password__eye(
-              v-if="!passwordsMatch && passwordFocus && passwordShow",
-              @click.prevent="togglePasswordShow()"
-            )
-              img(src="../assets/img/eye-closed.svg", alt="Closed eye")
-            .form-password__eye(v-if="passwordsMatch")
-              img(src="../assets/img/tick-success.svg", alt="Tick")
-          .form-error(v-if="passwordError != ''") {{ passwordError }}
+            .form-error(v-if="nameError != ''") {{ nameError }}
 
-        .form-block.signup-form__block(:class="{'form-block_error': passwordRepeatError != ''}")
-          label.form-label(for="signup-password-repeat") Повторите пароль
-          .form-password
+          .form-block.signup-form__block(:class="{'form-block_error': middlenameError != ''}")
+            label.form-label(for="signup-middlename") Отчество (не обязательно)
             input.form-input(
-              type="password",
-              id="signup-password-repeat",
-              v-model.trim="passwordRepeat",
-              @focusout="checkPasswordRepeat()"
+              type="text",
+              id="signup-middlename",
+              v-model.trim="middlename",
+              v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
+              @focusout="checkMiddlename()"
             )
-            button.form-password__eye(
-              v-if="!passwordsMatch && passwordRepeatFocus && !passwordRepeatShow",
-              @click.prevent="togglePasswordRepeatShow()"
-            )
-              img(src="../assets/img/eye.svg", alt="Eye")
-            button.form-password__eye(
-              v-if="!passwordsMatch && passwordRepeatFocus && passwordRepeatShow",
-              @click.prevent="togglePasswordRepeatShow()"
-            )
-              img(src="../assets/img/eye-closed.svg", alt="Closed eye")
-            .form-password__eye(v-if="passwordsMatch")
-              img(src="../assets/img/tick-success.svg", alt="Tick")
-          .form-error(v-if="passwordRepeatError != ''") {{ passwordRepeatError }}
+            .form-error(v-if="middlenameError != ''") {{ middlenameError }}
 
+          .form-block.signup-form__block(:class="{'form-block_error': loginError != ''}")
+            label.form-label(for="signup-login") Логин
+            input.form-input(
+              type="text",
+              id="signup-login",
+              v-model.trim="login",
+              v-mask="'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'",
+              @focusout="checkLogin()"
+            )
+            .form-error(v-if="loginError != ''") {{ loginError }}
 
-      button.form-submit(type="submit", :disabled="errors") Добавить пользователя
-      button.popup-close(@click.prevent="hidePopup()") &times;
+          .form-block.signup-form__block(:class="{'form-block_error': phoneError != ''}")
+            label.form-label(for="signup-phone") Телефон
+            input.form-input(
+              type="text", id="signup-phone",
+              v-model.trim="phone",
+              v-mask="'+7 (###) ###-##-##'",
+              @focusout="checkPhone()"
+            )
+            .form-error(v-if="phoneError != ''") {{ phoneError }}
+
+          .form-block.form-block_last
+            label.form-label.form-label__role Роль пользователя
+            .select-container
+              v-select.select(
+                v-model="role",
+                :options="roles",
+                :clearable="false",
+                :searchable="false"
+              )
+                template(v-slot:option="option")
+                  span.select-option {{ option.label }}
+
+          .form-block.signup-form__block(:class="{'form-block_error': passwordError != ''}")
+            label.form-label(for="signup-password") Пароль
+            .form-password
+              input.form-input(
+                type="password",
+                id="signup-password",
+                v-model.trim="password",
+                @focusout="checkPassword()"
+              )
+              button.form-password__eye(
+                v-if="!passwordsMatch && passwordFocus && !passwordShow",
+                @click.prevent="togglePasswordShow()"
+              )
+                img(src="../assets/img/eye.svg", alt="Eye")
+              button.form-password__eye(
+                v-if="!passwordsMatch && passwordFocus && passwordShow",
+                @click.prevent="togglePasswordShow()"
+              )
+                img(src="../assets/img/eye-closed.svg", alt="Closed eye")
+              .form-password__eye(v-if="passwordsMatch")
+                img(src="../assets/img/tick-success.svg", alt="Tick")
+            .form-error(v-if="passwordError != ''") {{ passwordError }}
+
+          .form-block.signup-form__block(:class="{'form-block_error': passwordRepeatError != ''}")
+            label.form-label(for="signup-password-repeat") Повторите пароль
+            .form-password
+              input.form-input(
+                type="password",
+                id="signup-password-repeat",
+                v-model.trim="passwordRepeat",
+                @focusout="checkPasswordRepeat()"
+              )
+              button.form-password__eye(
+                v-if="!passwordsMatch && passwordRepeatFocus && !passwordRepeatShow",
+                @click.prevent="togglePasswordRepeatShow()"
+              )
+                img(src="../assets/img/eye.svg", alt="Eye")
+              button.form-password__eye(
+                v-if="!passwordsMatch && passwordRepeatFocus && passwordRepeatShow",
+                @click.prevent="togglePasswordRepeatShow()"
+              )
+                img(src="../assets/img/eye-closed.svg", alt="Closed eye")
+              .form-password__eye(v-if="passwordsMatch")
+                img(src="../assets/img/tick-success.svg", alt="Tick")
+            .form-error(v-if="passwordRepeatError != ''") {{ passwordRepeatError }}
+
+        button.form-submit(type="submit", :disabled="errors") Добавить пользователя
+        button.popup-close(@click.prevent="hidePopup()") &times;
 </template>
 
 <script>
 export default {
+
   data() {
     return {
       showPopup: false,
@@ -180,7 +185,6 @@ export default {
   },
 
   methods:{
-
     hidePopup() {
       this.showPopup = false
     },
@@ -224,26 +228,26 @@ export default {
           phone: this.phone
         })
             .then(resp => {
-              this.name = ''
-              this.nameError = ''
-              this.surname = ''
-              this.surnameError = ''
-              this.middlename = ''
-              this.middlenameError = '',
-              this.login = ''
-              this.loginError = ''
-              this.password = ''
-              this.passwordError = ''
-              this.passwordFocus = false
-              this.passwordShow = false
-              this.passwordRepeat = ''
-              this.passwordRepeatError = ''
-              this.passwordRepeatFocus = false
-              this.passwordRepeatShow = false
-              this.passwordsMatch = false
-              this.phone = ''
-              this.phoneError = ''
-              this.role = {label: 'Пользователь', code: 'user'}
+                  this.name = ''
+                  this.nameError = ''
+                  this.surname = ''
+                  this.surnameError = ''
+                  this.middlename = ''
+                  this.middlenameError = ''
+                  this.login = ''
+                  this.loginError = ''
+                  this.password = ''
+                  this.passwordError = ''
+                  this.passwordFocus = false
+                  this.passwordShow = false
+                  this.passwordRepeat = ''
+                  this.passwordRepeatError = ''
+                  this.passwordRepeatFocus = false
+                  this.passwordRepeatShow = false
+                  this.passwordsMatch = false
+                  this.phone = ''
+                  this.phoneError = ''
+                  this.role = {label: 'Пользователь', code: 'user'}
                 },
                 err => {
                   if (err == 'login') {
@@ -432,19 +436,19 @@ export default {
   },
 
   watch: {
-      password(value) {
-        if (value != '')
-          this.passwordFocus = true
-        else
-          this.passwordFocus = false
-      },
+    password(value) {
+      if (value != '')
+        this.passwordFocus = true
+      else
+        this.passwordFocus = false
+    },
 
-      passwordRepeat(value) {
-        if (value != '')
-          this.passwordRepeatFocus = true
-        else
-          this.passwordRepeatFocus = false
-      }
+    passwordRepeat(value) {
+      if (value != '')
+        this.passwordRepeatFocus = true
+      else
+        this.passwordRepeatFocus = false
+    }
   },
 
   created() {
@@ -459,7 +463,8 @@ export default {
       }, 5000)
     })
   }
-};
+
+}
 </script>
 
 <style lang="sass" scoped>
@@ -495,7 +500,7 @@ export default {
 
       .login
         width: 170px
-      
+
       .name
         width: 350px
 
@@ -505,18 +510,10 @@ export default {
       .role
         width: 260px
 
-
-      // .account-form__block__checkbox
-      //   width: 140px
-
-      // .account-form__block__calendar
-      //   width: 210px
-
       .delete
         width: 110px
 
       &__line
-
         td
           padding: 10px 14px 10px 0px
           border-bottom: 1px solid $c-middle
@@ -525,108 +522,23 @@ export default {
 
       .login
         font-weight: bold
-        
-      .name
-
-      .phone
 
       .role
+
         .select
           width: 150px
           background-color: $c-light
           font-size: 14px
-
-
-        // .limit.form
-        //   &-block
-        //     &_error
-        //       padding-bottom: 47px
-
-        // .account-form__block__checkbox
-        //   padding-right: 4px
-
-        //   .form-label
-        //     max-width: 140px
-        //     font-weight: 500
-        //     font-size: 12px
-        //     color: $c-dark
-        //     text-transform: none
-
-        //   .account-form__checkbox
-        //     position: absolute
-        //     z-index: -1
-        //     opacity: 0
-
-        //   .account-form__checkbox + label
-        //     position: relative
-        //     padding: 0 0 0 26px
-        //     cursor: pointer
-
-        //   .account-form__checkbox + label:before
-        //     content: ''
-        //     position: absolute
-        //     top: 50%
-        //     left: 0
-        //     margin-top: -11px
-        //     width: 18px
-        //     height: 18px
-        //     border: 1px solid #2c3e50
-        //     background: transparent
-        //     transition: 0.1s
-
-        //   .account-form__checkbox + label:after
-        //     content: ''
-        //     position: absolute
-        //     top: 50%
-        //     left: 4px
-        //     width: 14px
-        //     height: 14px
-        //     margin-top: -8px
-        //     background: url(../assets/img/tick.svg) center no-repeat
-        //     background-size: contain
-        //     opacity: 0
-        //     transition: 0.1s
-
-        //   .account-form__checkbox:checked + label:after
-        //     opacity: 1
-
-        //   label.form-label__checkbox_active
-        //     &:after
-        //       opacity: 1
-
-        // .account-form__block__calendar
-        //   padding-left: 4px
-
-        //   .form-label
-        //     font-size: 12px
-        //     text-transform: none
-
-        //   .inputs-container
-        //     display: flex
-        //     justify-content: space-between
-        //     align-items: center
-
-        //   .form-input
-        //     width: 92px
-
-        //   .account-form__separator
-        //     width: 15px
-        //     height: 2px
-        //     background-color: $c-dark
-        //     margin: 0 10px
-
-        .delete
-          padding-right: 0
-
-          .btn
-            width: 100%
-            padding: 10px
-            font-size: 13px
-            font-weight: 500
-
-        .select
           &-container
             margin-bottom: 0
+
+      .delete
+        padding-right: 0
+        .btn
+          width: 100%
+          padding: 10px
+          font-size: 13px
+          font-weight: 500
 
       .form
         &-block
@@ -654,7 +566,6 @@ export default {
       margin: 0 auto 25px auto
       cursor: pointer
       transition: 0.2s
-
       &:hover
         transform: scale(1.3)
 
@@ -667,18 +578,6 @@ export default {
         flex-basis: 300px
         margin-bottom: 0
 
-        &__line
-          display: flex
-          align-items: center
-
-          .form-input
-            width: 170px
-
-          span
-            font-weight: 500
-            font-size: 18px
-            margin-left: 7px
-
       .form-submit
         flex-basis: 220px
         padding: 20px 0
@@ -689,8 +588,7 @@ export default {
   align-items: center
   width: 100vw
   min-height: 100vh
-  // change!
-  background-color: rgba(0, 0, 0, 0.5)
+  background-color: rgba(#000, 0.5)
   position: fixed
   top: 0
   left: 0
@@ -730,27 +628,9 @@ export default {
 
         &_last
           margin-bottom: 0
-        // &-line
-        //   display: flex
-        //   justify-content: space-between
-        // &__item
-        //   &:first-child
-        //     margin-right: 20px
-        //     .form-label
-        //       margin-bottom: 10px
-        &__line
-          display: flex
-          align-items: center
-          // .form-input
-          //   width: 85px
-          span
-            font-weight: 500
-            font-size: 18px
-            margin-left: 10px
 
         .select
           width: 262px
-          // font-size: 12px
           &-container
             margin-bottom: 0
 
