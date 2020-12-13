@@ -4,7 +4,7 @@
 
     DishesAdmin(v-if="chosenSection == 'dishes'")
     Orders(v-if="chosenSection == 'orders'")
-    CompanyAdmin(v-if="chosenSection == 'info'") 
+    CompanyAdmin(v-if="chosenSection == 'companyInfo'") 
     Users(v-if="chosenSection == 'users'")   
 
 
