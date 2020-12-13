@@ -1,6 +1,5 @@
 <template lang="pug">
 .admin-main.admin-users
-  //- form.users-container(action="#", @submit.prevent="saveChanges()")
   .users-container
     .users-title Управление пользователями
     table.users-table
@@ -28,8 +27,6 @@
         td.delete
           button.btn(@click.prevent="deleteUser(user.login)") Удалить
     button.users-btn(@click.prevent="showPopup = true") +
-
-      //- button.form-submit(type="submit") Сохранить изменения
 
   .overlay(v-if="showPopup")
     form.form.popup.popup-admin(action="#", @submit.prevent="checkForm()")
@@ -218,7 +215,7 @@ export default {
       this.checkPassword()
       this.checkPhone()
       if (!this.errors) {
-        this.$store.dispatch('REG_REQUEST', {
+        this.$store.dispatch('ADD_USER', {
           login: this.login,
           password: this.password,
           firstName: this.name,
@@ -227,7 +224,26 @@ export default {
           phone: this.phone
         })
             .then(resp => {
-                  this.$router.push('/')
+              this.name = ''
+              this.nameError = ''
+              this.surname = ''
+              this.surnameError = ''
+              this.middlename = ''
+              this.middlenameError = '',
+              this.login = ''
+              this.loginError = ''
+              this.password = ''
+              this.passwordError = ''
+              this.passwordFocus = false
+              this.passwordShow = false
+              this.passwordRepeat = ''
+              this.passwordRepeatError = ''
+              this.passwordRepeatFocus = false
+              this.passwordRepeatShow = false
+              this.passwordsMatch = false
+              this.phone = ''
+              this.phoneError = ''
+              this.role = {label: 'Пользователь', code: 'user'}
                 },
                 err => {
                   if (err == 'login') {

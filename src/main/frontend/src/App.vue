@@ -81,6 +81,9 @@ body, button, input, a
     margin-bottom: 65px
     position: relative
     transition: 0.2s
+    
+    &_last
+      margin-bottom: 0
 
     &_disabled
       opacity: 0.5

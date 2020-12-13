@@ -17,6 +17,15 @@ export default {
             state.users = data
         },
 
+        
+        ADD_USER(state, user) {
+                user.roleName = {
+                    label: user.roleName === 'admin' ? 'Администратор' : 'Пользователь',
+                    code: user.roleName
+                }
+            state.users = [...state.users, user]
+        },
+
         CHANGE_USER_ROLE(state, user) {
             state.users.find(u => u.login === user.login).roleName = user.roleName
             state.users = [...state.users]
@@ -65,62 +74,29 @@ export default {
             })
         },
 
-        // ADD_USER({commit, dispatch}, user) {
-        //     return new Promise((resolve, reject) => {
-        //       commit('SET_PROCESSING', true)
-        //       const url = '/api/auth/register'
-        //       axios({url: url, data: user, method: 'POST'})
-        //         .then(resp => {
-        //             if (resp.data) {
-        //             //   commit('SET_USER', resp.data)
-        //               commit('SET_PROCESSING', false)
-        //               resolve()
-        //             } else if (resp.data === "") {
-        //             //   dispatch('AUTH_LOGOUT')
-        //               commit('SET_PROCESSING', false)
-        //             //   reject('login')
-        //               reject()
-        //             } else {
-        //             //   dispatch('AUTH_LOGOUT')
-        //               commit('SET_PROCESSING', false)
-        //               reject()
-        //             }
-        //           },
-        //           err => {
-        //             // dispatch('AUTH_LOGOUT')
-        //             commit('SET_PROCESSING', false)
-        //             reject(err)
-        //           })
-        //     })
-        // },
-
         ADD_USER({commit}, user) {
-        return new Promise((resolve, reject) => {
-            commit('SET_PROCESSING', true)
-            const url = 'api/auth/register'   
-            axios({ url: url, data: user, method: 'POST' })
-                .then(resp => {
-                // console.log(resp.data);
-                    if (resp.data) {
-                        // user.id = resp.data.id
-                        commit('ADD_USER', user)
-                        commit('SET_PROCESSING', false)
-                        resolve()
-                    } else if (resp.data === "") {
-                        commit('SET_PROCESSING', false)
-                        reject()
-                    } else {
-                        commit('SET_PROCESSING', false)
-                        reject()
-                    }
-                },
-            err => {
-                commit('SET_PROCESSING', false)
-                reject(err)
+            return new Promise((resolve, reject) => {
+                commit('SET_PROCESSING', true)
+                const url = 'api/auth/register'
+                axios({ url: url, data: user, method: 'POST' })
+                    .then(resp => {
+                        if (resp.data) {
+                            commit('ADD_USER', resp.data)
+                            commit('SET_PROCESSING', false)
+                            resolve()
+                        } else if (resp.data === "") {
+                            commit('SET_PROCESSING', false)
+                            reject()
+                        } else {
+                            commit('SET_PROCESSING', false)
+                            reject()
+                        }
+                    },
+                err => {
+                    commit('SET_PROCESSING', false)
+                    reject(err)
+                })
             })
-        })
-        // send to server
-        // commit('ADD_USER', user)
         },
 
         DELETE_USER_ADMIN({commit}, login) {
