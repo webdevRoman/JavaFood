@@ -38,49 +38,58 @@ public class DishService {
     dish.setDishTypeName(dish.getDishTypeName());
     dish = setDishType(dish);
     Dish dishFromDb = dishRepository.save(dish);
-    if (dishFromDb != null) {
-      if (dish.isHasImage())
-        dishFromDb.setImageAddress("img-dishes/" + dishFromDb.getId() + ".jpg");
+    if (dishFromDb != null && dish.isHasImage()) {
+      dishFromDb.setImageAddress("img-dishes/" + dishFromDb.getId() + ".jpg");
+      dishFromDb.setDishTypeName(dishFromDb.getDishType().getName());
       return dishRepository.save(dishFromDb);
     }
-    return dishRepository.save(dishFromDb);
+    return dishFromDb;
   }
 
   public Dish saveDishImg(MultipartFile file) {
+    if (saveFile("src/main/resources/static/img-dishes/", file) &&
+        saveFile("build/resources/main/static/img-dishes/", file)) {
+      Dish dishFromDb = dishRepository
+          .findById(Long.parseLong(file.getOriginalFilename().split("\\.")[0])).orElse(null);
+      dishFromDb.setDishTypeName(dishFromDb.getDishType().getName());
+      return dishFromDb;
+    } else {
+      return null;
+    }
+  }
 
+  private boolean saveFile(String pathToDir, MultipartFile file) {
     InputStream inputStream = null;
     OutputStream outputStream = null;
     String fileName = file.getOriginalFilename();
-    File newFile = new File("src/main/resources/static/img-dishes/" + fileName);
+    File newFile = new File(pathToDir + fileName);
 
     try {
       inputStream = file.getInputStream();
 
-      if (!newFile.exists()) {
+      if (!newFile.exists())
         newFile.createNewFile();
-      }
       outputStream = new FileOutputStream(newFile);
       int read = 0;
       byte[] bytes = new byte[1024];
 
-      while ((read = inputStream.read(bytes)) != -1) {
+      while ((read = inputStream.read(bytes)) != -1)
         outputStream.write(bytes, 0, read);
-      }
 
       inputStream.close();
       outputStream.close();
+
+      return true;
     } catch (IOException e) {
       e.printStackTrace();
-      return null;
+      return false;
     }
-
-    return null;
   }
 
   public Dish updateDish(Dish dish) {
     Dish dishFromDb = dishRepository.findById(dish.getId()).orElse(null);
     if (dishFromDb != null) {
-      BeanUtils.copyProperties(dish, dishFromDb, "id", "dishType");
+      BeanUtils.copyProperties(dish, dishFromDb, "id", "dishType", "imageAddress");
       dishFromDb.setDishTypeName(dishFromDb.getDishType().getName());
       return dishRepository.save(dishFromDb);
     }
@@ -100,7 +109,7 @@ public class DishService {
   public boolean deleteDish(Long id) {
     Dish dishFromDb = dishRepository.findById(id).orElse(null);
     if (dishFromDb != null) {
-      dishRepository.delete(dishFromDb);
+      dishRepository.deleteById(dishFromDb.getId());
       return true;
     }
     return false;

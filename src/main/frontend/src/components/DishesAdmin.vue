@@ -16,7 +16,7 @@
           .dish-buttons
             button.dish-buttons__btn(@click.prevent="showPopup(dish)")
               img(src="../assets/img/pencil.svg", alt="Pencil")
-            button.dish-buttons__btn &times;
+            button.dish-buttons__btn(@click.prevent="deleteDish(dish.id)") &times;
 
     .overlay(v-if="isPopupShown")
       form.form.popup.popup-admin-dish(action="#", @submit.prevent="checkForm()")
@@ -76,12 +76,13 @@
               input.form-file(type="file", id="dish-img", @change="checkImg($event)")
               label.form-label(for="dish-img", :class="{'form-label_success': imgChosen}")
                 span.form-file-icon__wrapper
-                  img.form-file-icon(v-if="!editingDish", src="../assets/img/camera.svg", alt="Выбрать файл", width="25")
+                  img.form-file-icon(v-if="!editingDish || img", src="../assets/img/camera.svg", alt="Выбрать файл")
                   .form-file-icon.form-file-icon_bg(
                     v-else-if="!!editingDish.imageAddress",
                     :style="{'background-image': `url(http://localhost:8087/${editingDish.imageAddress})`}")
                   img.form-file-icon(v-else, src="../assets/img/dish-default-light.svg", alt="Dish image")
-                span.form-file-text Выберите изображение
+                span.form-file-text(v-if="img") Изображение выбрано
+                span.form-file-text(v-else) Выберите изображение
 
         button.form-submit(type="submit", v-if="editingDish", :disabled="errors") Сохранить изменения
         button.form-submit(type="submit", v-else, :disabled="errors") Добавить блюдо
@@ -142,6 +143,21 @@ export default {
       this.$store.dispatch('CLEAR_ERRORS', 'all')
     },
 
+    deleteDish(id) {
+      this.$store.dispatch('DELETE_DISH', id)
+          .then(() => {
+            this.$store.dispatch('SET_NOTIFICATION', {msg: 'Блюдо удалено.', err: false})
+            setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                5000)
+          })
+          .catch(err => {
+            console.log('Error on deleting dish: ' + err)
+            this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+            setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                5000)
+          })
+    },
+
     checkForm() {
       this.checkName()
       this.checkCategory()
@@ -149,30 +165,86 @@ export default {
       this.checkWeight()
       this.checkDescr()
       if (!this.errors) {
-        this.$store.dispatch('ADD_DISH', {
+        if (this.editingDish === null)
+          this.addDish()
+        else
+          this.editDish()
+      }
+    },
+
+    addDish() {
+      this.$store.dispatch('ADD_DISH', {
+        dish: {
+          name: this.name,
+          weight: this.weight,
+          description: this.descr,
+          price: this.price,
+          dishTypeName: this.category,
+          hasImage: !!this.image
+        },
+        image: this.img
+      })
+          .then(() => {
+            this.hidePopup()
+            this.$store.dispatch('SET_NOTIFICATION', {msg: 'Блюдо добавлено.', err: false})
+            setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                5000)
+          })
+          .catch(err => {
+            console.log('Error on creating dish: ' + err)
+            this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
+            setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
+                5000)
+          })
+    },
+
+    editDish() {
+      const requests = this.getRequests()
+      if (requests.length > 0) {
+
+        this.$store.dispatch('EDIT_DISH', {
           dish: {
+            id: this.editingDish.id,
             name: this.name,
             weight: this.weight,
             description: this.descr,
             price: this.price,
             dishTypeName: this.category,
-            hasImage: !!this.img
+            hasImage: !!this.image
           },
-          image: this.img
+          image: this.img,
+          requests: requests
         })
             .then(() => {
               this.hidePopup()
-              this.$store.dispatch('SET_NOTIFICATION', {msg: 'Блюдо добавлено>', err: false})
+              this.$store.dispatch('SET_NOTIFICATION', {msg: 'Блюдо изменено.', err: false})
               setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
                   5000)
             })
             .catch(err => {
-              console.log('Error on creating dish: ' + err)
+              console.log('Error on editing dish: ' + err)
               this.$store.dispatch('SET_NOTIFICATION', {msg: `Ошибка: ${err}`, err: true})
               setTimeout(() => this.$store.dispatch('SET_NOTIFICATION', {msg: '', err: false}),
                   5000)
             })
+
       }
+    },
+
+    getRequests() {
+      const requests = []
+      if (
+          this.name !== this.editingDish.name ||
+          this.price !== this.editingDish.price ||
+          this.weight !== this.editingDish.weight ||
+          this.descr !== this.editingDish.description
+      )
+        requests.push('data')
+      if (this.category !== this.editingDish.dishTypeName)
+        requests.push('category')
+      if (this.img !== null)
+        requests.push('img')
+      return requests
     },
 
     checkName() {

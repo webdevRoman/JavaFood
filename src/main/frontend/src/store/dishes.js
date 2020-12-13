@@ -77,6 +77,25 @@ export default {
     CLEAR_ORDER(state) {
       state.dishes.forEach(d => d.amount = 0)
       state.dishes = [...state.dishes]
+    },
+
+    ADD_DISH(state, data) {
+      data.amount = 0
+      data.favourite = false
+      state.dishes = [...state.dishes, data]
+    },
+
+    UPDATE_DISH(state, dish) {
+      const oldDish = state.dishes.find(d => d.id === dish.id)
+      dish.amount = oldDish.amount
+      dish.favourite = oldDish.favourite
+      state.dishes.splice(state.dishes.findIndex(d => d.id === dish.id), 1, dish)
+      state.dishes = [...state.dishes]
+    },
+
+    DELETE_DISH(state, id) {
+      state.dishes.splice(state.dishes.findIndex(dish => dish.id === id), 1)
+      state.dishes = [...state.dishes]
     }
   },
 
@@ -241,7 +260,8 @@ export default {
   },
 
   getters: {
-    dishes: (state) => state.dishes,
+    dishes: (state) => state.dishes
+      .sort((a, b) => a.dishTypeName < b.dishTypeName ? -1 : (a.dishTypeName > b.dishTypeName ? 1 : 0)),
     categories: (state) => {
       const categories = state.dishes.reduce((acc, item) => {
         if (!acc.has(item.dishTypeName))

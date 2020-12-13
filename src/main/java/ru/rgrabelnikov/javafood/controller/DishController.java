@@ -25,6 +25,7 @@ public class DishController {
   public Dish addDish(@RequestBody Dish dish) { return dishService.saveDish(dish); }
 
   @PostMapping("/admin/img")
+  @JsonView(Views.Dish.class)
   public Dish addDishImg(@RequestBody MultipartFile file) { return dishService.saveDishImg(file); }
 
   @PutMapping("/admin")
