@@ -511,7 +511,6 @@ export default {
     flex-grow: 1
     min-height: 100vh
     padding: 80px 70px
-   
 
 
   .docs

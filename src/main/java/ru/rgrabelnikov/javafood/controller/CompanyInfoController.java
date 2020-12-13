@@ -16,23 +16,8 @@ public class CompanyInfoController {
     return companyInfoService.getCompanyInfo();
   }
 
-  @PutMapping("/admin/description")
-  public boolean updateDescription(@RequestBody String description) {
-    return companyInfoService.updateDescription(description);
-  }
-
-  @PutMapping("/admin/phone")
-  public boolean updatePhone(@RequestBody String phone) {
-    return companyInfoService.updatePhone(phone);
-  }
-
-  @PutMapping("/admin/email")
-  public boolean updateEmail(@RequestBody String email) {
-    return companyInfoService.updateEmail(email);
-  }
-
-  @PutMapping("/admin/address")
-  public boolean updateAddress(@RequestBody String address) {
-    return companyInfoService.updateAddress(address);
+  @PutMapping("/admin")
+  public CompanyInfo updateCompanyInfo(@RequestBody CompanyInfo companyInfo) {
+    return companyInfoService.updateCompanyInfo(companyInfo);
   }
 }

@@ -33,6 +33,22 @@ export default {
             reject(err)
           })
       })
+    },
+
+    UPDATE_COMPANY({commit}, company) {
+      return new Promise((resolve, reject) => {
+        commit('SET_PROCESSING', true)
+        axios({url: '/api/company/admin', method: 'PUT', data: company})
+          .then(resp => {
+            commit('SET_COMPANY', resp.data)
+            commit('SET_PROCESSING', false)
+            resolve()
+          })
+          .catch(err => {
+            commit('SET_PROCESSING', false)
+            reject(err)
+          })
+      })
     }
   },
 

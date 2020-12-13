@@ -273,7 +273,7 @@ body, button, input, a
     display: flex
     justify-content: space-between
     align-items: center
-    width: 250px
+    width: 350px
     padding: 15px
     background-color: $c-dark
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15)
@@ -288,7 +288,8 @@ body, button, input, a
     margin-right: 10px
 
   &-img
-    width: 20px
+    flex-basis: 20px
+    flex-shrink: 0
 
   &-close
     font-size: 24px

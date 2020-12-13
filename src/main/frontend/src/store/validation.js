@@ -9,7 +9,8 @@ export default {
     passwordMask: /^[A-Za-z0-9]{6,25}$/,
     phoneMask: /^\+7 \(\d{3}\) \d{3}-\d{2}-\d{2}$/,
     timeMask: /^\d{2}:\d{2}$/,
-    dishNameMask: /^[А-Яа-яёA-Za-z0-9\s]{0,35}$/
+    dishNameMask: /^[А-Яа-яёA-Za-z0-9\s]{0,35}$/,
+    emailMask: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,10}$/,
   },
 
 
@@ -89,6 +90,17 @@ export default {
         Vue.set(state.errors, 'time', 'empty')
       } else if (!time.match(state.timeMask)) {
         Vue.set(state.errors, 'time', 'wrong')
+      }
+    },
+
+    CHECK_EMAIL(state, email) {
+      Vue.set(state.errors, 'email', undefined)
+      if (email.length == 0) {
+        Vue.set(state.errors, 'email', 'empty')
+      } else if (email.length > 50) {
+        Vue.set(state.errors, 'email', 'long')
+      } else if (!email.match(state.emailMask)) {
+        Vue.set(state.errors, 'email', 'wrong')
       }
     },
 
@@ -181,6 +193,16 @@ export default {
       return new Promise((resolve) => {
         if (getters.errors.time != undefined)
           resolve(getters.errors.time)
+        else
+          resolve('correct')
+      })
+    },
+
+    CHECK_EMAIL({commit, getters}, email) {
+      commit('CHECK_EMAIL', email)
+      return new Promise((resolve) => {
+        if (getters.errors.email != undefined)
+          resolve(getters.errors.email)
         else
           resolve('correct')
       })

@@ -51,13 +51,13 @@ export default {
             editDataResp = await dispatch('EDIT_DISH_DATA', payload.dish)
           if (payload.requests.some(r => r === 'category'))
             editCategoryResp = await dispatch('EDIT_DISH_CATEGORY', payload.dish)
-          if (payload.requests.some(r => r === 'img')) {
+          if (payload.requests.some(r => r === 'img'))
             editImgResp = await dispatch('UPDATE_DISH_IMAGE', {dishId: payload.dish.id, image: payload.image})
-            document.location.reload(true)
-          }
           let resp = editImgResp ? editImgResp : (editCategoryResp ? editCategoryResp : (editDataResp ? editDataResp : null))
           commit('UPDATE_DISH', resp.data)
           commit('SET_PROCESSING', false)
+          if (editImgResp)
+            document.location.reload(true)
           resolve()
         } catch (err) {
           commit('SET_PROCESSING', false)
